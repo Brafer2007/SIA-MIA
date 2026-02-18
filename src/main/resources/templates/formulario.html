@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulario Aprendiz</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4fdf4;
+            padding: 40px;
+        }
+
+        h2 {
+            color: #006B2D;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        form {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+
+        label {
+            font-weight: 600;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0 20px 0;
+            border: 1px solid #98FB98;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        input[readonly] {
+            background-color: #e0e0e0;
+        }
+
+        input[disabled], select[disabled] {
+            background-color: #f0f0f0;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        button[disabled] {
+            background-color: #999;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        button[disabled]:hover {
+            background-color: #999;
+        }
+
+        button {
+            background-color: #006B2D;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #039e4d;
+        }
+    </style>
+</head>
+<body>
+
+<h2><i class="fas fa-user-graduate"></i> Datos del Aprendiz</h2>
+
+<!-- Alerta si el perfil está completo -->
+<div th:if="${perfilCompleto}" style="background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; text-align: center;">
+    <i class="fas fa-check-circle"></i> <strong>Perfil Completado</strong>
+    <p>Tu perfil ha sido completado. Solo puedes editar tus datos personales, mas no la ficha de formación.</p>
+</div>
+
+
+<form th:action="@{/aprendiz/formulario/guardar}" method="post">
+    <!-- IDs ocultos -->
+    <input type="hidden" name="idUsuario" th:value="${usuario.idUsuario}" />
+    <input type="hidden" name="idAprendiz" th:value="${aprendiz.idAprendiz}" />
+
+    <!-- Campos visibles -->
+    <label>Nombres:</label>
+    <input type="text" name="nombres" th:value="${usuario.nombres}" required>
+
+    <label>Apellidos:</label>
+    <input type="text" name="apellidos" th:value="${usuario.apellidos}" required>
+
+    <input type="hidden" name="nombreUsuario" th:value="${usuario.nombreUsuario}" />
+
+    <label>Número de Documento:</label>
+    <input type="text" name="noDocumento" th:value="${usuario.noDocumento}" readonly>
+
+    <label>Correo Electrónico:</label>
+    <input type="email" name="correo" th:value="${usuario.correo}" readonly>
+
+    <label>Ficha de Formación:</label>
+    <input type="text" name="fichaFormacion" th:value="${aprendiz.fichaFormacion}" required th:disabled="${perfilCompleto}">
+
+    <label for="programa_formacion">Programa de Formación:</label>
+    <select name="programaFormacion" id="programa_formacion" required th:disabled="${perfilCompleto}">
+        <option value="">-- Selecciona un programa --</option>
+        <option th:each="prog : ${programas}"
+                th:value="${prog}"
+                th:text="${prog}"
+                th:selected="${aprendiz.programaFormacion != null and aprendiz.programaFormacion.equals(prog)}">
+        </option>
+    </select>
+
+    <div style="display:flex; gap:10px;">
+        <button type="submit" style="flex:1;" th:disabled="${perfilCompleto}"><i class="fas fa-save"></i> Guardar Datos</button>
+        <a href="/dashboard/aprendiz" style="flex:1; text-decoration:none;">
+            <button type="button" style="width:100%; background:#039e4d; color:white;">
+                <i class="fas fa-arrow-left"></i> Volver al Dashboard
+            </button>
+        </a>
+    </div>
+</form>
+
+
+
+
+<!-- Mensajes Flash -->
+<div th:if="${success}" id="success-message" th:text="${success}" style="display:none;"></div>
+<div th:if="${error}" id="error-message" th:text="${error}" style="display:none;"></div>
+<script>
+    const success = document.getElementById('success-message');
+    if(success && success.textContent) {
+        Swal.fire({
+            title: '¡Éxito!',
+            text: success.textContent,
+            icon: 'success',
+            showCancelButton: false,
+            confirmButtonText: 'Volver al dashboard',
+            allowOutsideClick: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '/dashboard/aprendiz';
+            }
+        });
+    }
+    const error = document.getElementById('error-message');
+    if(error && error.textContent) {
+        Swal.fire('Error', error.textContent, 'error');
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>500 — Error del servidor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+  body {
+    margin: 0;
+    height: 100vh;
+    background: linear-gradient(to bottom, #1a1a1a, #3a0000);
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .flames {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 200px;
+    background: url('https://i.imgur.com/3U1zXQz.gif') repeat-x;
+    background-size: contain;
+    z-index: 0;
+  }
+
+  .message-container {
+    z-index: 1;
+    text-align: center;
+  }
+
+  .message {
+    font-size: 4rem;
+    font-weight: bold;
+    color: #ff4c4c;
+  }
+
+  .sub-message {
+    font-size: 1.2rem;
+    margin-top: 10px;
+    color: #ffaaaa;
+  }
+
+  .back-button {
+    margin-top: 20px;
+    padding: 12px 25px;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #ff4c4c;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+  }
+
+  .back-button:hover {
+    background-color: #cc0000;
+  }
+</style>
+</head>
+<body>
+  <div class="stars"></div>
+  <div class="lamp-container">
+    <div class="cord"></div>
+    <div class="lamp"></div>
+    <div class="bulb"></div>
+    <div class="light"></div>
+  </div>
+  <div class="message-container">
+    <div class="message">Error 500<br>Algo salió mal</div>
+    <div class="sub-message">El servidor tuvo un problema inesperado. Estamos trabajando en ello.</div>
+    <a href="/" class="back-button">Regresar al inicio</a>
+  </div>
+  <img src="https://st5.depositphotos.com/1007168/75761/p/450/depositphotos_757616832-stock-photo-ufo-cute-alien-cartoon-character.png" alt="Astronauta flotando" class="astronaut">
+  <script>/* Usa el mismo script de estrellas que tu 404.html */</script>
+</body>
+</html>

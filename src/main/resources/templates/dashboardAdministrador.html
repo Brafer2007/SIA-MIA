@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Administrador SENA</title>
+
+  <!-- Fuentes y librerías externas -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- Estilos optimizados y organizados -->
+  <style>
+    /* --- Layout general --- */
+    :root {
+      --verde: #006B2D;
+      --verde-suave: rgba(66,241,89,0.1);
+      --vinotinto: #8B0000;
+      --gris-sombra: rgba(90,90,90,0.25);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #ffffff;
+      color: #111;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* --- Sidebar --- */
+    .sidebar {
+      width: 250px;
+      background: var(--verde);
+      padding: 20px;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      color: #fcfcfc;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.06);
+      z-index: 100;
+    }
+    .sidebar a {
+      color: #fcfcfc;
+      text-decoration: none;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      transition: background 0.18s, color 0.18s;
+    }
+    .sidebar a:hover {
+      background: #39FF14;
+      color: #000;
+    }
+
+    /* --- Contenido principal --- */
+    .content {
+      margin-left: 270px;
+      padding: 30px;
+      flex-grow: 1;
+    }
+    .dashboard-header {
+      text-align: center;
+      margin-bottom: 30px;
+      color: var(--verde);
+    }
+
+    /* --- Cards y secciones --- */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--verde-suave);
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(109,108,108,0.22);
+      transition: transform 0.2s;
+      cursor: pointer;
+    }
+    .card:hover { transform: translateY(-5px); }
+    .card i { font-size: 40px; color: var(--verde); margin-bottom: 12px; }
+
+    .section {
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px var(--gris-sombra);
+      background: #fff;
+    }
+
+    /* --- Tabla --- */
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 6px 8px;
+      text-align: center;
+      vertical-align: middle;
+    }
+    th { background: var(--verde-suave); color: #0e0d0d; }
+
+    /* --- Botones --- */
+    .btn {
+      margin: 5px 2px;
+      padding: 6px 10px;
+      background: var(--verde-suave);
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .btn:hover { filter: brightness(.98); }
+    .btn-accion { width: 90px; display: inline-block; }
+    .btn-activo { background-color: #d33; color: #fff; }
+    .btn-inactivo { background-color: var(--verde); color: #fff; }
+    .btn-danger { background-color: #d33; color: #fff; }
+
+    /* --- Reportes: estilo específico --- */
+    #reportes .card { background:#f0f0f0; padding:25px; border-radius:14px; box-shadow:0 5px 20px rgba(0,0,0,0.08); color:#222; }
+    #reportes .btn { background: var(--vinotinto); color: #fff; padding:10px 16px; border-radius:6px; }
+    #reportes canvas { max-height: 350px; }
+
+    /* --- Notificaciones: campana y modal --- */
+    .campana-flotante {
+      position: fixed;
+      top: 20px;
+      right: 30px;
+      z-index: 1200;
+      font-size: 24px;
+      cursor: pointer;
+      color: #333;
+    }
+    .noti-count {
+      position: absolute;
+      top: -6px;
+      right: -10px;
+      background: red;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 50%;
+      font-size: 12px;
+    }
+
+    .modal-noti {
+      display: none;
+      position: fixed;
+      z-index: 1300;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+    .modal-contenido {
+      background-color: #fff;
+      margin: 8% auto;
+      padding: 20px;
+      border-radius: 8px;
+      width: 520px;
+      max-height: 75vh;
+      overflow-y: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      animation: fadeIn 0.18s ease-out;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .btn-cerrar { margin-top: 10px; background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+
+    .noti-item { padding: 8px 10px; margin-bottom: 10px; border-left: 4px solid #ccc; background: #fafafa; border-radius: 4px; }
+    .baja { border-left-color: #4CAF50; }
+    .media { border-left-color: #FFC107; }
+    .alta { border-left-color: #FF5722; }
+    .critica { border-left-color: #D50000; }
+
+    /* pequeñas adaptaciones responsive */
+    @media (max-width: 720px) {
+      .modal-contenido { width: 90%; margin-top: 18%; }
+      .sidebar { display: none; }
+      .content { margin-left: 15px; padding: 15px; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <a href="#" onclick="showSection('usuarios')"><i class="fas fa-users"></i> Gestión de Usuarios</a>
+    <a href="#" onclick="showSection('cronogramas')"><i class="fas fa-calendar-alt"></i> Cronogramas</a>
+    <a href="#" onclick="showSection('vehiculos')"><i class="fas fa-car"></i> Vehículos</a>
+    <a href="#" onclick="showSection('reportes')"><i class="fas fa-chart-line"></i> Reportes</a>
+    <a href="#" onclick="showSection('configuracion')"><i class="fas fa-cogs"></i> Configuración</a>
+    <a href="#" onclick="showSection('auditorias')"><i class="fas fa-user-shield"></i> Auditorías</a>
+    <a th:href="@{/probar502}"><i class="fas fa-life-ring"></i> Soporte</a>
+    <a th:href="@{/login}"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="content">
+    <div class="dashboard-header">
+      <h1>Panel del Administrador</h1>
+      <p>Gestión y control del sistema SENA</p>
+    </div>
+
+    <section class="cards">
+      <div class="card" onclick="showSection('usuarios')">
+        <i class="fas fa-users"></i>
+        <h3>Usuarios</h3>
+        <p>Administrar cuentas</p>
+      </div>
+      <div class="card" onclick="showSection('cronogramas')">
+        <i class="fas fa-calendar-alt"></i>
+        <h3>Cronogramas</h3>
+        <p>Gestionar cronogramas</p>
+      </div>
+      <div class="card" onclick="showSection('vehiculos')">
+        <i class="fas fa-car"></i>
+        <h3>Vehículos</h3>
+        <p>Registrar y gestionar vehículos</p>
+      </div>
+    </section>
+
+    <!-- ---------------- USUARIOS ---------------- -->
+    <section id="usuarios" class="section">
+      <h2 style="display:flex; justify-content:space-between; align-items:center;">
+        <span><i class="fas fa-users"></i> Gestión de Usuarios</span>
+        <div style="display:flex; gap:10px;">
+          <a th:href="@{/usuario/nuevo}">
+            <button class="btn"><i class="fas fa-user-plus"></i> Agregar</button>
+          </a>
+          <a th:href="@{/usuario/exportarExcel}">
+            <button class="btn"><i class="fas fa-file-excel"></i> Descargar Excel</button>
+          </a>
+        </div>
+      </h2>
+
+      <table id="tablaUsuarios">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>No. Documento</th>
+            <th>Perfil</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="usuario : ${usuarios}">
+            <td th:text="${usuario.nombreUsuario}"></td>
+            <td th:text="${usuario.correo}"></td>
+            <td th:text="${usuario.noDocumento}"></td>
+            <td th:text="${usuario.perfil != null ? usuario.perfil.nombrePerfil : 'Sin perfil'}"></td>
+            <td th:text="${usuario.estado == 1 ? 'Activo' : 'Inactivo'}"
+                th:id="'estadoTxt_' + ${usuario.idUsuario}"></td>
+            <td>
+              <a th:href="@{/usuario/editar/{id}(id=${usuario.idUsuario})}">
+                <button class="btn btn-accion">
+                  <i class="fas fa-edit"></i> Editar
+                </button>
+              </a>
+
+              <button th:id="'estadoBtn_' + ${usuario.idUsuario}"
+        th:class="'btn btn-accion ' + (${usuario.estado == 1} ? 'btn-activo btn-danger' : 'btn-inactivo')"
+        th:text="${usuario.estado == 1} ? 'Desactivar' : 'Activar'"
+        th:onclick="'toggleUsuario(' + ${usuario.idUsuario} + ', ' + ${usuario.estado} + ')'">
+              </button>
+            </td>
+          </tr>
+
+          <tr th:if="${#lists.isEmpty(usuarios)}">
+            <td colspan="6">No hay usuarios registrados.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ---------------- CRONOGRAMAS ---------------- -->
+    <section id="cronogramas" class="section" style="display:none;">
+      <h2><i class="fas fa-calendar-alt"></i> Gestión de Cronogramas</h2>
+      
+      <div style="background: #f9f9f9; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+        <h3>Subir Cronograma</h3>
+        <p style="color: #666; margin-bottom: 15px;">Carga el archivo Excel con la programación de los instructores.</p>
+        
+        <form id="upload-form-admin" enctype="multipart/form-data">
+          <div style="display: flex; gap: 10px; align-items: flex-end;">
+            <div style="flex: 1;">
+              <label for="file-input-admin" style="display: block; margin-bottom: 8px; font-weight: bold;">Selecciona archivo:</label>
+              <input type="file" id="file-input-admin" name="file" accept=".xlsx,.xls" required style="padding: 10px; border: 1px solid #006B2D; border-radius: 5px; width: 100%;">
+            </div>
+            <button type="submit" style="background: #006B2D; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+              📤 Subir
+            </button>
+          </div>
+        </form>
+        
+        <div id="estado-upload-admin" style="margin-top: 15px; padding: 10px; border-radius: 5px; display: none;"></div>
+      </div>
+
+      <h3>Cronogramas Registrados</h3>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <div></div>
+        <button onclick="eliminarTodosCronogramas()" style="background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+          🗑️ Eliminar Todos
+        </button>
+      </div>
+      <div id="tabla-cronogramas-admin" style="margin-top: 20px;">
+        <p style="color: #666;">Cargando cronogramas...</p>
+      </div>
+    </section>
+
+    <!-- ---------------- VEHÍCULOS ---------------- -->
+    <section id="vehiculos" class="section" style="display:none;">
+      <h2 style="display:flex; justify-content:space-between; align-items:center;">
+        <span><i class="fas fa-car"></i> Gestión de Vehículos</span>
+        <div style="display:flex; gap:10px;">
+          <button class="btn" onclick="toggleFormularioVehiculo()"><i class="fas fa-plus"></i> Agregar Vehículo</button>
+          <button class="btn" onclick="showParquedero()"><i class="fas fa-parking"></i> Parquedero</button>
+        </div>
+      </h2>
+
+      <!-- Formulario para registrar vehículo -->
+      <div id="formularioVehiculoDiv" style="background: #f0f0f0; padding: 20px; border-radius: 10px; margin-bottom: 20px; display: none;">
+        <h3>Registrar Nuevo Vehículo</h3>
+        <form id="formVehiculo" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+          <input type="hidden" id="idVehiculo" />
+          <input type="text" id="placa" placeholder="Placa (ej: ABC-123)" required style="grid-column: 1/2;">
+          <input type="text" id="marca" placeholder="Marca (ej: Toyota)" required style="grid-column: 2/2;">
+          <input type="text" id="modelo" placeholder="Modelo (ej: Corolla)" required style="grid-column: 1/2;">
+          <input type="text" id="color" placeholder="Color" required style="grid-column: 2/2;">
+          <div style="grid-column: 1/2;">
+            <label for="propietario">Propietario:</label>
+            <select id="propietario" required>
+              <option value="">Seleccionar propietario</option>
+              <option value="admin">Administrador</option>
+              <option value="instructor">Instructor</option>
+              <option value="aprendiz">Aprendiz</option>
+            </select>
+          </div>
+          <input type="text" id="propietarioNombre" placeholder="Nombre del propietario" required style="grid-column: 2/2;">
+          <textarea id="observaciones" placeholder="Observaciones" style="grid-column: 1/2;"></textarea>
+          <input type="number" id="capacidad" placeholder="Capacidad de personas" required style="grid-column: 2/2;">
+          <div style="grid-column: 1/-1; display: flex; gap: 10px; justify-content: flex-end;">
+            <button type="submit" class="btn" style="background: #006B2D; color: white;">Guardar</button>
+            <button type="button" class="btn" onclick="toggleFormularioVehiculo()" style="background: #dc3545; color: white;">Cancelar</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Tabla de vehículos -->
+      <h3>Vehículos Registrados</h3>
+      <table id="tablaVehiculos">
+        <thead>
+          <tr>
+            <th>Placa</th>
+            <th>Marca</th>
+            <th>Modelo</th>
+            <th>Color</th>
+            <th>Propietario</th>
+            <th>Nombre Propietario</th>
+            <th>Capacidad</th>
+            <th>Observaciones</th>
+            <th>Prioridad</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="cuerpoTablaVehiculos">
+          <tr>
+            <td colspan="10" style="text-align:center;">Cargando vehículos...</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Modal Parquedero -->
+      <div id="modalParquedero" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; overflow-y:auto;">
+        <div style="background:white; margin:5% auto; padding:20px; width:90%; max-width:1200px; border-radius:8px; position:relative;">
+          <h2><i class="fas fa-parking"></i> Parquedero</h2>
+          <p style="color:#666;">Vehículos ordenados por prioridad (Administrador > Instructor > Aprendiz)</p>
+          <button onclick="cerrarParquedero()" style="position:absolute; top:10px; right:10px; background:#dc3545; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer;">✕ Cerrar</button>
+          <div id="contenidoParquedero" style="margin-top:20px;">
+            <p style="text-align:center; color:#666;">Cargando parquedero...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------------- REPORTES ----------
+
+------ -->
+    <section id="reportes" class="section" style="display:none;">
+      <h2><i class="fas fa-chart-line"></i> Reportes Estadísticos</h2>
+      <div class="cards">
+        <div class="card aprendices">
+          <i class="fas fa-user-graduate"></i>
+          <h3>Aprendices por Programa</h3>
+          <canvas id="chartAprendices"></canvas>
+          <div class="acciones">
+            <a href="/admin/reportes/pdf/aprendices" target="_blank"><button class="btn"><i class="fas fa-eye"></i> Ver PDF</button></a>
+            <a href="/admin/reportes/pdf/aprendices?descargar=true"><button class="btn"><i class="fas fa-file-download"></i> Descargar PDF</button></a>
+          </div>
+        </div>
+
+        <div class="columna-secundaria" style="display:flex; flex-direction:column; gap:20px;">
+          <div class="card secundaria">
+            <i class="fas fa-desktop"></i>
+            <h3>Equipos Registrados</h3>
+            <canvas id="chartEquipos"></canvas>
+            <div class="acciones">
+              <a href="/admin/reportes/pdf/equipos" target="_blank"><button class="btn"><i class="fas fa-eye"></i> Ver PDF</button></a>
+              <a href="/admin/reportes/pdf/equipos?descargar=true"><button class="btn"><i class="fas fa-file-download"></i> Descargar PDF</button></a>
+            </div>
+          </div>
+
+          <div class="card secundaria">
+            <i class="fas fa-user-check"></i>
+            <h3>Usuarios Activos / Inactivos</h3>
+            <canvas id="chartUsuarios"></canvas>
+            <div class="acciones">
+              <a href="/admin/reportes/pdf/usuarios" target="_blank"><button class="btn"><i class="fas fa-eye"></i> Ver PDF</button></a>
+              <a href="/admin/reportes/pdf/usuarios?descargar=true"><button class="btn"><i class="fas fa-file-download"></i> Descargar PDF</button></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ---------------- CAMPANA Y MODAL DE NOTIFICACIONES ---------------- -->
+  <div id="campana" class="campana-flotante" title="Notificaciones">
+    <i class="fas fa-bell"></i>
+    <span id="contadorNotificaciones" class="noti-count"></span>
+  </div>
+
+  <div id="modalNotificaciones" class="modal-noti" aria-hidden="true">
+    <div class="modal-contenido" role="dialog" aria-modal="true" aria-labelledby="notiTitulo">
+      <h3 id="notiTitulo">📢 Notificaciones del sistema</h3>
+
+      <!-- ÚNICO contenedor de notificaciones: NO duplicar -->
+      <div id="listaNotificaciones" aria-live="polite"></div>
+
+      <div style="display:flex; justify-content:space-between; margin-top:15px;">
+        <button onclick="marcarLeidas()" class="btn-cerrar">Marcar como leídas</button>
+        <button onclick="cerrarModal()" class="btn-cerrar">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sonido -->
+  <audio id="sonidoNotificacion" src="/sounds/notificacion.mp3" preload="auto"></audio>
+
+  <!-- Scripts: jQuery, DataTables, Chart.js (remoto) -->
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Scripts organizados -->
+  <script th:inline="javascript">
+    // ---------- Utilidades de UI ----------
+    function showSection(sectionId) {
+      document.querySelectorAll('.section').forEach(section => section.style.display = 'none');
+      const el = document.getElementById(sectionId);
+      if (el) el.style.display = 'block';
+    }
+
+    // ---------- Toggle usuario (AJAX + actualización DOM) ----------
+    function toggleUsuario(id, estado) {
+      const action = estado === 1 ? 'desactivar' : 'activar';
+      const title = estado === 1 ? '¿Seguro que quieres desactivar este usuario?' : '¿Seguro que quieres activar este usuario?';
+      const text = estado === 1 ? 'El usuario no podrá acceder más hasta ser reactivado.' : 'El usuario podrá acceder nuevamente.';
+      const confirmBtn = estado === 1 ? 'Sí, desactivar' : 'Sí, activar';
+      const confirmColor = estado === 1 ? '#d33' : '#006B2D';
+
+      Swal.fire({
+        title: title,
+        text: text,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: confirmColor,
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: confirmBtn,
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          fetch(`/usuario/${action}/${id}`, { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                // Actualizar botón y texto de estado sin recargar
+                const btn = document.getElementById('estadoBtn_' + id);
+                const txt = document.getElementById('estadoTxt_' + id);
+                if (estado === 1) {
+                  btn.textContent = 'Activar';
+                  btn.classList.remove('btn-activo', 'btn-danger');
+                  btn.classList.add('btn-inactivo');
+                  btn.setAttribute('onclick', 'toggleUsuario(' + id + ', 0)');
+                  txt.textContent = 'Inactivo';
+                } else {
+                  btn.textContent = 'Desactivar';
+                  btn.classList.remove('btn-inactivo');
+                  btn.classList.add('btn-activo', 'btn-danger');
+                  btn.setAttribute('onclick', 'toggleUsuario(' + id + ', 1)');
+                  txt.textContent = 'Activo';
+                }
+                Swal.fire('Listo', `Usuario ${action}do correctamente.`, 'success');
+              } else {
+                Swal.fire('Error', data.message || 'No se pudo completar la acción.', 'error');
+              }
+            })
+            .catch(() => {
+              Swal.fire('Error', 'Ocurrió un error al conectar con el servidor.', 'error');
+            });
+        }
+      });
+    }
+
+    // ---------- Inicialización al cargar la página ----------
+    window.onload = function () {
+      showSection('usuarios');
+      try {
+        $('#tablaUsuarios').DataTable({
+          language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' }
+        });
+      } catch (e) {
+        console.warn('DataTables no pudo inicializarse', e);
+      }
+    };
+
+    // ---------- Charts (solicitan datos al backend) ----------
+    document.addEventListener("DOMContentLoaded", function () {
+      Chart.defaults.color = "#333";
+      Chart.defaults.font.family = "Poppins";
+      Chart.defaults.font.size = 14;
+
+      const chartTheme = {
+        barColors: ["#007BFF", "#6F42C1", "#FD7E14", "#20C997", "#FFC107"],
+        doughnutColors: ["#007BFF", "#6F42C1", "#FD7E14", "#20C997", "#FFC107"],
+        pieColors: ["#007BFF", "#6F42C1", "#FD7E14"]
+      };
+
+      // Aprendices por programa
+      fetch("/admin/reportes/data/aprendices")
+        .then(res => res.json())
+        .then(data => {
+          if (document.getElementById("chartAprendices")) {
+            new Chart(document.getElementById("chartAprendices"), {
+              type: "bar",
+              data: { labels: data.labels, datasets: [{ label: "Aprendices", data: data.values, backgroundColor: chartTheme.barColors }] },
+              options: { responsive: true, maintainAspectRatio: false }
+            });
+          }
+        }).catch(()=>{/* silent */});
+
+      // Equipos por tipo
+      fetch("/admin/reportes/data/equipos")
+        .then(res => res.json())
+        .then(data => {
+          if (document.getElementById("chartEquipos")) {
+            new Chart(document.getElementById("chartEquipos"), {
+              type: "doughnut",
+              data: { labels: Object.keys(data), datasets: [{ data: Object.values(data), backgroundColor: chartTheme.doughnutColors }] },
+              options: { responsive: true, maintainAspectRatio: false }
+            });
+          }
+        }).catch(()=>{/* silent */});
+
+      // Usuarios activos/inactivos
+      fetch("/admin/reportes/data/usuarios")
+        .then(res => res.json())
+        .then(data => {
+          if (document.getElementById("chartUsuarios")) {
+            new Chart(document.getElementById("chartUsuarios"), {
+              type: "pie",
+              data: { labels: Object.keys(data), datasets: [{ data: Object.values(data), backgroundColor: chartTheme.pieColors }] },
+              options: { responsive: true, maintainAspectRatio: false }
+            });
+          }
+        }).catch(()=>{/* silent */});
+    });
+
+    /* ============================
+       SISTEMA DE NOTIFICACIONES
+       ============================ */
+
+    let notificacionesPrevias = 0;
+
+    function cargarNotificaciones() {
+      fetch('/dashboard/admin/notificaciones')
+        .then(r => {
+          if (!r.ok) throw new Error('Respuesta no OK');
+          return r.json();
+        })
+        .then(data => {
+          // Sonido/animación cuando llegan nuevas
+          if (Array.isArray(data) && data.length > notificacionesPrevias) {
+            try { document.getElementById("sonidoNotificacion").play(); } catch(e){/* autoplay policy */ }
+            const bell = document.getElementById("campana");
+            bell.classList.add("new");
+            setTimeout(()=>bell.classList.remove("new"), 600);
+          }
+
+          notificacionesPrevias = Array.isArray(data) ? data.length : 0;
+          document.getElementById("contadorNotificaciones").innerText = notificacionesPrevias > 0 ? notificacionesPrevias : "";
+
+          // Construir HTML
+          let html = "";
+          if (!Array.isArray(data) || data.length === 0) {
+            html = `<p style="text-align:center; color:#888;">No hay notificaciones pendientes</p>`;
+          } else {
+            data.forEach(n => {
+              // seguridad: escapar valores mínimos si vienen mal formados
+              const categoria = n.categoria ? n.categoria : 'General';
+              const mensaje = n.mensaje ? n.mensaje : '';
+              const fecha = n.fecha ? new Date(n.fecha).toLocaleString() : '';
+              const clase = n.prioridad ? n.prioridad : '';
+              html += `
+                <div class="noti-item ${clase}">
+                  <strong>${categoria.toUpperCase()}</strong><br>
+                  ${mensaje}<br>
+                  <small style="color:#666;">${fecha}</small>
+                </div>
+              `;
+            });
+          }
+
+          // Insertar contenido SOLO en el modal
+          const container = document.querySelector("#modalNotificaciones #listaNotificaciones");
+          if (container) container.innerHTML = html;
+        })
+        .catch(err => {
+          console.warn('No se pudieron cargar notificaciones', err);
+          const container = document.querySelector("#modalNotificaciones #listaNotificaciones");
+          if (container) container.innerHTML = `<p style="text-align:center;color:#888;">Error al cargar notificaciones</p>`;
+        });
+    }
+
+    // Polling ligero: cada 4s actualiza contador / animación
+    setInterval(cargarNotificaciones, 4000);
+
+    // Abrir modal sin marcar como leídas
+    document.getElementById("campana").onclick = function() {
+      cargarNotificaciones(); // carga antes de abrir
+      const modal = document.getElementById("modalNotificaciones");
+      if (modal) {
+        modal.style.display = "block";
+        modal.setAttribute("aria-hidden", "false");
+      }
+    };
+
+    // Marcar como leídas (cuando admin lo decida)
+    function marcarLeidas() {
+      fetch('/dashboard/admin/notificaciones/leidas', { method: 'POST' })
+        .then(response => {
+          if (!response.ok) throw new Error('Error al marcar leídas');
+          // limpiar contador y recargar vista
+          document.getElementById("contadorNotificaciones").innerText = "";
+          notificacionesPrevias = 0;
+          cargarNotificaciones();
+        })
+        .catch(err => {
+          console.warn('Error al marcar notificaciones leídas', err);
+          // feedback visual
+          Swal.fire('Error', 'No se pudo marcar como leídas.', 'error');
+        });
+    }
+
+    function cerrarModal() {
+      const modal = document.getElementById("modalNotificaciones");
+      if (modal) {
+        modal.style.display = "none";
+        modal.setAttribute("aria-hidden", "true");
+      }
+    }
+
+    // Cerrar modal al hacer clic fuera del contenido
+    window.addEventListener('click', function (e) {
+      const modal = document.getElementById("modalNotificaciones");
+      const contenido = document.querySelector('#modalNotificaciones .modal-contenido');
+      if (modal && contenido && modal.style.display === 'block' && !contenido.contains(e.target) && !document.getElementById('campana').contains(e.target)) {
+        modal.style.display = 'none';
+        modal.setAttribute("aria-hidden", "true");
+      }
+    });
+
+    // FUNCIONES PARA GESTIÓN DE CRONOGRAMAS (ADMIN)
+    // ================================================
+
+    // Subir archivo de programación
+    function subirArchivoProgramacionAdmin(event) {
+      event.preventDefault();
+      const fileInput = document.getElementById('file-input-admin');
+      const file = fileInput.files[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const estado = document.getElementById('estado-upload-admin');
+      estado.style.display = 'block';
+      estado.style.background = '#f0f0f0';
+      estado.textContent = 'Subiendo archivo...';
+
+      fetch('/programacion/upload-admin', { method: 'POST', body: formData })
+        .then(res => res.json())
+        .then(json => {
+          fileInput.value = '';
+          estado.style.background = '#d4edda';
+          estado.style.color = '#155724';
+          estado.textContent = json.mensaje || 'Archivo subido correctamente';
+          cargarCronogramasAdmin();
+        })
+        .catch(err => {
+          console.error('Error subiendo archivo:', err);
+          estado.style.background = '#f8d7da';
+          estado.style.color = '#721c24';
+          estado.textContent = 'Error subiendo archivo';
+        })
+        .finally(() => setTimeout(() => { estado.style.display = 'none'; }, 5000));
+    }
+
+    // Cargar todos los cronogramas para el admin
+    function cargarCronogramasAdmin() {
+      fetch('/programacion/todos-instructores')
+        .then(res => res.json())
+        .then(instructores => mostrarCronogramasAdmin(instructores))
+        .catch(err => {
+          console.error('Error cargando cronogramas:', err);
+          document.getElementById('tabla-cronogramas-admin').innerHTML = '<p style="color: #d32f2f;">Error cargando cronogramas</p>';
+        });
+    }
+
+    // Mostrar cronogramas en tabla para admin
+    function mostrarCronogramasAdmin(instructores) {
+      const contenedor = document.getElementById('tabla-cronogramas-admin');
+      if (!contenedor) return;
+
+      let html = '<div>';
+      
+      instructores.forEach(instructor => {
+        if (!instructor.programacion || instructor.programacion.length === 0) return;
+
+        const agrupado = {};
+        instructor.programacion.forEach(p => {
+          const clave = `${p.nombreFicha}|${p.curso}|${p.aula}|${p.horaInicio}|${p.horaFin}|${p.trimestre}`;
+          if (!agrupado[clave]) {
+            agrupado[clave] = { ...p, dias: [p.dia] };
+          } else {
+            agrupado[clave].dias.push(p.dia);
+          }
+        });
+
+        html += `
+        <div style="margin-bottom: 30px; padding: 20px; background: #f5f5f5; border-radius: 10px; border-left: 4px solid #006B2D;">
+          <h3 style="color: #006B2D; margin-top: 0;">Instructor: ${instructor.nombre}</h3>
+          <table style="width:100%; border-collapse: collapse;">
+            <thead style="background: #006B2D; color: white;">
+              <tr>
+                <th>Ficha</th><th>Curso</th><th>Aula</th><th>Hora</th><th>Trimestre</th><th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+
+        Object.values(agrupado).forEach(p => {
+          html += `
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td>${p.nombreFicha}</td>
+            <td>${p.curso}</td>
+            <td>${p.aula}</td>
+            <td>${p.horaInicio} - ${p.horaFin}</td>
+            <td>${p.trimestre}</td>
+            <td>
+              <button onclick="eliminarProgramacionAdmin(${p.id})" style="background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">🗑 Eliminar</button>
+            </td>
+          </tr>
+          `;
+        });
+
+        html += `</tbody></table></div>`;
+      });
+
+      html += '</div>';
+      contenedor.innerHTML = html || '<p style="color: #666;">No hay cronogramas registrados</p>';
+    }
+
+    // Eliminar programación como admin
+    function eliminarProgramacionAdmin(idProgramacion) {
+      if (!confirm('¿Estás seguro de que quieres eliminar esta programación?')) {
+        return;
+      }
+
+      fetch(`/programacion/${idProgramacion}`, { method: 'DELETE' })
+        .then(res => res.json())
+        .then(data => {
+          if (data.mensaje) {
+            alert('Programación eliminada correctamente');
+            cargarCronogramasAdmin();
+          } else if (data.error) {
+            alert('Error: ' + data.error);
+          }
+        })
+        .catch(err => {
+          console.error('Error eliminando programación:', err);
+          alert('Error al eliminar la programación');
+        });
+    }
+
+    // Eliminar TODOS los cronogramas
+    function eliminarTodosCronogramas() {
+      if (!confirm('⚠️ ¿Estás COMPLETAMENTE SEGURO de que quieres eliminar TODOS los cronogramas? Esta acción no se puede deshacer.')) {
+        return;
+      }
+
+      if (!confirm('⚠️ CONFIRMACIÓN FINAL: Se eliminarán TODOS los cronogramas. ¿Continuar?')) {
+        return;
+      }
+
+      fetch('/programacion/admin/todos', { method: 'DELETE' })
+        .then(res => res.json())
+        .then(data => {
+          if (data.mensaje) {
+            alert(`✅ ${data.mensaje}`);
+            cargarCronogramasAdmin();
+          } else if (data.error) {
+            alert('❌ Error: ' + data.error);
+          }
+        })
+        .catch(err => {
+          console.error('Error eliminando todos los cronogramas:', err);
+          alert('❌ Error al eliminar los cronogramas');
+        });
+    }
+
+    // Inicializar al cargar
+    document.addEventListener('DOMContentLoaded', function() {
+      const uploadFormAdmin = document.getElementById('upload-form-admin');
+      if (uploadFormAdmin) {
+        uploadFormAdmin.addEventListener('submit', subirArchivoProgramacionAdmin);
+      }
+      cargarCronogramasAdmin();
+      cargarVehiculos();
+      
+      // Evento para formulario de vehículos
+      const formVehiculo = document.getElementById('formVehiculo');
+      if (formVehiculo) {
+        formVehiculo.addEventListener('submit', guardarVehiculo);
+      }
+    });
+
+    // ---------- Funciones para VEHÍCULOS ----------
+    function toggleFormularioVehiculo() {
+      const div = document.getElementById('formularioVehiculoDiv');
+      div.style.display = div.style.display === 'none' ? 'block' : 'none';
+      if (div.style.display === 'block') {
+        document.getElementById('formVehiculo').reset();
+        document.getElementById('idVehiculo').value = '';
+      }
+    }
+
+    function cargarVehiculos() {
+      fetch('/vehiculos')
+        .then(res => res.json())
+        .then(vehiculos => {
+          const tbody = document.getElementById('cuerpoTablaVehiculos');
+          tbody.innerHTML = '';
+          
+          if (vehiculos.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;">No hay vehículos registrados</td></tr>';
+            return;
+          }
+
+          vehiculos.forEach(v => {
+            const prioridad = v.propietario === 'admin' ? '⭐⭐⭐' : v.propietario === 'instructor' ? '⭐⭐' : '⭐';
+            const row = `
+              <tr>
+                <td>${v.placa}</td>
+                <td>${v.marca}</td>
+                <td>${v.modelo}</td>
+                <td>${v.color}</td>
+                <td>${v.propietario}</td>
+                <td>${v.propietarioNombre}</td>
+                <td>${v.capacidad}</td>
+                <td>${v.observaciones || '-'}</td>
+                <td>${prioridad}</td>
+                <td>
+                  <button class="btn" onclick="editarVehiculo(${v.id})" style="background:#0056b3; color:white;">Editar</button>
+                  <button class="btn" onclick="eliminarVehiculo(${v.id})" style="background:#dc3545; color:white;">Eliminar</button>
+                </td>
+              </tr>
+            `;
+            tbody.innerHTML += row;
+          });
+        })
+        .catch(err => console.error('Error cargando vehículos:', err));
+    }
+
+    function guardarVehiculo(e) {
+      e.preventDefault();
+      
+      const idVehiculo = document.getElementById('idVehiculo').value;
+      const vehiculo = {
+        placa: document.getElementById('placa').value,
+        marca: document.getElementById('marca').value,
+        modelo: document.getElementById('modelo').value,
+        color: document.getElementById('color').value,
+        propietario: document.getElementById('propietario').value,
+        propietarioNombre: document.getElementById('propietarioNombre').value,
+        observaciones: document.getElementById('observaciones').value,
+        capacidad: document.getElementById('capacidad').value
+      };
+
+      const url = idVehiculo ? `/vehiculos/${idVehiculo}` : '/vehiculos';
+      const metodo = idVehiculo ? 'PUT' : 'POST';
+
+      fetch(url, {
+        method: metodo,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(vehiculo)
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.id) {
+            alert('Vehículo guardado correctamente');
+            toggleFormularioVehiculo();
+            cargarVehiculos();
+          } else {
+            alert('Error al guardar el vehículo');
+          }
+        })
+        .catch(err => {
+          console.error('Error:', err);
+          alert('Error al guardar el vehículo');
+        });
+    }
+
+    function editarVehiculo(id) {
+      fetch(`/vehiculos/${id}`)
+        .then(res => res.json())
+        .then(v => {
+          document.getElementById('idVehiculo').value = v.id;
+          document.getElementById('placa').value = v.placa;
+          document.getElementById('marca').value = v.marca;
+          document.getElementById('modelo').value = v.modelo;
+          document.getElementById('color').value = v.color;
+          document.getElementById('propietario').value = v.propietario;
+          document.getElementById('propietarioNombre').value = v.propietarioNombre;
+          document.getElementById('observaciones').value = v.observaciones;
+          document.getElementById('capacidad').value = v.capacidad;
+          document.getElementById('formularioVehiculoDiv').style.display = 'block';
+        })
+        .catch(err => console.error('Error:', err));
+    }
+
+    function eliminarVehiculo(id) {
+      if (!confirm('¿Estás seguro de que quieres eliminar este vehículo?')) return;
+      
+      fetch(`/vehiculos/${id}`, { method: 'DELETE' })
+        .then(res => res.json())
+        .then(data => {
+          alert('Vehículo eliminado correctamente');
+          cargarVehiculos();
+        })
+        .catch(err => {
+          console.error('Error:', err);
+          alert('Error al eliminar el vehículo');
+        });
+    }
+
+    function showParquedero() {
+      document.getElementById('modalParquedero').style.display = 'block';
+      cargarParquedero();
+    }
+
+    function cerrarParquedero() {
+      document.getElementById('modalParquedero').style.display = 'none';
+    }
+
+    function cargarParquedero() {
+      fetch('/vehiculos')
+        .then(res => res.json())
+        .then(vehiculos => {
+          // Ordenar por prioridad
+          const orden = { admin: 1, instructor: 2, aprendiz: 3 };
+          vehiculos.sort((a, b) => orden[a.propietario] - orden[b.propietario]);
+
+          const contenido = document.getElementById('contenidoParquedero');
+          if (vehiculos.length === 0) {
+            contenido.innerHTML = '<p style="text-align:center;">No hay vehículos registrados</p>';
+            return;
+          }
+
+          let html = '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">';
+          
+          vehiculos.forEach((v, i) => {
+            const prioridadTexto = v.propietario === 'admin' ? '⭐⭐⭐ PRIORIDAD ALTA' : v.propietario === 'instructor' ? '⭐⭐ PRIORIDAD MEDIA' : '⭐ PRIORIDAD BAJA';
+            const bgColor = v.propietario === 'admin' ? '#fff0f0' : v.propietario === 'instructor' ? '#fffef0' : '#f0f0ff';
+            
+            html += `
+              <div style="background:${bgColor}; padding:20px; border-radius:10px; border-left:5px solid ${v.propietario === 'admin' ? '#dc3545' : v.propietario === 'instructor' ? '#ffc107' : '#007bff'};">
+                <h3>${v.placa}</h3>
+                <p><strong>Vehículo:</strong> ${v.marca} ${v.modelo} (${v.color})</p>
+                <p><strong>Propietario:</strong> ${v.propietarioNombre} (${v.propietario})</p>
+                <p><strong>Capacidad:</strong> ${v.capacidad} personas</p>
+                <p><strong>${prioridadTexto}</strong></p>
+                ${v.observaciones ? `<p><strong>Observaciones:</strong> ${v.observaciones}</p>` : ''}
+              </div>
+            `;
+          });
+          
+          html += '</div>';
+          contenido.innerHTML = html;
+        })
+        .catch(err => console.error('Error:', err));
+    }
+  </script>
+
+  <!-- Enlace oculto para probar error 502 (como en tu original) -->
+  <a th:href="@{/probar502}" style="position:fixed;bottom:2px;right:2px;font-size:8px;color:transparent;z-index:9999;">.</a>
+</body>
+</html>

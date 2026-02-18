@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agregar Usuario - SENA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    display: flex;
+  }
+
+  .sidebar {
+    width: 250px;
+    background: #009c3b;
+    padding: 20px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .sidebar a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    transition: background 0.3s;
+  }
+
+  .sidebar a:hover {
+    background: #fff;
+    color: #009c3b;
+  }
+
+  .content {
+    margin-left: 270px;
+    padding: 30px;
+    flex-grow: 1;
+  }
+
+  .form-container {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 600px;
+    margin: 0 auto;
+    box-shadow: 0 0 15px rgba(0, 156, 59, 0.2);
+    border-top: 8px solid #009c3b;
+  }
+
+  h2 {
+    text-align: center;
+    color: #009c3b;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  input, select {
+    margin: 10px 0;
+    padding: 10px;
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background: #f9f9f9;
+    color: #333;
+    transition: border-color 0.3s;
+  }
+
+  input:focus, select:focus {
+    border-color: #009c3b;
+    outline: none;
+  }
+
+  button {
+    width: 100%;
+    background: #009c3b;
+    color: #fff;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: background-color 0.3s;
+  }
+
+  button:hover {
+    background: #007a2e;
+  }
+
+  .back-link {
+    display: block;
+    margin-top: 20px;
+    text-align: center;
+    color: #009c3b;
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+</style>
+</head>
+<body>
+  <div class="sidebar">
+    <a class="back-link" th:href="@{/dashboard/admin}"><i class="fas fa-arrow-left"></i> Volver</a>
+  </div>
+
+  <div class="content">
+    <div class="form-container">
+      <h2><i class="fas fa-user-plus"></i> Agregar Nuevo Usuario</h2>
+
+      <!-- Formulario Spring Boot -->
+      <form th:action="@{/usuario/nuevo}" method="post">
+        <input type="text" name="nombreUsuario" placeholder="Nombre de usuario" required>
+        <input type="text" name="nombres" placeholder="Nombres" required>
+        <input type="text" name="apellidos" placeholder="Apellidos" required>
+        <input type="email" name="correo" placeholder="Correo electrónico" required>
+        <input type="text" name="documento" placeholder="Número de documento" required>
+        <input type="password" name="clave" placeholder="Contraseña" required>
+
+        <select name="perfil" required>
+          <option value="">Seleccione un perfil</option>
+          <option value="2">Administrador</option>
+          <option value="3">Instructor</option>
+          <option value="1">Aprendiz</option>
+          <option value="4">Administrativo</option>
+        </select>
+
+        <button type="submit">Guardar Usuario</button>
+      </form>
+
+      <a class="back-link" th:href="@{/dashboard/admin}"><i class="fas fa-arrow-left"></i> Volver al listado</a>
+
+    </div>
+  </div>
+</body>
+</html>

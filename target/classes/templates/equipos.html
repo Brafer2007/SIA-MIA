@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar Equipo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #eef6f0; padding: 40px; color: #333; }
+        h2 { color: #006B2D; margin-bottom: 20px; }
+        form { background-color: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        label { font-weight: 600; margin-top: 15px; }
+        input, select { width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 15px; border: 1px solid #98FB98; border-radius: 5px; background-color: #f9f9f9; }
+        button[type="submit"] { padding: 10px 20px; background-color: #006B2D; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: background 0.3s; }
+        button[type="submit"]:hover { background-color: #039e4d; }
+        a { display: inline-block; margin-top: 20px; background-color: #FF8C00; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; text-align: center; }
+    </style>
+</head>
+<body>
+
+<h2><i class="fas fa-laptop"></i> Registrar Nuevo Equipo</h2>
+
+<p th:if="${mensaje}" th:text="${mensaje}" style="color:green;"></p>
+<p th:if="${error}" th:text="${error}" style="color:red;"></p>
+
+<form id="equipoForm" th:action="@{/equipos/registrar}" method="post">
+    <label>Tipo de Equipo:</label>
+    <select name="tipoEquipo" id="tipoEquipo" required>
+        <option value="">-- Selecciona un tipo --</option>
+        <option value="Portátil">Portátil</option>
+        <option value="Tablet">Tablet</option>
+        <option value="Celular">Celular</option>
+    </select>
+
+    <label>Marca/Modelo:</label>
+    <input list="marcas" name="marcaModelo" placeholder="Escribe o selecciona una marca" required>
+    <datalist id="marcas"></datalist>
+
+    <label>Número de Serie:</label>
+    <input type="text" name="numeroSerie" required>
+
+    <button type="submit">Registrar Equipo</button>
+</form>
+
+<a th:if="${dashboardUrl != null}" th:href="@{${dashboardUrl}}">Volver al Dashboard</a>
+<a th:if="${dashboardUrl == null}" href="/login">Volver al Dashboard</a>
+
+<script>
+    const marcasPorTipo = {
+        "Portátil": ["Dell", "HP", "Lenovo", "Asus", "Acer", "Apple MacBook", "MSI", "Samsung"],
+        "Tablet": ["iPad", "Samsung Galaxy Tab", "Huawei MatePad", "Lenovo Tab", "Amazon Fire", "Xiaomi Pad"],
+        "Celular": ["iPhone", "Samsung Galaxy", "Xiaomi", "Huawei", "Motorola", "Oppo"]
+    };
+
+    const tipoSelect = document.getElementById("tipoEquipo");
+    const dataList = document.getElementById("marcas");
+
+    tipoSelect.addEventListener("change", function () {
+        const tipo = this.value;
+        dataList.innerHTML = "";
+        if (marcasPorTipo[tipo]) {
+            marcasPorTipo[tipo].forEach(marca => {
+                const option = document.createElement("option");
+                option.value = marca;
+                dataList.appendChild(option);
+            });
+        }
+    });
+
+    document.getElementById("equipoForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        Swal.fire({
+            icon: 'success',
+            title: '¡Registrado!',
+            text: 'El equipo fue registrado correctamente',
+            confirmButtonText: 'Ir al Dashboard'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.submit();
+            }
+        });
+    });
+</script>
+</body>
+</html>

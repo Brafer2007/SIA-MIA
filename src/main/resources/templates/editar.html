@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Editar Usuario</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    padding: 20px;
+  }
+
+  .form-container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 600px;
+    margin: auto;
+    box-shadow: 0 0 15px rgba(0, 128, 0, 0.2);
+    border-top: 8px solid #009c3b; /* Verde SENA */
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #009c3b;
+    font-size: 24px;
+  }
+
+  label {
+    display: block;
+    margin-top: 15px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background: #f9f9f9;
+    color: #333;
+    transition: border-color 0.3s;
+  }
+
+  input:focus, select:focus {
+    border-color: #009c3b;
+    outline: none;
+  }
+
+  input[readonly] {
+    background-color: #e0e0e0;
+    cursor: not-allowed;
+  }
+
+  .btn {
+    margin-top: 25px;
+    padding: 12px;
+    width: 100%;
+    background-color: #009c3b;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .btn:hover {
+    background-color: #007a2e;
+  }
+
+  .back-link {
+    display: block;
+    margin-top: 20px;
+    text-align: center;
+    color: #009c3b;
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+</style>
+</head>
+<body>
+
+<div class="form-container">
+  <h2><i class="fas fa-user-edit"></i> Editar Usuario</h2>
+
+  <form th:action="@{/usuario/editar}" method="post" th:object="${usuario}">
+    <!-- ID oculto -->
+    <input type="hidden" th:field="*{idUsuario}"/>
+
+    <label for="nombreUsuario">Nombre de Usuario</label>
+    <input type="text" th:field="*{nombreUsuario}" id="nombreUsuario" required>
+
+    <label for="nombres">Nombres</label>
+    <input type="text" th:field="*{nombres}" id="nombres" required>
+
+    <label for="apellidos">Apellidos</label>
+    <input type="text" th:field="*{apellidos}" id="apellidos" required>
+
+    <label for="correo">Correo</label>
+    <input type="email" th:field="*{correo}" id="correo" required>
+
+    <label for="noDocumento">Número de Documento</label>
+    <input type="text" th:field="*{noDocumento}" id="noDocumento" readonly>
+
+    <label for="clave">Contraseña (opcional)</label>
+    <input type="password" th:field="*{clave}" placeholder="Dejar en Blanco" >
+
+    <label for="idPerfil">Perfil</label>
+<select th:field="*{idPerfil}" id="idPerfil" required>
+  <option th:each="p : ${perfiles}"
+          th:value="${p.idPerfil}"
+          th:text="${p.nombrePerfil}">
+  </option>
+</select>
+
+
+
+
+
+    <button type="submit" class="btn">Actualizar Usuario</button>
+  </form>
+        <a class="back-link" th:href="@{/dashboard/admin}"><i class="fas fa-arrow-left"></i> Volver al listado</a>
+
+</div>
+
+</body>
+</html>

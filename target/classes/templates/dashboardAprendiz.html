@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Aprendiz SENA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #fff;
+      color: #006B2D;
+      display: flex;
+    }
+
+    .sidebar {
+      width: 250px;
+      background: #006B2D;
+      padding: 20px;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      box-shadow: 2px 0 10px rgba(0, 107, 45, 0.2);
+    }
+
+    .sidebar a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+
+    .sidebar a:hover {
+      background: #008D4D;
+      color: #fff;
+    }
+
+    .sidebar a.active {
+      background: #014F27;
+      box-shadow: inset 2px 0 0 #a3d9a5;
+    }
+
+    .content {
+      margin-left: 270px;
+      padding: 30px;
+      flex-grow: 1;
+      background: #fff;
+    }
+
+    .dashboard-header {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #006B2D;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: #F0FFF0;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(0, 107, 45, 0.1);
+      transition: transform 0.3s;
+      cursor: pointer;
+      color: #000;
+      border: 1px solid #98FB98;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0, 107, 45, 0.15);
+      border: 1px solid #006B2D;
+    }
+
+    .card i {
+      font-size: 40px;
+      color: #050505;
+      margin-bottom: 15px;
+    }
+
+    .section {
+      display: none;
+      margin-top: 20px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 107, 45, 0.1);
+      color: #121312;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th,
+    td {
+      border: 1px solid #98FB98;
+      padding: 10px;
+      text-align: center;
+      color: #020202;
+    }
+
+    th {
+      background: #F0FFF0;
+      color: #0c0c0c;
+    }
+
+    button {
+      background: #43d828;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      margin: 5px;
+      transition: all 0.3s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+    }
+
+    button.delete {
+      background: #FF8C00;
+      color: white;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      background: #F0FFF0;
+      color: #000;
+      border: 1px solid #98FB98;
+      border-radius: 5px;
+    }
+
+    .file-upload {
+      border: 2px dashed #006B2D;
+      padding: 20px;
+      text-align: center;
+      border-radius: 5px;
+      margin: 15px 0;
+      color: #0f0f0f;
+    }
+
+    .doc-list {
+      background: #F0FFF0;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 10px 0;
+      color: #0a0a0a;
+      border: 1px solid #98FB98;
+    }
+
+    .status {
+      font-weight: bold;
+    }
+    /* Chat bubbles */
+    #mensajes-grupo {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 12px;
+      overflow-y: auto;
+      background: #fff;
+    }
+
+    .message-row {
+      display: flex;
+      margin: 4px 0;
+    }
+
+    .message-row.own {
+      justify-content: flex-end;
+    }
+
+    .message-row.left {
+      justify-content: flex-start;
+    }
+
+    .chat-bubble {
+      max-width: 72%;
+      padding: 10px 12px;
+      border-radius: 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      word-wrap: break-word;
+      line-height: 1.2em;
+    }
+
+    .chat-bubble.own {
+      background: #28a745; /* verde brillante para el aprendiz (tú) */
+      color: #ffffff;
+      border-top-right-radius: 6px;
+      box-shadow: 0 2px 6px rgba(40,167,69,0.2);
+    }
+
+    .chat-bubble.instructor {
+      background: #ff8c00;
+      color: #ffffff;
+      border-top-left-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,123,255,0.18);
+    }
+
+    .chat-bubble.other {
+      background: #007bff;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(255,140,0,0.18);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="sidebar">
+    <!-- las llamadas inline usan showSection(event,'id') para evitar navegación -->
+    <a href="#" onclick="showSection(event,'horario')"><i class="fas fa-calendar-alt"></i> Mi Horario</a>
+    <a href="#" onclick="showSection(event,'perfil')"><i class="fas fa-user-edit"></i> Mi Perfil</a>
+    <a href="#" onclick="showSection(event,'equipos')"><i class="fas fa-laptop"></i> Equipos</a>
+    <a href="#" onclick="showSection(event,'vehiculos')"><i class="fas fa-car"></i> Vehículos</a>
+    <a href="#" onclick="showSection(event,'certificado')"><i class="fas fa-file-alt"></i> Certificado</a>
+    <a href="#" onclick="showSection(event,'incapacidades')"><i class="fas fa-file-medical"></i> Incapacidades</a>
+    <a href="#" onclick="showSection(event,'trabajos')"><i class="fas fa-tasks"></i> Mis Trabajos</a>
+    <a href="#" onclick="showSection('mensajes')"><i class="fas fa-comments"></i> Mensajes</a>
+    <!-- logout mantén th:href si usas Spring Security -->
+    <a th:href="@{/login}"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+  </div>
+
+  <div class="content">
+    <div class="dashboard-header">
+      <h1>Panel del Aprendiz SENA</h1>
+      <p>Bienvenido a tu espacio de formación</p>
+    </div>
+
+    <!-- === CARDS === -->
+    <section class="cards">
+      <div class="card" onclick="showSection('horario')">
+        <i class="fas fa-calendar-alt"></i>
+        <h3>Mi Horario</h3>
+        <p>Consulta tus clases y actividades</p>
+      </div>
+      <div class="card" onclick="showSection('vehiculos')">
+        <i class="fas fa-car"></i>
+        <h3>Vehículos</h3>
+        <p>Registra y consulta vehículos</p>
+      </div>
+      <div class="card" onclick="showSection('certificado')">
+        <i class="fas fa-file-alt"></i>
+        <h3>Certificado</h3>
+        <p>Descarga tu certificado</p>
+      </div>
+      <div class="card" onclick="showSection('trabajos')">
+        <i class="fas fa-tasks"></i>
+        <h3>Mis Trabajos</h3>
+        <p>Revisa tus entregas</p>
+      </div>
+    </section>
+
+    <!-- === HORARIO === -->
+    <section id="horario" class="section" style="display:block;">
+      <h2><i class="fas fa-calendar-alt"></i> Mi Horario Trimestral</h2>
+
+      <div style="text-align:center; margin-bottom:20px;">
+        <button onclick="abrirCalendarioAprendiz()"
+          style="background:#006B2D; color:#fff; font-size:1.1em; padding:10px 20px;">
+          <i class="fas fa-calendar-week"></i> Ver Calendario Completo
+        </button>
+      </div>
+
+      <div th:if="${#lists.isEmpty(horario)}" style="text-align:center; color:#666;">
+        <p>📂 Aún no se ha cargado programación para tu ficha (<span th:text="${aprendiz.fichaFormacion}"></span>).</p>
+      </div>
+
+      <!-- Tabla de horario oculta: usar botón 'Ver Calendario Completo' -->
+      <div style="text-align:center; color:#666; margin-top:8px;">
+        <p>Usa el botón "Ver Calendario Completo" para ver tu programación.</p>
+      </div>
+
+      <!-- Modal Calendario -->
+      <div id="modal-calendario-aprendiz"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; overflow-y:auto;">
+        <div
+          style="background:white; margin:5% auto; padding:20px; width:90%; max-width:1000px; border-radius:8px; position:relative;">
+          <span onclick="cerrarCalendarioAprendiz()"
+            style="position:absolute; top:10px; right:15px; font-size:24px; cursor:pointer; font-weight:bold;">&times;</span>
+          <h2 style="text-align:center; color:#006B2D;">Programación Trimestral</h2>
+
+          <div style="text-align:right; margin-bottom:10px;">
+            <div style="display:inline-block; margin-right:15px;"><span style="color:#d63031;">🎉</span> Festivo</div>
+            <div style="display:inline-block;"><span style="color:green;">✔️</span> Clase Programada</div>
+          </div>
+
+          <div id="contenido-calendario-aprendiz"></div>
+
+          <div style="text-align:center; margin-top:20px;">
+            <button onclick="cerrarCalendarioAprendiz()" style="background:#666;">Cerrar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel Detalle Día -->
+      <div id="detalle-dia"
+        style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:white; padding:20px; border:2px solid #006B2D; border-radius:8px; z-index:1001; width:300px; box-shadow:0 0 15px rgba(0,0,0,0.3);">
+        <h3 style="margin-top:0; color:#006B2D; border-bottom:1px solid #ccc; padding-bottom:5px;">Detalle del Día</h3>
+        <div id="contenido-detalle-dia"></div>
+        <button onclick="cerrarDetalleDia()" style="margin-top:10px; width:100%; background:#666;">Cerrar</button>
+      </div>
+
+    </section>
+
+    <!-- === PERFIL === -->
+    <section id="perfil" class="section">
+      <h2><i class="fas fa-user-edit"></i> Perfil del Aprendiz</h2>
+      <div th:if="${aprendiz_completo}">
+        <div class="card" style="text-align:left; max-width:600px; margin:0 auto;">
+          <div style="background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center;">
+            <i class="fas fa-check-circle"></i> <strong>Perfil Completado</strong>
+          </div>
+          <h3 style="color:#006B2D"><i class="fas fa-id-badge"></i> Información Personal</h3>
+          <p><strong>Nombres:</strong> <span th:text="${usuario.nombres}"></span></p>
+          <p><strong>Apellidos:</strong> <span th:text="${usuario.apellidos}"></span></p>
+          <p><strong>Correo:</strong> <span th:text="${usuario.correo}"></span></p>
+          <p><strong>Número de Documento:</strong> <span th:text="${usuario.noDocumento}"></span></p>
+          <p><strong>Ficha de Formación:</strong> <span th:text="${aprendiz.fichaFormacion}"></span></p>
+          <p><strong>Programa de Formación:</strong> <span th:text="${aprendiz.programaFormacion}"></span></p>
+
+          <!-- Botones -->
+          <a href="/aprendiz/formulario">
+            <button
+              style="margin-top:15px; background:#006B2D; color:white; border:none; border-radius:5px; padding:8px 18px; font-weight:bold; cursor:pointer;">
+              <i class="fas fa-edit"></i> Editar Datos Personales
+            </button>
+          </a>
+
+          <a th:href="@{/aprendiz/qr-img}" download
+            style="margin-top:15px; background:#008D4D; color:white; border:none; border-radius:5px; padding:8px 18px; font-weight:bold; cursor:pointer; text-decoration:none; display:inline-block;">
+            <i class="fas fa-qrcode"></i> Descargar QR
+          </a>
+
+          <button onclick="mostrarQR()"
+            style="margin-top:15px; background:#43d828; color:#000; border:none; border-radius:5px; padding:8px 18px; font-weight:bold; cursor:pointer;">
+            <i class="fas fa-eye"></i> Ver QR
+          </button>
+
+          <!-- Contenedor QR dinámico -->
+          <div id="qrVista" style="display:none; text-align:center; margin-top:15px;">
+            <h4 style="color:#006B2D">Mi Código QR</h4>
+            <img id="qrImagen" src="" alt="QR del aprendiz"
+              style="border:2px solid #006B2D; border-radius:10px; padding:5px;">
+          </div>
+        </div>
+      </div>
+      <div th:if="${!aprendiz_completo}">
+        <p style="color:#ADFF2F;">⚠ Aún no has completado tu perfil de aprendiz.</p>
+        <a th:href="@{/aprendiz/formulario}">
+          <button><i class="fas fa-user-plus"></i> Completar Información del Aprendiz</button>
+        </a>
+      </div>
+    </section>
+
+
+
+    <!-- === EQUIPOS === -->
+    <section id="equipos" class="section">
+      <h2><i class="fas fa-laptop"></i> Registro de Equipos</h2>
+      <a th:href="@{/equipos}">
+        <button type="button"><i class="fas fa-plus-circle"></i> Registrar Nuevo Equipo</button>
+      </a>
+
+      <h2><i class="fas fa-table"></i> Lista de Equipos Registrados</h2>
+      <div th:if="${mensaje}"
+        style="background-color:#d4edda; color:#155724; padding:10px; border-radius:5px; margin-bottom:10px;">
+        <i class="fas fa-check-circle"></i> <span th:text="${mensaje}"></span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Marca/Modelo</th>
+            <th>Serie</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="equipo : ${equipos}" th:if="${equipo.estado == 1}">
+            <td th:text="${equipo.tipoEquipo}"></td>
+            <td th:text="${equipo.marcaModelo}"></td>
+            <td th:text="${equipo.numeroSerie}"></td>
+            <td th:text="${equipo.estado == 1 ? 'Activo' : 'Inactivo'}"></td>
+            <td>
+              <button type="button"
+                style="background:#007bff; color:white; border:none; border-radius:5px; padding:5px 10px; cursor:pointer; margin-right:5px;"
+                th:attr="onclick='editarEquipo(' + ${equipo.idEquipo} + ')'">
+                <i class="fas fa-edit"></i> Editar
+              </button>
+              <button type="button"
+                style="background:#FF8C00; color:white; border:none; border-radius:5px; padding:5px 10px; cursor:pointer;"
+                th:attr="onclick='eliminarEquipoAjax(' + ${equipo.idEquipo} + ')'">
+                <i class="fas fa-trash"></i> Eliminar
+              </button>
+            </td>
+            <script>
+              function editarEquipo(idEquipo) {
+                // Redirige a la página de edición del equipo
+                window.location.href = '/equipos/editar/' + idEquipo;
+              }
+              function eliminarEquipoAjax(idEquipo) {
+                if (!confirm('¿Seguro que deseas eliminar este equipo?')) return;
+                fetch(`/equipos/desactivar/${idEquipo}`, { method: 'POST' })
+                  .then(res => {
+                    if (!res.ok) throw new Error('Error al eliminar equipo');
+                    // Eliminar la fila de la tabla
+                    const fila = document.querySelector(`button[onclick*='${idEquipo}']`).closest('tr');
+                    if (fila) fila.remove();
+                    // Mostrar mensaje de éxito
+                    mostrarMensaje('El equipo se ha eliminado correctamente.');
+                  })
+                  .catch(() => mostrarMensaje('No se pudo eliminar el equipo.'));
+              }
+              function mostrarMensaje(msg) {
+                let div = document.getElementById('mensajeExito');
+                if (!div) {
+                  div = document.createElement('div');
+                  div.id = 'mensajeExito';
+                  div.style.backgroundColor = '#d4edda';
+                  div.style.color = '#155724';
+                  div.style.padding = '10px';
+                  div.style.borderRadius = '5px';
+                  div.style.marginBottom = '10px';
+                  div.innerHTML = `<i class='fas fa-check-circle'></i> <span></span>`;
+                  const tabla = document.querySelector('#equipos table');
+                  tabla.parentNode.insertBefore(div, tabla);
+                }
+                div.querySelector('span').textContent = msg;
+                div.style.display = 'block';
+                setTimeout(() => { div.style.display = 'none'; }, 2500);
+              }
+            </script>
+          </tr>
+          <tr th:if="${equipos == null or #lists.isEmpty(equipos)}">
+            <td colspan="5" style="text-align:center; color:#888;">No hay equipos registrados.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- === CERTIFICADO === -->
+    <section id="certificado" class="section">
+  <h2>
+    <i class="fas fa-file-alt"></i>
+    Certificado Estudiantil
+  </h2>
+
+  <div class="doc-list">
+    <h3>Certificado disponible</h3>
+
+    <div class="certificado-item">
+      <i class="fas fa-file-pdf pdf-icon"></i>
+      <span>Constancia de Formación SENA</span>
+    </div>
+
+    <a href="/certificados/aprendiz/aprendiz"
+       class="btn-descargar">
+      <i class="fas fa-download"></i>
+      Descargar certificado
+    </a>
+  </div>
+</section>
+
+
+    <!-- === INCAPACIDADES === -->
+    <section id="incapacidades" class="section">
+      <h2><i class="fas fa-file-medical"></i> Gestión de Incapacidades</h2>
+      <div class="file-upload">
+        <h3><i class="fas fa-cloud-upload-alt"></i> Subir Nueva Incapacidad</h3>
+        <input type="file" id="incapacidadFile" accept=".pdf,.jpg,.png">
+        <label>Fecha de incapacidad:</label>
+        <input type="date" id="fechaIncapacidad">
+        <button onclick="subirIncapacidad()"><i class="fas fa-upload"></i> Subir Documento</button>
+      </div>
+      <h3>Historial de Incapacidades:</h3>
+      <div class="doc-list">
+        <p><i class="fas fa-file-pdf"></i> Incapacidad_2024-03-15.pdf <span class="status"
+            style="color:#158601">Aprobada</span></p>
+        <p><i class="fas fa-file-image"></i> Incapacidad_2024-02-10.jpg <span class="status" style="color:#ffee00">En
+            revisión</span></p>
+      </div>
+    </section>
+
+    <!-- === TRABAJOS === -->
+    <section id="trabajos" class="section">
+      <h2><i class="fas fa-tasks"></i> Mis Trabajos Entregados</h2>
+      <table>
+        <tr>
+          <th>Actividad</th>
+          <th>Fecha Entrega</th>
+          <th>Archivo</th>
+          <th>Estado</th>
+          <th>Calificación</th>
+        </tr>
+        <tr>
+          <td>Proyecto Base de Datos</td>
+          <td>15/03/2024</td>
+          <td><i class="fas fa-file-code"></i> proyecto_bd.zip</td>
+          <td><span style="color:#169400">Aprobado</span></td>
+          <td>4.8/5.0</td>
+        </tr>
+        <tr>
+          <td>Informe de Matemáticas</td>
+          <td>28/02/2024</td>
+          <td><i class="fas fa-file-word"></i> informe_matematicas.docx</td>
+          <td><span style="color:#ffd104">En revisión</span></td>
+          <td>-</td>
+        </tr>
+      </table>
+
+      <div class="file-upload" style="margin-top:30px;">
+        <h3><i class="fas fa-cloud-upload-alt"></i> Entregar Nuevo Trabajo</h3>
+        <label>Seleccionar actividad:</label>
+        <select id="actividadSelect">
+          <option>Proyecto Final Programación</option>
+          <option>Taller de Inglés</option>
+        </select>
+        <input type="file" id="trabajoFile">
+        <button onclick="entregarTrabajo()"><i class="fas fa-paper-plane"></i> Enviar Trabajo</button>
+      </div>
+    </section>
+    
+    <!-- === VEHÍCULOS === -->
+    <section id="vehiculos" class="section" style="display:none;">
+      <h2 style="display:flex; justify-content:space-between; align-items:center;">
+        <span><i class="fas fa-car"></i> Mis Vehículos</span>
+        <div style="display:flex; gap:10px;">
+          <button class="btn" onclick="toggleFormularioVehiculoAprendiz()" style="background:#006B2D; color:white;"><i class="fas fa-plus"></i> Registrar Vehículo</button>
+          <button class="btn" onclick="showParquederoAprendiz()" style="background:#ff8c00; color:white;"><i class="fas fa-parking"></i> Ver Parquedero</button>
+        </div>
+      </h2>
+
+      <!-- Formulario para registrar vehículo -->
+      <div id="formularioVehiculoDivAprendiz" style="background: #F0FFF0; padding: 20px; border-radius: 10px; margin-bottom: 20px; display: none; border: 1px solid #98FB98;">
+        <h3>Registrar Nuevo Vehículo</h3>
+        <form id="formVehiculoAprendiz" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+          <input type="hidden" id="idVehiculoAprendiz" />
+          <input type="text" id="placaAprendiz" placeholder="Placa (ej: ABC-123)" required style="grid-column: 1/2;">
+          <input type="text" id="marcaAprendiz" placeholder="Marca (ej: Toyota)" required style="grid-column: 2/2;">
+          <input type="text" id="modeloAprendiz" placeholder="Modelo (ej: Corolla)" required style="grid-column: 1/2;">
+          <input type="text" id="colorAprendiz" placeholder="Color" required style="grid-column: 2/2;">
+          <input type="text" id="propietarioNombreAprendiz" placeholder="Nombre del propietario" required style="grid-column: 1/2;">
+          <input type="number" id="capacidadAprendiz" placeholder="Capacidad de personas" required style="grid-column: 2/2;">
+          <textarea id="observacionesAprendiz" placeholder="Observaciones" style="grid-column: 1/-1;"></textarea>
+          <div style="grid-column: 1/-1; display: flex; gap: 10px; justify-content: flex-end;">
+            <button type="submit" class="btn" style="background: #006B2D; color: white;">Guardar</button>
+            <button type="button" class="btn" onclick="toggleFormularioVehiculoAprendiz()" style="background: #dc3545; color: white;">Cancelar</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Tabla de vehículos del aprendiz -->
+      <h3>Mis Vehículos Registrados</h3>
+      <table id="tablaVehiculosAprendiz">
+        <thead>
+          <tr>
+            <th>Placa</th>
+            <th>Marca</th>
+            <th>Modelo</th>
+            <th>Color</th>
+            <th>Capacidad</th>
+            <th>Observaciones</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="cuerpoTablaVehiculosAprendiz">
+          <tr>
+            <td colspan="7" style="text-align:center;">Cargando vehículos...</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Modal Parquedero -->
+      <div id="modalParquederoAprendiz" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; overflow-y:auto;">
+        <div style="background:white; margin:5% auto; padding:20px; width:90%; max-width:1200px; border-radius:8px; position:relative;">
+          <h2><i class="fas fa-parking"></i> Parquedero - Todos los Vehículos</h2>
+          <p style="color:#666;">Vehículos ordenados por prioridad (Administrador > Instructor > Aprendiz)</p>
+          <button onclick="cerrarParquederoAprendiz()" style="position:absolute; top:10px; right:10px; background:#dc3545; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer;">✕ Cerrar</button>
+          <div id="contenidoParquederoAprendiz" style="margin-top:20px;">
+            <p style="text-align:center; color:#666;">Cargando parquedero...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="mensajes" class="section" style="display:none; height:500px;">
+  <h2>Chat de la Ficha</h2>
+
+  <div style="display:flex; height:100%;">
+    <div style="width:30%;">
+      <ul id="fichas-chat" style="list-style:none; padding:0; margin:0;"></ul>
+    </div>
+    <div style="width:70%; display:flex; flex-direction:column;">
+      <h3 id="titulo-chat"></h3>
+      <div id="mensajes-grupo" style="flex:1; overflow:auto;"></div>
+
+      <form id="form-chat" style="display:flex; gap:8px; margin-top:8px; align-items:center;">
+        <label style="cursor:pointer; font-size:20px; flex:0 0 auto; display:flex; align-items:center;">
+          📎
+          <input type="file" id="archivo-mensaje" style="display:none;" onchange="uploadFileAprendiz()">
+        </label>
+        <input id="mensaje" placeholder="Escribe un mensaje..." style="flex:1;">
+        <button type="submit" style="flex:0 0 auto; padding:8px 16px;">Enviar</button>
+      </form>
+    </div>
+  </div>
+</section>
+  </div>
+
+<script th:inline="javascript">
+let fichaAprendiz = '[[${aprendiz.fichaFormacion}]]'
+  .replace(/"/g, '')
+  .replace(/%22/g, '')
+  .replace("–", "-")
+  .split("-")[0]
+  .trim();
+
+let nombreAprendiz = '[[${usuario.nombres}]] [[${usuario.apellidos}]]';
+let idUsuario = [[${idUsuario}]];
+let ws = null;
+let wsNotificaciones = null;
+
+// Función para reproducir sonido de notificación
+function reproducirSonidoNotificacion() {
+  try {
+    const audio = new Audio('/sounds/notificacion.mp3');
+    audio.volume = 0.7; // Volumen al 70%
+    audio.play().catch(err => console.log('No se pudo reproducir sonido:', err));
+  } catch (e) {
+    console.error('Error reproduciendo sonido:', e);
+  }
+}
+
+// Función para mostrar notificación visual
+function mostrarNotificacionVisual(notificacion) {
+  const titulo = notificacion.titulo || 'Nueva Notificación';
+  const mensaje = notificacion.mensaje || '';
+  
+  // Crear elemento de notificación
+  const notifDiv = document.createElement('div');
+  notifDiv.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #006B2D 0%, #008D4D 100%);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 9999;
+    max-width: 350px;
+    animation: slideIn 0.3s ease-out;
+    font-family: 'Poppins', sans-serif;
+    border-left: 4px solid #00FF99;
+  `;
+  
+  notifDiv.innerHTML = `
+    <strong>🔔 ${titulo}</strong><br>
+    <span style="font-size: 0.9em; margin-top: 5px; display: block;">${mensaje}</span>
+  `;
+  
+  document.body.appendChild(notifDiv);
+  
+  // Auto-remover después de 5 segundos
+  setTimeout(() => {
+    notifDiv.style.animation = 'slideOut 0.3s ease-in';
+    setTimeout(() => notifDiv.remove(), 300);
+  }, 5000);
+}
+
+// Agregar estilos de animación
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes slideIn {
+    from {
+      transform: translateX(400px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideOut {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(400px);
+      opacity: 0;
+    }
+  }
+`;
+document.head.appendChild(style);
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  cargarChatsAprendiz();
+  cargarVehiculosAprendiz();
+  
+  // Conectar a WebSocket de notificaciones
+  conectarWebSocketNotificaciones();
+  
+  // Evento para formulario de vehículos
+  const formVehiculo = document.getElementById('formVehiculoAprendiz');
+  if (formVehiculo) {
+    formVehiculo.addEventListener('submit', guardarVehiculoAprendiz);
+  }
+});
+
+// Conectar a WebSocket de notificaciones
+function conectarWebSocketNotificaciones() {
+  try {
+    const wsProtocolo = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const wsUrl = `${wsProtocolo}://localhost:8080/notificaciones/aprendiz/${encodeURIComponent(fichaAprendiz)}`;
+    
+    wsNotificaciones = new WebSocket(wsUrl);
+    
+    wsNotificaciones.onopen = () => {
+      console.info('✅ WebSocket de notificaciones conectado para aprendiz');
+    };
+    
+    wsNotificaciones.onmessage = (evento) => {
+      try {
+        const notificacion = JSON.parse(evento.data);
+        
+        // Reproducir sonido si está habilitado
+        if (notificacion.sonar !== false) {
+          reproducirSonidoNotificacion();
+        }
+        
+        // Mostrar notificación visual
+        mostrarNotificacionVisual(notificacion);
+        
+        console.log('📬 Notificación recibida:', notificacion);
+      } catch (e) {
+        console.error('Error procesando notificación:', e);
+      }
+    };
+    
+    wsNotificaciones.onerror = (error) => {
+      console.error('❌ Error en WebSocket de notificaciones:', error);
+    };
+    
+    wsNotificaciones.onclose = () => {
+      console.info('❌ WebSocket de notificaciones cerrado');
+      // Intentar reconectar después de 5 segundos
+      setTimeout(conectarWebSocketNotificaciones, 5000);
+    };
+  } catch (e) {
+    console.error('Error al conectar WebSocket de notificaciones:', e);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    if (!ws || ws.readyState === WebSocket.CLOSED) {
+      ws = new WebSocket(`ws://localhost:8080/chat/${encodeURIComponent(fichaAprendiz)}`);
+      ws.onmessage = e => mostrarMensaje(JSON.parse(e.data));
+      ws.onopen = () => console.info('WS apprentice connected for ficha', fichaAprendiz);
+      ws.onerror = err => console.error('WS apprentice error', err);
+      ws.onclose = () => console.info('WS apprentice closed for ficha', fichaAprendiz);
+    }
+  } catch (e) {
+    console.error('Error opening apprentice WS', e);
+  }
+});
+
+function abrirChatFicha(ficha, instructorId) {
+
+  // ficha may be '2996893' or '2996893 - 2996900' — preserve the full range if it exists
+  const fichaNorm = ficha
+    .replace(/"/g, '')
+    .replace(/%22/g, '')
+    .replace("–", "-")
+    .trim();
+
+  // Keep the full ficha display (may be a range like "2996893 - 2996900")
+  const fichaNormDisplay = fichaNorm;
+  
+  // But extract the FIRST ficha for persistence (apprentice's actual ficha)
+  fichaAprendiz = fichaNorm.split("-")[0].trim();
+
+  // Only set currentSala when an instructorId is provided (selecting a specific instructor)
+  if (instructorId) {
+      // Send with individual ficha, not the range
+      const sala = fichaAprendiz + '|' + instructorId;
+    window.currentSala = sala;
+  } else {
+    window.currentSala = null;
+  }
+
+  document.getElementById('titulo-chat').innerText = `Ficha ${fichaNormDisplay} (Instructor ${instructorId || '—'})`;
+  document.getElementById('mensajes-grupo').innerHTML = '';
+
+  if (!instructorId) {
+    document.getElementById('mensajes-grupo').innerHTML = '<div style="padding:20px; color:#999; text-align:center;">Selecciona un instructor de la lista para ver los mensajes</div>';
+    // load ficha-level messages (group of apprentices) so apprentices can see each other
+    fetch(`/mensajes/ficha/${encodeURIComponent(fichaAprendiz)}`)
+      .then(res => res.json())
+      .then(data => {
+        if (!Array.isArray(data)) return;
+        data.sort((a,b) => new Date(a.fechaEnvio) - new Date(b.fechaEnvio));
+        data.forEach(mostrarMensaje);
+      })
+      .catch(err => console.error('Error cargando mensajes por ficha:', err));
+    // keep apprentice WS open (opened on load) so real-time apprentice messages arrive
+  }
+
+  if (!ws || ws.readyState === WebSocket.CLOSED) {
+    ws = new WebSocket(`ws://localhost:8080/chat/${encodeURIComponent(fichaAprendiz)}`);
+    ws.onmessage = e => mostrarMensaje(JSON.parse(e.data));
+  }
+
+  // Load messages for this specific ficha + instructor combination
+  if (instructorId) {
+    fetch(`/mensajes/ficha/${encodeURIComponent(fichaAprendiz)}/${encodeURIComponent(instructorId)}`)
+      .then(res => res.json())
+      .then(data => {
+        if (!Array.isArray(data)) return;
+        data.sort((a,b) => new Date(a.fechaEnvio) - new Date(b.fechaEnvio));
+        data.forEach(mostrarMensaje);
+      })
+      .catch(err => console.error('Error cargando mensajes:', err));
+  } else {
+    // Load all messages for this ficha if no instructor selected
+    fetch(`/mensajes/ficha/${encodeURIComponent(fichaAprendiz)}`)
+      .then(res => res.json())
+      .then(data => {
+        if (!Array.isArray(data)) return;
+        data.sort((a,b) => new Date(a.fechaEnvio) - new Date(b.fechaEnvio));
+        data.forEach(mostrarMensaje);
+      })
+      .catch(err => console.error('Error cargando mensajes por ficha:', err));
+  }
+}
+
+function cargarChatsAprendiz() {
+  fetch(`/mensajes/chats-por-ficha/${encodeURIComponent(fichaAprendiz)}`)
+    .then(res => res.json())
+    .then(list => {
+      const ul = document.getElementById('fichas-chat');
+      ul.innerHTML = '';
+      if (!list || list.length === 0) {
+        ul.innerHTML = '<li style="padding:8px;color:#666;">No hay chats disponibles</li>';
+        return;
+      }
+      list.forEach((sala, index) => {
+        // sala format: '2996893|1'
+        const [ficha, instructorId] = sala.split('|');
+        
+        // Intentar obtener el curso desde programacionAprendiz (si está disponible)
+        let cursoNombre = 'Curso no disponible';
+        if (typeof programacionAprendiz !== 'undefined' && Array.isArray(programacionAprendiz)) {
+          // Buscar el primer curso del instructor
+          const cursoEncontrado = programacionAprendiz.find(p => 
+            p.instructor && p.instructor.toLowerCase().includes(instructorId)
+          );
+          if (cursoEncontrado) {
+            cursoNombre = cursoEncontrado.curso;
+          }
+        }
+        
+        const li = document.createElement('li');
+        li.style.padding = '8px';
+        li.innerHTML = `<button style="width:100%; text-align:left; background:none; border:none; padding:6px; cursor:pointer; font-size:0.95em;" onclick="abrirChatFicha('${ficha}','${instructorId}')">Ficha ${ficha}<br><small style="color:#666;">Instructor ${instructorId} - ${cursoNombre}</small></button>`;
+        ul.appendChild(li);
+        
+        // Auto-select first instructor on load so apprentices see group chat
+        if (index === 0) {
+          setTimeout(() => abrirChatFicha(ficha, instructorId), 100);
+        }
+      });
+    })
+    .catch(err => console.error('Error cargando chats:', err));
+}
+
+document.getElementById('form-chat').addEventListener('submit', e => {
+  e.preventDefault();
+
+  const texto = document.getElementById('mensaje').value.trim();
+  if (!texto || !ws || ws.readyState !== WebSocket.OPEN) return;
+
+  const payload = {
+    ficha: fichaAprendiz,
+    mensaje: texto,
+    idEmisor: idUsuario,
+    nombreEmisor: nombreAprendiz,
+    rolEmisor: 'Aprendiz'
+  };
+  
+  // Include sala if instructor was selected
+  if (window.currentSala) {
+    payload.sala = window.currentSala;
+  }
+
+  try {
+    ws.send(JSON.stringify(payload));
+  } catch (err) {
+    console.error('Error sending WS message', err);
+  }
+
+  document.getElementById('mensaje').value = '';
+});
+
+function uploadFileAprendiz() {
+  const input = document.getElementById('archivo-mensaje');
+  if (!input || !input.files || input.files.length === 0) {
+    return;
+  }
+  const file = input.files[0];
+  const fd = new FormData();
+  fd.append('file', file);
+
+  fetch('/mensajes/upload', { method: 'POST', body: fd })
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.success) {
+        const m = {
+          idEmisor: idUsuario,
+          nombreEmisor: nombreAprendiz,
+          rolEmisor: 'Aprendiz',
+          fileUrl: data.url,
+          fileName: file.name,
+          mensaje: ''
+        };
+        mostrarMensaje(m);
+        // Enviar por WebSocket también para broadcast
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({
+            ficha: fichaAprendiz,
+            mensaje: '',
+            idEmisor: idUsuario,
+            nombreEmisor: nombreAprendiz,
+            rolEmisor: 'Aprendiz',
+            fileUrl: data.url,
+            fileName: file.name,
+            sala: window.currentSala || null
+          }));
+        }
+        input.value = '';
+      } else {
+        alert('Error: ' + (data.error || 'No se pudo subir el archivo'));
+      }
+    })
+    .catch(err => {
+      console.error('Error subiendo archivo:', err);
+      alert('Error de conexión');
+    });
+}
+
+function mostrarMensaje(m) {
+  // Compatibilidad: si se llama con un string (mensajes de éxito de equipos), mostrar toast.
+  if (typeof m === 'string' || typeof m === 'number') {
+    let div = document.getElementById('mensajeExito');
+    if (!div) {
+      div = document.createElement('div');
+      div.id = 'mensajeExito';
+      div.style.backgroundColor = '#d4edda';
+      div.style.color = '#155724';
+      div.style.padding = '10px';
+      div.style.borderRadius = '5px';
+      div.style.marginBottom = '10px';
+      div.innerHTML = `<i class='fas fa-check-circle'></i> <span></span>`;
+      const tabla = document.querySelector('#equipos table');
+      if (tabla) tabla.parentNode.insertBefore(div, tabla);
+    }
+    div.querySelector('span').textContent = String(m);
+    div.style.display = 'block';
+    setTimeout(() => { div.style.display = 'none'; }, 2500);
+    return;
+  }
+
+  const cont = document.getElementById('mensajes-grupo');
+  if (!cont) return;
+
+  // Crear fila contenedora para controlar alineación
+  const row = document.createElement('div');
+  row.className = 'message-row';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'chat-bubble';
+
+  // Sanitizar nombre: quitar comillas y codificaciones comunes
+  const rawName = (m && m.nombreEmisor) ? String(m.nombreEmisor) : '';
+  const nombre = rawName.replace(/%22/g, '').replace(/\"/g, '').replace(/"/g, '').replace(/'/g, '').trim();
+
+  // Escape básico del mensaje para evitar HTML no deseado
+  const rawMsg = (m && m.mensaje) ? String(m.mensaje) : '';
+  const escapeHtml = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const mensajeEsc = escapeHtml(rawMsg);
+
+  // Determinar emoji por rol
+  let emoji = '👤';
+  if (m && m.rolEmisor && String(m.rolEmisor).toLowerCase().includes('instructor')) {
+    emoji = '👨‍🏫';
+  } else if (m && m.rolEmisor && String(m.rolEmisor).toLowerCase().includes('aprendiz')) {
+    emoji = '👨‍🎓';
+  }
+
+  bubble.innerHTML = `<strong>${emoji} ${nombre || ''}</strong><br>`;
+  const contentDiv = document.createElement('div');
+  contentDiv.style.marginTop = '6px';
+
+  if (m && m.fileUrl) {
+    // Mostrar archivo como burbuja tipo WhatsApp
+    const fileLink = document.createElement('a');
+    fileLink.href = m.fileUrl;
+    fileLink.target = '_blank';
+    fileLink.style.display = 'flex';
+    fileLink.style.alignItems = 'center';
+    fileLink.style.gap = '8px';
+    fileLink.style.padding = '8px 0';
+    fileLink.style.color = '#fff';
+    fileLink.style.textDecoration = 'none';
+    fileLink.style.cursor = 'pointer';
+
+    // Icono según tipo de archivo
+    const fileIcon = document.createElement('span');
+    const fileName = (m.fileName || '').toLowerCase();
+    if (fileName.includes('.pdf')) {
+      fileIcon.textContent = '📄';
+    } else if (fileName.match(/\.(jpg|jpeg|png|gif)$/)) {
+      fileIcon.textContent = '🖼️';
+    } else if (fileName.match(/\.(doc|docx)$/)) {
+      fileIcon.textContent = '📝';
+    } else if (fileName.match(/\.(zip|rar|7z)$/)) {
+      fileIcon.textContent = '📦';
+    } else {
+      fileIcon.textContent = '📎';
+    }
+    fileIcon.style.fontSize = '20px';
+
+    const fileNameSpan = document.createElement('span');
+    fileNameSpan.textContent = m.fileName || 'Descargar archivo';
+    fileNameSpan.style.whiteSpace = 'nowrap';
+    fileNameSpan.style.overflow = 'hidden';
+    fileNameSpan.style.textOverflow = 'ellipsis';
+    fileNameSpan.style.maxWidth = '150px';
+
+    fileLink.appendChild(fileIcon);
+    fileLink.appendChild(fileNameSpan);
+    contentDiv.appendChild(fileLink);
+
+    if (m.mensaje) {
+      const span = document.createElement('div');
+      span.style.marginTop = '6px';
+      span.textContent = mensajeEsc;
+      contentDiv.appendChild(span);
+    }
+  } else {
+    contentDiv.textContent = mensajeEsc;
+  }
+  bubble.appendChild(contentDiv);
+
+  // Determinar tipo: instructor, propio (logged-in), u otros aprendices
+  const isOwn = (m && (m.idEmisor !== undefined ? m.idEmisor === idUsuario : false));
+  if (m && m.rolEmisor && String(m.rolEmisor).toLowerCase().includes('instructor')) {
+    // Mensaje de instructor
+    row.classList.add('left');
+    bubble.classList.add('instructor');
+  } else if (isOwn) {
+    // Mensaje del usuario logeado
+    row.classList.add('own');
+    bubble.classList.add('own');
+  } else {
+    // Mensaje de otro aprendiz
+    row.classList.add('left');
+    bubble.classList.add('other');
+  }
+
+  row.appendChild(bubble);
+  cont.appendChild(row);
+
+  // Auto-scroll al último mensaje
+  cont.scrollTop = cont.scrollHeight;
+}
+
+
+
+    // showSection flexible: puede llamarse showSection('id') o showSection(event,'id')
+    function showSection(eOrId, maybeId) {
+      let id;
+      if (typeof eOrId === 'string') {
+        id = eOrId;
+      } else {
+        // eOrId es el evento
+        if (eOrId && typeof eOrId.preventDefault === 'function') eOrId.preventDefault();
+        id = maybeId;
+      }
+      if (!id) return;
+
+      // ocultar todas las secciones y mostrar la solicitada
+      document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'block';
+
+      // actualizar estado "activo" del sidebar
+      document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+      // buscar anchor cuyo onclick contenga el id o tenga data-target
+      const anchors = Array.from(document.querySelectorAll('.sidebar a'));
+      const activeLink = anchors.find(a => {
+        const onclick = a.getAttribute('onclick') || '';
+        if (onclick.includes(`'${id}'`) || onclick.includes(`"${id}"`)) return true;
+        const dt = a.dataset.target;
+        if (dt === id) return true;
+        return false;
+      });
+      if (activeLink) activeLink.classList.add('active');
+
+      // si la sección es equipos, solicitar datos al backend
+      if (id === 'equipos') cargarEquipos();
+    }
+
+    function descargarCertificado() {
+      alert("Descargando certificado... (simulación)");
+    }
+
+    function subirIncapacidad() {
+      const f = document.getElementById('incapacidadFile').files[0];
+      if (f) {
+        alert(`Incapacidad "${f.name}" subida.`);
+        // aqui iría el POST real a tu endpoint
+      } else {
+        alert("Selecciona un archivo");
+      }
+    }
+
+    function entregarTrabajo() {
+      const f = document.getElementById('trabajoFile').files[0];
+      const actividad = document.getElementById('actividadSelect').value;
+      if (f) {
+        alert(`Trabajo "${f.name}" entregado para "${actividad}".`);
+        // aqui iría el POST real a tu endpoint
+      } else {
+        alert("Selecciona un archivo");
+      }
+    }
+
+    function mostrarQR() {
+      const qrDiv = document.getElementById('qrVista');
+      const qrImg = document.getElementById('qrImagen');
+      qrImg.src = "/aprendiz/qr-img?" + new Date().getTime(); // evita caché
+      qrDiv.style.display = 'block';
+    }
+    function descargarQR() {
+      fetch("/aprendiz/qr-img")
+        .then(response => {
+          if (!response.ok) throw new Error("No se pudo descargar el QR");
+          return response.blob();
+        })
+        .then(blob => {
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = "codigoQR.png";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        })
+        .catch(err => {
+          alert("Hubo un error al descargar el QR");
+          console.error(err);
+        });
+    }
+
+
+    function cargarEquipos() {
+      // ejemplo: si tu endpoint existe en el backend este fetch traerá la lista
+      fetch("/equipos/listar")
+        .then(res => {
+          if (!res.ok) throw new Error("No se pudo obtener equipos");
+          return res.json();
+        })
+        .then(data => {
+          const tbody = document.querySelector("#tablaEquipos tbody");
+          tbody.innerHTML = "";
+          data.forEach(equipo => {
+            const fila = `
+              <tr>
+                <td>${equipo.tipo_equipo}</td>
+                <td>${equipo.marca_modelo}</td>
+                <td>${equipo.numero_serie}</td>
+                <td>${equipo.estado == 1 ? 'Activo' : 'Inactivo'}</td>
+                <td><button class="btn-delete" onclick="eliminarEquipo(${equipo.id_equipo})">Eliminar</button></td>
+              </tr>`;
+            tbody.innerHTML += fila;
+          });
+        })
+        .catch(err => {
+          console.warn("No se pudieron cargar equipos:", err);
+        });
+    }
+
+    function eliminarEquipo(id) {
+      Swal.fire({
+        title: '¿Eliminar equipo?',
+        text: "Esta acción no se puede deshacer.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+      }).then((r) => {
+        if (r.isConfirmed) {
+          fetch(`/equipos/eliminar/${id}`, { method: 'DELETE' })
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) {
+                Swal.fire('¡Eliminado!', 'El equipo ha sido eliminado.', 'success');
+                cargarEquipos();
+              } else {
+                Swal.fire('Error', 'No se pudo eliminar el equipo.', 'error');
+              }
+            })
+            .catch(err => Swal.fire('Error', 'Hubo un problema en el servidor.', 'error'));
+        }
+      });
+    }
+
+
+
+    // marcar por defecto la sección inicial
+    (function init() {
+      // si quieres que otra sección arranque visible, cambia 'horario'
+      showSection('horario');
+    })();
+
+    // =========================================================
+    // LÓGICA CALENDARIO APRENDIZ
+    // =========================================================
+
+    // 1. Serializar datos de Thymeleaf a JS
+    // Usamos th:each para construir un array de objetos
+    const programacionAprendiz = [
+      /*[# th:each="p : ${horario}"]*/
+      {
+        dia: [[${ p.dia }]],
+        aula: [[${ p.aula }]],
+        curso: [[${ p.curso }]],
+        horaInicio: [[${ p.horaInicio }]],
+        horaFin: [[${ p.horaFin }]],
+        nombreFicha: [[${ p.nombreFicha }]],
+        trimestre: [[${ p.trimestre }]],
+        instructor: [[${ p.instructor.nombreCompleto }]]
+      },
+      /*[/]*/
+    ];
+
+    function abrirCalendarioAprendiz() {
+      console.log("Intentando abrir calendario...");
+      try {
+        fetch('/api/externos/festivos')
+          .then(res => {
+            if (!res.ok) throw new Error("Error API Festivos: " + res.status);
+            return res.json();
+          })
+          .then(responseFestivos => {
+            console.log("Festivos cargados");
+            const listaFestivos = responseFestivos.datos || [];
+            const mapaFestivos = {};
+            listaFestivos.forEach(f => mapaFestivos[f.date] = f.localName);
+
+            renderizarCalendario(programacionAprendiz, mapaFestivos);
+            document.getElementById('modal-calendario-aprendiz').style.display = 'block';
+          })
+          .catch(err => {
+            console.error("Error festivos (mostrando sin festivos):", err);
+            renderizarCalendario(programacionAprendiz, {});
+            document.getElementById('modal-calendario-aprendiz').style.display = 'block';
+          });
+      } catch (e) {
+        alert("Error crítico en JS: " + e.message);
+        console.error(e);
+      }
+    }
+
+
+    function renderizarCalendario(programacion, mapaFestivos) {
+      // Agrupar sesiones por dia
+      const sesionesPorDia = {};
+      programacion.forEach(p => {
+        const clave = normalizarDia(p.dia);
+        if (!sesionesPorDia[clave]) sesionesPorDia[clave] = [];
+        sesionesPorDia[clave].push(p);
+      });
+      window.sesionesAprendizPorDia = sesionesPorDia; // guardar globalmente
+
+      const meses = ["OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
+      const nombreDias = ["LUNES", "MARTES", "MIÉRCOLES", "JUEVES", "VIERNES", "SÁBADO", "DOMINGO"];
+      const mapaMeses = {
+        "ENERO": 0, "FEBRERO": 1, "MARZO": 2, "ABRIL": 3,
+        "MAYO": 4, "JUNIO": 5, "JULIO": 6, "AGOSTO": 7,
+        "SEPTIEMBRE": 8, "OCTUBRE": 9, "NOVIEMBRE": 10, "DICIEMBRE": 11
+      };
+
+      let htmlGlobal = '';
+
+      meses.forEach(mesTexto => {
+        const mes = mapaMeses[mesTexto];
+        const año = 2025;
+        const diasEnMes = new Date(año, mes + 1, 0).getDate();
+        const primerDiaSemana = (new Date(año, mes, 1).getDay() + 6) % 7;
+
+        let html = `<h3 style="text-align:center; margin-top:20px; color:#006B2D;">${mesTexto} ${año}</h3>`;
+        html += `<table style="border-collapse:collapse; width:100%; font-size:0.9em; background:white; border:1px solid #ccc;">
+                      <thead style="background:#f0f0f0;">
+                        <tr>${nombreDias.map(d => `<th style="padding:8px; border:1px solid #ccc;">${d}</th>`).join('')}</tr>
+                      </thead>
+                      <tbody><tr>`;
+
+        let diaActual = 1;
+        let diaSemana = primerDiaSemana;
+
+        for (let i = 0; i < diaSemana; i++) html += `<td style="border:1px solid #ccc; padding:10px;"></td>`;
+
+        while (diaActual <= diasEnMes) {
+          const clave = normalizarDia(`${diaActual} ${mesTexto}`);
+          const sesiones = sesionesPorDia[clave] || [];
+
+          // Validar festivo
+          const mesNum = (mes + 1).toString().padStart(2, '0');
+          const diaNum = diaActual.toString().padStart(2, '0');
+          const fechaIso = `${año}-${mesNum}-${diaNum}`;
+          const nombreFestivo = mapaFestivos[fechaIso];
+
+          let background = 'white';
+          let contenido = `<strong>${diaActual}</strong><br>`;
+          let cursor = 'default';
+          let acciones = '';
+
+          if (nombreFestivo) {
+            background = '#fff0f0';
+            contenido += `<span style="color:#d63031; font-size:0.8em;">🎉 ${nombreFestivo}</span>`;
+          } else if (sesiones.length > 0) {
+            background = '#e6f4ea';
+            contenido += `<span style="color:green;">✔️</span>`;
+            cursor = 'pointer';
+            acciones = `onclick="mostrarDetalleDiaAprendiz('${clave}')"`;
+          }
+
+          html += `<td style="border:1px solid #ccc; padding:10px; background:${background}; cursor:${cursor}; text-align:center; vertical-align:top; height:60px;" ${acciones}>
+                            ${contenido}
+                         </td>`;
+
+          diaActual++;
+          diaSemana++;
+          if (diaSemana === 7 && diaActual <= diasEnMes) {
+            html += `</tr><tr>`;
+            diaSemana = 0;
+          }
+        }
+        while (diaSemana < 7 && diaSemana > 0) {
+          html += `<td style="border:1px solid #ccc; padding:10px;"></td>`;
+          diaSemana++;
+        }
+
+        html += `</tr></tbody></table>`;
+        htmlGlobal += html + '<hr>';
+      });
+
+      document.getElementById('contenido-calendario-aprendiz').innerHTML = htmlGlobal;
+    }
+
+    function cerrarCalendarioAprendiz() {
+      document.getElementById('modal-calendario-aprendiz').style.display = 'none';
+      cerrarDetalleDia();
+    }
+
+    function mostrarDetalleDiaAprendiz(clave) {
+      const sesiones = window.sesionesAprendizPorDia[clave];
+      if (!sesiones || sesiones.length === 0) return;
+
+      // Deduplicar sesiones
+      const visto = new Set();
+      const sesionesUnicas = sesiones.filter(s => {
+        const key = s.curso + '|' + s.horaInicio + '|' + s.aula;
+        if (visto.has(key)) return false;
+        visto.add(key);
+        return true;
+      });
+
+      const html = sesionesUnicas.map(s => `
+            <div style="margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:5px;">
+                <strong>Materia:</strong> ${s.curso}<br>
+                <strong>Horario:</strong> ${s.horaInicio} - ${s.horaFin}<br>
+                <strong>Ambiente:</strong> ${s.aula}<br>
+                <strong>Instructor:</strong> ${s.instructor}<br>
+            </div>
+        `).join('');
+
+      document.getElementById('contenido-detalle-dia').innerHTML = html;
+      document.getElementById('detalle-dia').style.display = 'block';
+    }
+
+    function cerrarDetalleDia() {
+      document.getElementById('detalle-dia').style.display = 'none';
+    }
+
+    function normalizarDia(texto) {
+      if (!texto) return "";
+      return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, '').trim().toUpperCase().replace(/\s+/g, ' ');
+    }
+
+    // ---------- Funciones para VEHÍCULOS (APRENDIZ) ----------
+    function toggleFormularioVehiculoAprendiz() {
+      const div = document.getElementById('formularioVehiculoDivAprendiz');
+      div.style.display = div.style.display === 'none' ? 'block' : 'none';
+      if (div.style.display === 'block') {
+        document.getElementById('formVehiculoAprendiz').reset();
+        document.getElementById('idVehiculoAprendiz').value = '';
+      }
+    }
+
+    function cargarVehiculosAprendiz() {
+      fetch('/vehiculos/aprendiz/' + idUsuario)
+        .then(res => res.json())
+        .then(vehiculos => {
+          const tbody = document.getElementById('cuerpoTablaVehiculosAprendiz');
+          tbody.innerHTML = '';
+          
+          if (vehiculos.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No tienes vehículos registrados</td></tr>';
+            return;
+          }
+
+          vehiculos.forEach(v => {
+            const row = `
+              <tr>
+                <td>${v.placa}</td>
+                <td>${v.marca}</td>
+                <td>${v.modelo}</td>
+                <td>${v.color}</td>
+                <td>${v.capacidad}</td>
+                <td>${v.observaciones || '-'}</td>
+                <td>
+                  <button class="btn" onclick="editarVehiculoAprendiz(${v.id})" style="background:#0056b3; color:white;">Editar</button>
+                  <button class="btn" onclick="eliminarVehiculoAprendiz(${v.id})" style="background:#dc3545; color:white;">Eliminar</button>
+                </td>
+              </tr>
+            `;
+            tbody.innerHTML += row;
+          });
+        })
+        .catch(err => console.error('Error cargando vehículos:', err));
+    }
+
+    function guardarVehiculoAprendiz(e) {
+      e.preventDefault();
+      
+      const idVehiculo = document.getElementById('idVehiculoAprendiz').value;
+      const vehiculo = {
+        placa: document.getElementById('placaAprendiz').value,
+        marca: document.getElementById('marcaAprendiz').value,
+        modelo: document.getElementById('modeloAprendiz').value,
+        color: document.getElementById('colorAprendiz').value,
+        propietario: 'aprendiz',
+        propietarioNombre: document.getElementById('propietarioNombreAprendiz').value,
+        observaciones: document.getElementById('observacionesAprendiz').value,
+        capacidad: document.getElementById('capacidadAprendiz').value,
+        idUsuario: idUsuario
+      };
+
+      const url = idVehiculo ? `/vehiculos/${idVehiculo}` : '/vehiculos';
+      const metodo = idVehiculo ? 'PUT' : 'POST';
+
+      fetch(url, {
+        method: metodo,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(vehiculo)
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.id) {
+            alert('Vehículo guardado correctamente');
+            toggleFormularioVehiculoAprendiz();
+            cargarVehiculosAprendiz();
+          } else {
+            alert('Error al guardar el vehículo');
+          }
+        })
+        .catch(err => {
+          console.error('Error:', err);
+          alert('Error al guardar el vehículo');
+        });
+    }
+
+    function editarVehiculoAprendiz(id) {
+      fetch(`/vehiculos/${id}`)
+        .then(res => res.json())
+        .then(v => {
+          document.getElementById('idVehiculoAprendiz').value = v.id;
+          document.getElementById('placaAprendiz').value = v.placa;
+          document.getElementById('marcaAprendiz').value = v.marca;
+          document.getElementById('modeloAprendiz').value = v.modelo;
+          document.getElementById('colorAprendiz').value = v.color;
+          document.getElementById('propietarioNombreAprendiz').value = v.propietarioNombre;
+          document.getElementById('observacionesAprendiz').value = v.observaciones;
+          document.getElementById('capacidadAprendiz').value = v.capacidad;
+          document.getElementById('formularioVehiculoDivAprendiz').style.display = 'block';
+        })
+        .catch(err => console.error('Error:', err));
+    }
+
+    function eliminarVehiculoAprendiz(id) {
+      if (!confirm('¿Estás seguro de que quieres eliminar este vehículo?')) return;
+      
+      fetch(`/vehiculos/${id}`, { method: 'DELETE' })
+        .then(res => res.json())
+        .then(data => {
+          alert('Vehículo eliminado correctamente');
+          cargarVehiculosAprendiz();
+        })
+        .catch(err => {
+          console.error('Error:', err);
+          alert('Error al eliminar el vehículo');
+        });
+    }
+
+    function showParquederoAprendiz() {
+      document.getElementById('modalParquederoAprendiz').style.display = 'block';
+      cargarParquederoAprendiz();
+    }
+
+    function cerrarParquederoAprendiz() {
+      document.getElementById('modalParquederoAprendiz').style.display = 'none';
+    }
+
+    function cargarParquederoAprendiz() {
+      fetch('/vehiculos')
+        .then(res => res.json())
+        .then(vehiculos => {
+          // Ordenar por prioridad
+          const orden = { admin: 1, instructor: 2, aprendiz: 3 };
+          vehiculos.sort((a, b) => orden[a.propietario] - orden[b.propietario]);
+
+          const contenido = document.getElementById('contenidoParquederoAprendiz');
+          if (vehiculos.length === 0) {
+            contenido.innerHTML = '<p style="text-align:center;">No hay vehículos registrados</p>';
+            return;
+          }
+
+          let html = '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">';
+          
+          vehiculos.forEach((v, i) => {
+            const prioridadTexto = v.propietario === 'admin' ? '⭐⭐⭐ PRIORIDAD ALTA' : v.propietario === 'instructor' ? '⭐⭐ PRIORIDAD MEDIA' : '⭐ PRIORIDAD BAJA';
+            const bgColor = v.propietario === 'admin' ? '#fff0f0' : v.propietario === 'instructor' ? '#fffef0' : '#f0f0ff';
+            
+            html += `
+              <div style="background:${bgColor}; padding:20px; border-radius:10px; border-left:5px solid ${v.propietario === 'admin' ? '#dc3545' : v.propietario === 'instructor' ? '#ffc107' : '#007bff'};">
+                <h3>${v.placa}</h3>
+                <p><strong>Vehículo:</strong> ${v.marca} ${v.modelo} (${v.color})</p>
+                <p><strong>Propietario:</strong> ${v.propietarioNombre} (${v.propietario})</p>
+                <p><strong>Capacidad:</strong> ${v.capacidad} personas</p>
+                <p><strong>${prioridadTexto}</strong></p>
+                ${v.observaciones ? `<p><strong>Observaciones:</strong> ${v.observaciones}</p>` : ''}
+              </div>
+            `;
+          });
+          
+          html += '</div>';
+          contenido.innerHTML = html;
+        })
+        .catch(err => console.error('Error:', err));
+    }
+
+  </script>
+</body>
+
+</html>

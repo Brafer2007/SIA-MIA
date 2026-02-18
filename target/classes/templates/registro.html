@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registro de Usuario</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: url('https://www.bloomberglinea.com/resizer/v2/RAEW7WILHFA3JJHMQAYOWKN4EM.jpeg?auth=2d9996b6e3bd09f86ba0666285d6c9a921996fb4e8ae4470773335616e80f35e&width=800&height=533&quality=80&smart=true') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .form-container {
+      background: rgba(0, 0, 0, 0.75);
+      padding: 40px 45px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+      width: 400px;
+      position: relative;
+      color: #fff;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 25px;
+      font-weight: 600;
+      font-size: 24px;
+      color: #00FF99;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 500;
+      color: #fff;
+      text-align: left;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      background-color: #00FF99;
+      color: #000;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-top: 15px;
+    }
+
+    button:hover {
+      background-color: #00cc7a;
+    }
+
+    .robot {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 15px auto;
+    }
+
+    .robot img {
+      width: 100%;
+      animation: bounce 1.5s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .btn-google, .btn-login {
+      margin-top: 10px;
+      background: #555;
+      color: #fff;
+      text-decoration: none;
+      display: block;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .btn-login {
+      background: #00FF99;
+      color: #000;
+    }
+
+    .btn-google:hover, .btn-login:hover {
+      opacity: 0.85;
+    }
+
+    .error-container {
+      margin-bottom: 10px;
+      background-color: #ff3333;
+      border-radius: 8px;
+      padding: 10px 15px;
+      color: #fff;
+      text-align: left;
+    }
+
+    .error-container ul {
+      list-style: disc;
+      padding-left: 20px;
+      margin: 5px 0 0 0;
+    }
+
+    .close-btn {
+      float: right;
+      background: transparent;
+      border: none;
+      font-size: 18px;
+      color: #fff;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <div class="robot">
+      <img src="https://i.pinimg.com/originals/4b/cb/1f/4bcb1fb72d1d08efa44efa5ceb712ec7.gif" alt="Robot animado">
+    </div>
+
+    <h2>Registro de Usuario</h2>
+
+
+  <!-- Mensaje de éxito o error -->
+  <div id="mensajeRegistro" th:if="${mensaje}" th:text="${mensaje}" style="display:none;"></div>
+
+  <form th:action="@{/registro/guardar}" method="post" th:object="${usuario}">
+
+      <!-- 🟥 Caja de errores -->
+      <div th:if="${#fields.hasErrors()}" class="error-container">
+        <button class="close-btn" type="button" onclick="this.parentElement.style.display='none'">✖</button>
+        <ul>
+          <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+        </ul>
+      </div>
+
+      <label>Nombre de usuario</label>
+      <input type="text" th:field="*{nombreUsuario}" required>
+
+      <label>Nombres</label>
+      <input type="text" th:field="*{nombres}" required>
+
+      <label>Apellidos</label>
+      <input type="text" th:field="*{apellidos}" required>
+
+      <label>Correo Electrónico</label>
+      <input type="email" th:field="*{correo}" required />
+      <label>Número de Documento</label>
+      <input type="text" th:field="*{noDocumento}" required />
+
+      <label>Contraseña</label>
+      <input type="password" th:field="*{passUsuario}" required />
+
+      <label>Confirmar Contraseña</label>
+      <input type="password" th:field="*{confirmPassword}" required />
+
+      <button type="submit">Registrarse</button>
+    </form>
+
+    <button class="btn-google" onclick="alert('Registro con Google no disponible aún')">Registrarse con Google</button>
+
+    <a th:href="@{/login}" class="btn-login">Volver al Login</a>
+  </div>
+
+  <script>
+    // Mostrar SweetAlert si hay mensaje de éxito o error
+    const mensaje = document.getElementById("mensajeRegistro");
+    if(mensaje && mensaje.innerText.trim() !== ""){
+      Swal.fire({
+        icon: mensaje.innerText.includes('correctamente') ? 'success' : 'error',
+        title: mensaje.innerText.includes('correctamente') ? '¡Éxito!' : 'Error',
+        text: mensaje.innerText,
+        confirmButtonColor: '#006B2D',
+        timer: 3500,
+        timerProgressBar: true
+      });
+    }
+  </script>
+</body>
+</html>
