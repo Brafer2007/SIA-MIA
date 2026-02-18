@@ -3,5 +3,13 @@ services:
     name: SIA-MIA
     env: java
     plan: starter
-    buildCommand: mvn clean package -DskipTests
+    buildCommand: ./mvnw clean package -DskipTests
     startCommand: java -jar target/SIA-MIA.jar
+    envVars:
+      - key: DATABASE_URL
+        value: postgresql://sistema_usuario_user:pQG1wqwZy6Qv0FI2tQI7IvVAggMiGe8m@dpg-d6ahc3jh46gs738ebbmg-a/sistema_usuario
+      - key: MAIL_USERNAME
+        value: brafer2007@gmail.com
+      - key: MAIL_PASSWORD
+        value: Brhian011824*.
+
