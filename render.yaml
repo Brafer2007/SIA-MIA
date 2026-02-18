@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: SIA-MIA
+    env: java
+    plan: starter
+    buildCommand: mvn clean package -DskipTests
+    startCommand: java -jar target/SIA-MIA.jar
