@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Explora el SENA | SIA</title>
+  <link rel="icon" type="image/png" th:href="@{/img/logo_sia_fondo.png}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --verde: #006B2D;
+      --verde-claro: #39A900;
+      --verde-oscuro: #004d1f;
+      --blanco: #ffffff;
+      --gris-claro: #f4f9f4;
+    }
+
+    body { font-family: 'Poppins', sans-serif; background: var(--blanco); color: #1a1a1a; overflow-x: hidden; }
+
+    /* ── NAVBAR ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 48px;
+      background: rgba(0, 77, 31, 0.95);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 2px 20px rgba(0,0,0,0.25);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .nav-logo img { height: 40px; }
+    .nav-logo span { color: #fff; font-weight: 700; font-size: 18px; letter-spacing: 1px; }
+    .nav-links { display: flex; gap: 8px; list-style: none; }
+    .nav-links a { color: rgba(255,255,255,0.85); text-decoration: none; font-size: 14px; font-weight: 500; padding: 8px 18px; border-radius: 25px; transition: all 0.25s; }
+    .nav-links a:hover { background: rgba(255,255,255,0.15); color: #fff; }
+    .nav-links a.active { background: rgba(255,255,255,0.15); color: #fff; }
+    .nav-links a.btn-login { background: var(--verde-claro); color: #fff; font-weight: 600; }
+    .nav-links a.btn-login:hover { background: #2d8500; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 60vh;
+      background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde) 60%, var(--verde-claro) 100%);
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; padding: 120px 24px 70px;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute;
+      width: 500px; height: 500px; background: rgba(255,255,255,0.04);
+      border-radius: 50%; top: -120px; right: -120px;
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 700px; }
+    .hero-badge {
+      display: inline-block; background: rgba(255,255,255,0.15); color: #fff;
+      font-size: 13px; font-weight: 500; padding: 6px 18px; border-radius: 20px;
+      margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.25);
+    }
+    .hero h1 { font-size: clamp(28px, 4vw, 50px); font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 16px; }
+    .hero h1 span { color: #a8f0b0; }
+    .hero p { font-size: 17px; color: rgba(255,255,255,0.85); line-height: 1.7; margin-bottom: 32px; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #fff; color: var(--verde); padding: 13px 30px;
+      border-radius: 30px; font-weight: 700; font-size: 15px;
+      text-decoration: none; transition: all 0.3s;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.25); }
+
+    /* ── SECCIÓN GENÉRICA ── */
+    .section { padding: 80px 48px; }
+    .section.alt { background: var(--gris-claro); }
+    .section-inner { max-width: 1100px; margin: 0 auto; }
+    .section-tag {
+      display: inline-block; background: #e6f4ea; color: var(--verde);
+      font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 20px;
+      margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;
+    }
+    .section h2 { font-size: clamp(22px, 3vw, 34px); font-weight: 700; color: var(--verde-oscuro); margin-bottom: 10px; }
+    .section > .section-inner > p, .section-intro {
+      color: #555; font-size: 16px; max-width: 560px; line-height: 1.7; margin-bottom: 48px;
+    }
+
+    /* ── ARTÍCULOS ── */
+    .articles-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+    .article-card {
+      background: #fff; border-radius: 16px; overflow: hidden;
+      box-shadow: 0 2px 16px rgba(0,107,45,0.08); transition: transform 0.3s, box-shadow 0.3s;
+      border: 1px solid #e8f5e9;
+    }
+    .article-card:hover { transform: translateY(-6px); box-shadow: 0 12px 32px rgba(0,107,45,0.14); }
+    .article-card img { width: 100%; height: 180px; object-fit: cover; display: block; }
+    .article-card-body { padding: 20px; }
+    .article-tag {
+      display: inline-block; background: #e6f4ea; color: var(--verde);
+      font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 12px; margin-bottom: 10px;
+    }
+    .article-card-body h3 { font-size: 16px; font-weight: 600; color: var(--verde-oscuro); margin-bottom: 8px; line-height: 1.4; }
+    .article-card-body p { font-size: 13px; color: #666; line-height: 1.6; }
+
+    /* ── BENEFICIOS ── */
+    .benefits-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;
+    }
+    .benefit-item {
+      display: flex; gap: 16px; align-items: flex-start;
+      background: #fff; border-radius: 12px; padding: 20px;
+      box-shadow: 0 2px 12px rgba(0,107,45,0.07); border: 1px solid #e8f5e9;
+    }
+    .benefit-icon {
+      width: 44px; height: 44px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--verde), var(--verde-claro));
+      border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    }
+    .benefit-icon i { color: #fff; font-size: 18px; }
+    .benefit-item h4 { font-size: 14px; font-weight: 600; color: var(--verde-oscuro); margin-bottom: 4px; }
+    .benefit-item p { font-size: 13px; color: #666; line-height: 1.5; }
+
+    /* ── TESTIMONIOS ── */
+    .testimonials-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px;
+    }
+    .testimonial-card {
+      background: linear-gradient(135deg, var(--verde-oscuro), var(--verde));
+      border-radius: 16px; padding: 28px 24px; color: #fff;
+    }
+    .testimonial-card .quote { font-size: 32px; color: #a8f0b0; line-height: 1; margin-bottom: 12px; }
+    .testimonial-card p { font-size: 14px; line-height: 1.7; opacity: 0.9; margin-bottom: 20px; }
+    .testimonial-author { display: flex; align-items: center; gap: 12px; }
+    .author-avatar {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: rgba(255,255,255,0.2); display: flex; align-items: center;
+      justify-content: center; font-size: 18px; font-weight: 700;
+    }
+    .author-info .name { font-size: 14px; font-weight: 600; }
+    .author-info .role { font-size: 12px; opacity: 0.75; }
+
+    /* ── CTA ── */
+    .cta {
+      background: linear-gradient(135deg, var(--verde-oscuro), var(--verde-claro));
+      padding: 80px 48px; text-align: center; color: #fff;
+    }
+    .cta h2 { font-size: clamp(24px, 3vw, 38px); font-weight: 700; margin-bottom: 14px; }
+    .cta p { font-size: 17px; opacity: 0.88; margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--verde-oscuro); color: rgba(255,255,255,0.7);
+      text-align: center; padding: 28px 24px; font-size: 13px;
+    }
+    footer strong { color: #a8f0b0; }
+    footer a { color: #a8f0b0; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <a class="nav-logo" th:href="@{/}">
+      <img src="https://www.sena.edu.co/Style%20Library/alayout/images/logoSena.png" alt="SENA"
+           onerror="this.src='/img/logo_sia_fondo.png'">
+      <span>SIA</span>
+    </a>
+    <ul class="nav-links">
+      <li><a th:href="@{/}"><i class="fas fa-home"></i> Inicio</a></li>
+      <li><a th:href="@{/vistas}" class="active"><i class="fas fa-compass"></i> Explora</a></li>
+      <li><a th:href="@{/pqrs}"><i class="fas fa-envelope"></i> PQRS</a></li>
+      <li><a th:href="@{/login}" class="btn-login"><i class="fas fa-sign-in-alt"></i> Ingresar</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">🌿 Formación para el trabajo y el desarrollo humano</div>
+      <h1>Descubre todo lo que<br><span>el SENA tiene para ti</span></h1>
+      <p>Educación gratuita y de calidad, oportunidades laborales y herramientas para impulsar tu futuro.</p>
+      <a th:href="@{/login}" class="btn-primary">
+        <i class="fas fa-rocket"></i> Acceder al sistema
+      </a>
+    </div>
+  </section>
+
+  <!-- ARTÍCULOS DESTACADOS -->
+  <section class="section alt">
+    <div class="section-inner">
+      <div class="section-tag">Artículos</div>
+      <h2>Contenido destacado</h2>
+      <p class="section-intro">Conoce los beneficios, historias de éxito y cómo el SENA transforma vidas.</p>
+
+      <div class="articles-grid">
+        <div class="article-card">
+          <img src="https://i.pinimg.com/1200x/9e/69/99/9e6999e777926328e5c953414b7c992a.jpg"
+               alt="Beneficios SENA" onerror="this.style.background='#e6f4ea'; this.style.height='180px';">
+          <div class="article-card-body">
+            <span class="article-tag">Formación</span>
+            <h3>Beneficios de estudiar en el SENA</h3>
+            <p>Accede a programas técnicos, tecnológicos y complementarios completamente gratuitos con certificación nacional.</p>
+          </div>
+        </div>
+        <div class="article-card">
+          <img src="https://media.istockphoto.com/id/1370433251/es/foto/mujer-negra-sentada-en-el-escritorio-usando-la-computadora-en-el-cuaderno.jpg?s=612x612&w=0&k=20&c=W-t_X_EM-o-olJ8VWpS6p5QFsR6H3ewtp2eoAki2bYw="
+               alt="Inscripción" onerror="this.style.background='#e6f4ea'; this.style.height='180px';">
+          <div class="article-card-body">
+            <span class="article-tag">Guía</span>
+            <h3>Cómo inscribirte fácilmente</h3>
+            <p>Sigue el paso a paso para registrarte en los programas de formación y comenzar tu proceso de aprendizaje.</p>
+          </div>
+        </div>
+        <div class="article-card">
+          <img src="https://pymstatic.com/5904/conversions/frases-graduacion-default.jpg"
+               alt="Historias de éxito" onerror="this.style.background='#e6f4ea'; this.style.height='180px';">
+          <div class="article-card-body">
+            <span class="article-tag">Inspiración</span>
+            <h3>Historias de éxito de aprendices</h3>
+            <p>Conoce cómo miles de colombianos han transformado su vida profesional gracias a la formación del SENA.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BENEFICIOS -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-tag">¿Por qué el SENA?</div>
+      <h2>Razones para elegir el SENA</h2>
+      <p class="section-intro">Más de 60 años formando talento humano para el trabajo y el desarrollo del país.</p>
+
+      <div class="benefits-grid">
+        <div class="benefit-item">
+          <div class="benefit-icon"><i class="fas fa-graduation-cap"></i></div>
+          <div>
+            <h4>Educación gratuita</h4>
+            <p>Todos los programas de formación son completamente gratuitos para los colombianos.</p>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-icon"><i class="fas fa-certificate"></i></div>
+          <div>
+            <h4>Certificación oficial</h4>
+            <p>Obtén certificados con reconocimiento nacional e internacional avalados por el Estado.</p>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-icon"><i class="fas fa-briefcase"></i></div>
+          <div>
+            <h4>Bolsa de empleo</h4>
+            <p>Accede a miles de ofertas laborales a través del Servicio Público de Empleo del SENA.</p>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-icon"><i class="fas fa-laptop-code"></i></div>
+          <div>
+            <h4>Formación virtual</h4>
+            <p>Estudia desde cualquier lugar con los programas de formación virtual disponibles 24/7.</p>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-icon"><i class="fas fa-users"></i></div>
+          <div>
+            <h4>Comunidad activa</h4>
+            <p>Conecta con instructores expertos y una comunidad de más de 8 millones de aprendices.</p>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-icon"><i class="fas fa-tools"></i></div>
+          <div>
+            <h4>Práctica real</h4>
+            <p>Aprende con equipos de última tecnología y proyectos aplicados al mundo laboral real.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPLORA MÁS -->
+  <section class="section alt">
+    <div class="section-inner">
+      <div class="section-tag">Recursos</div>
+      <h2>Explora más oportunidades</h2>
+      <p class="section-intro">Desde cursos hasta eventos, el SENA tiene todo lo que necesitas para crecer.</p>
+
+      <div class="articles-grid">
+        <div class="article-card">
+          <img src="https://images.squarespace-cdn.com/content/v1/53aadf1de4b0a0a817640cca/1525447524857-DTOI9N9V5RA84TREKR46/bigstock--211637290.jpg"
+               alt="Cursos" onerror="this.style.background='#e6f4ea'; this.style.height='180px';">
+          <div class="article-card-body">
+            <span class="article-tag">Formación</span>
+            <h3>Cursos disponibles</h3>
+            <p>Explora el catálogo de programas técnicos, tecnológicos y complementarios del SENA.</p>
+          </div>
+        </div>
+        <div class="article-card">
+          <img src="https://extension.univalle.edu.co/images/2022/08/28/banner_bolsadeempleo.jpg"
+               alt="Empleo" onerror="this.style.background='#e6f4ea'; this.style.height='180px';">
+          <div class="article-card-body">
+            <span class="article-tag">Empleo</span>
+            <h3>Bolsa de empleos</h3>
+            <p>Encuentra oportunidades laborales que se ajusten a tu perfil y formación profesional.</p>
+          </div>
+        </div>
+        <div class="article-card">
+          <img src="https://maestriasydiplomadostec.blob.core.windows.net/maestriasydiplomados/uploads/banner_principal_diplomado/imagen/4/Talleres.png"
+               alt="Eventos" onerror="this.style.background='#e6f4ea'; this.style.height='180px';">
+          <div class="article-card-body">
+            <span class="article-tag">Eventos</span>
+            <h3>Eventos y talleres</h3>
+            <p>Participa en ferias, talleres y eventos que potencian tus habilidades y networking.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIOS -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-tag">Testimonios</div>
+      <h2>Lo que dicen nuestros aprendices</h2>
+      <p class="section-intro">Historias reales de personas que transformaron su futuro con el SENA.</p>
+
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <div class="quote">"</div>
+          <p>Gracias al SENA pude certificarme como técnico en sistemas y conseguir mi primer empleo formal. La formación es de altísima calidad.</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">C</div>
+            <div class="author-info">
+              <div class="name">Carlos M.</div>
+              <div class="role">Técnico en Sistemas</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="quote">"</div>
+          <p>El programa de formación virtual me permitió estudiar mientras trabajaba. Hoy tengo mi propio negocio gracias a lo aprendido.</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">L</div>
+            <div class="author-info">
+              <div class="name">Laura P.</div>
+              <div class="role">Emprendedora</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="quote">"</div>
+          <p>Los instructores son profesionales con experiencia real. Aprendí más en 6 meses en el SENA que en años de estudio autodidacta.</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">A</div>
+            <div class="author-info">
+              <div class="name">Andrés R.</div>
+              <div class="role">Tecnólogo en Desarrollo</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <h2>¿Listo para comenzar tu formación?</h2>
+    <p>Accede al sistema SIA y gestiona tu proceso de aprendizaje de forma inteligente.</p>
+    <a th:href="@{/login}" class="btn-primary" style="font-size:16px; padding:15px 40px;">
+      <i class="fas fa-sign-in-alt"></i> Ingresar al sistema
+    </a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>&copy; 2025 <strong>SENA</strong> · <a th:href="@{/}">Inicio</a> · <a th:href="@{/pqrs}">PQRS</a> · Todos los derechos reservados.</p>
+  </footer>
+
+</body>
+</html>

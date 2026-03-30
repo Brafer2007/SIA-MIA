@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SIA | Software de Ingreso y Automatizacion</title>
+  <link rel="icon" type="image/png" th:href="@{/img/logo_sia_fondo.png}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --verde: #006B2D;
+      --verde-claro: #39A900;
+      --verde-oscuro: #004d1f;
+      --blanco: #ffffff;
+      --gris-claro: #f4f9f4;
+      --texto: #1a1a1a;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--blanco);
+      color: var(--texto);
+      overflow-x: hidden;
+    }
+
+    /* ── NAVBAR ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 48px;
+      background: rgba(0, 77, 31, 0.95);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 2px 20px rgba(0,0,0,0.25);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .nav-logo img { height: 40px; }
+
+    .nav-logo span {
+      color: var(--blanco);
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 1px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 8px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px 18px;
+      border-radius: 25px;
+      transition: all 0.25s;
+    }
+
+    .nav-links a:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+    .nav-links a.btn-login {
+      background: var(--verde-claro);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .nav-links a.btn-login:hover { background: #2d8500; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde) 50%, var(--verde-claro) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 50%;
+      top: -150px; right: -150px;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 50%;
+      bottom: -100px; left: -100px;
+    }
+
+    .hero-content { position: relative; z-index: 1; max-width: 780px; }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 18px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(255,255,255,0.25);
+      letter-spacing: 0.5px;
+    }
+
+    .hero h1 {
+      font-size: clamp(32px, 5vw, 58px);
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 span { color: #a8f0b0; }
+
+    .hero p {
+      font-size: clamp(15px, 2vw, 18px);
+      color: rgba(255,255,255,0.85);
+      line-height: 1.7;
+      margin-bottom: 40px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      color: var(--verde);
+      padding: 14px 32px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 15px;
+      text-decoration: none;
+      transition: all 0.3s;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.25); }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      color: #fff;
+      padding: 14px 32px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 15px;
+      text-decoration: none;
+      border: 2px solid rgba(255,255,255,0.5);
+      transition: all 0.3s;
+    }
+
+    .btn-secondary:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
+
+    /* ── STATS ── */
+    .stats {
+      background: var(--verde);
+      padding: 40px 48px;
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+      flex-wrap: wrap;
+    }
+
+    .stat-item { text-align: center; color: #fff; }
+    .stat-item .num { font-size: 36px; font-weight: 700; color: #a8f0b0; }
+    .stat-item .label { font-size: 13px; opacity: 0.85; margin-top: 4px; }
+
+    /* ── FEATURES ── */
+    .features {
+      padding: 90px 48px;
+      background: var(--gris-claro);
+      text-align: center;
+    }
+
+    .section-tag {
+      display: inline-block;
+      background: #e6f4ea;
+      color: var(--verde);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .features h2 {
+      font-size: clamp(24px, 3vw, 36px);
+      font-weight: 700;
+      color: var(--verde-oscuro);
+      margin-bottom: 12px;
+    }
+
+    .features > p {
+      color: #555;
+      font-size: 16px;
+      max-width: 560px;
+      margin: 0 auto 56px;
+      line-height: 1.7;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .feature-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 32px 24px;
+      text-align: left;
+      box-shadow: 0 2px 16px rgba(0,107,45,0.08);
+      transition: transform 0.3s, box-shadow 0.3s;
+      border: 1px solid #e8f5e9;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 32px rgba(0,107,45,0.14);
+    }
+
+    .feature-icon {
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg, var(--verde), var(--verde-claro));
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+
+    .feature-icon i { color: #fff; font-size: 22px; }
+
+    .feature-card h3 {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--verde-oscuro);
+      margin-bottom: 8px;
+    }
+
+    .feature-card p { font-size: 14px; color: #666; line-height: 1.6; }
+
+    /* ── ROLES ── */
+    .roles {
+      padding: 90px 48px;
+      text-align: center;
+      background: #fff;
+    }
+
+    .roles h2 {
+      font-size: clamp(24px, 3vw, 36px);
+      font-weight: 700;
+      color: var(--verde-oscuro);
+      margin-bottom: 12px;
+    }
+
+    .roles > p { color: #555; font-size: 16px; max-width: 520px; margin: 0 auto 56px; }
+
+    .roles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .role-card {
+      background: linear-gradient(135deg, var(--verde-oscuro), var(--verde));
+      border-radius: 16px;
+      padding: 36px 20px;
+      color: #fff;
+      text-align: center;
+      transition: transform 0.3s;
+      cursor: default;
+    }
+
+    .role-card:hover { transform: translateY(-6px); }
+    .role-card i { font-size: 36px; margin-bottom: 14px; color: #a8f0b0; }
+    .role-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+    .role-card p { font-size: 13px; opacity: 0.8; line-height: 1.5; }
+
+    /* ── CTA ── */
+    .cta {
+      background: linear-gradient(135deg, var(--verde-oscuro), var(--verde-claro));
+      padding: 90px 48px;
+      text-align: center;
+      color: #fff;
+    }
+
+    .cta h2 { font-size: clamp(26px, 3vw, 40px); font-weight: 700; margin-bottom: 16px; }
+    .cta p { font-size: 17px; opacity: 0.88; margin-bottom: 36px; max-width: 520px; margin-left: auto; margin-right: auto; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--verde-oscuro);
+      color: rgba(255,255,255,0.7);
+      text-align: center;
+      padding: 28px 24px;
+      font-size: 13px;
+    }
+
+    footer strong { color: #a8f0b0; }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <a class="nav-logo" th:href="@{/}">
+      <img src="https://www.sena.edu.co/Style%20Library/alayout/images/logoSena.png" alt="SENA"
+           onerror="this.src='/img/logo_sia_fondo.png'">
+      <span>SIA</span>
+    </a>
+    <ul class="nav-links">
+      <li><a th:href="@{/}"><i class="fas fa-home"></i> Inicio</a></li>
+      <li><a th:href="@{/vistas}"><i class="fas fa-compass"></i> Explora</a></li>
+      <li><a th:href="@{/login}" class="btn-login"><i class="fas fa-sign-in-alt"></i> Ingresar</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">🌿 Software de Ingreso y Automatizacion</div>
+      <h1>Gestiona tu formación<br><span>de forma inteligente</span></h1>
+      <p>SIA centraliza el control de acceso, asistencia, tareas, mensajería y más para aprendices, instructores y personal del SENA.</p>
+      <div class="hero-buttons">
+        <a th:href="@{/login}" class="btn-primary">
+          <i class="fas fa-rocket"></i> Comenzar ahora
+        </a>
+        <a th:href="@{/vistas}" class="btn-secondary">
+          <i class="fas fa-compass"></i> Explorar el SENA
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-item">
+      <div class="num">100%</div>
+      <div class="label">Gratuito y accesible</div>
+    </div>
+    <div class="stat-item">
+      <div class="num">4</div>
+      <div class="label">Roles de usuario</div>
+    </div>
+    <div class="stat-item">
+      <div class="num">QR</div>
+      <div class="label">Control de acceso</div>
+    </div>
+    <div class="stat-item">
+      <div class="num">24/7</div>
+      <div class="label">Disponibilidad</div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <section class="features">
+    <div class="section-tag">Funcionalidades</div>
+    <h2>Todo lo que necesitas en un solo lugar</h2>
+    <p>Herramientas diseñadas para simplificar la gestión académica y administrativa del SENA.</p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-qrcode"></i></div>
+        <h3>Control de Acceso QR</h3>
+        <p>Registro de ingresos y salidas mediante código QR o búsqueda manual por documento.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-calendar-check"></i></div>
+        <h3>Asistencia Digital</h3>
+        <p>Registro y seguimiento de asistencia de aprendices con reportes en tiempo real.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-comments"></i></div>
+        <h3>Chat por Ficha</h3>
+        <p>Comunicación directa entre instructores y aprendices organizada por ficha de formación.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-tasks"></i></div>
+        <h3>Gestión de Tareas</h3>
+        <p>Creación, entrega y calificación de actividades académicas desde el dashboard.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-door-open"></i></div>
+        <h3>Gestión de Ambientes</h3>
+        <p>Solicitudes de apertura y cierre de aulas con notificaciones en tiempo real al personal de seguridad.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-chart-bar"></i></div>
+        <h3>Reportes Diarios</h3>
+        <p>Consulta reportes de acceso por fecha con detalle de ingresos y salidas del día.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROLES -->
+  <section class="roles">
+    <div class="section-tag">Perfiles</div>
+    <h2>Diseñado para todos</h2>
+    <p>Cada usuario tiene su propio espacio con las herramientas que necesita.</p>
+
+    <div class="roles-grid">
+      <div class="role-card">
+        <i class="fas fa-user-graduate"></i>
+        <h3>Aprendiz</h3>
+        <p>Consulta horarios, entrega tareas, chatea con tu instructor y descarga tu QR.</p>
+      </div>
+      <div class="role-card">
+        <i class="fas fa-chalkboard-teacher"></i>
+        <h3>Instructor</h3>
+        <p>Gestiona fichas, asistencia, tareas y comunicación con tus aprendices.</p>
+      </div>
+      <div class="role-card">
+        <i class="fas fa-shield-alt"></i>
+        <h3>Seguridad</h3>
+        <p>Controla el acceso, gestiona solicitudes de ambientes y consulta reportes.</p>
+      </div>
+      <div class="role-card">
+        <i class="fas fa-user-cog"></i>
+        <h3>Administrador</h3>
+        <p>Administra usuarios, perfiles y configuración general del sistema.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <h2>¿Listo para empezar?</h2>
+    <p>Accede a tu cuenta y aprovecha todas las herramientas que SIA tiene para ti.</p>
+    <a th:href="@{/login}" class="btn-primary" style="font-size:16px; padding:16px 40px;">
+      <i class="fas fa-sign-in-alt"></i> Ingresar al sistema
+    </a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>&copy; 2025 <strong>SENA</strong> · Software de Ingreso y Automatizacion · Todos los derechos reservados.</p>
+  </footer>
+
+
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Error | SIA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body { margin:0; height:100vh; background:linear-gradient(135deg,#004d1f,#006B2D); font-family:'Poppins',sans-serif; display:flex; align-items:center; justify-content:center; color:#fff; overflow:hidden; }
+    .container { text-align:center; z-index:1; max-width:500px; padding:24px; }
+    .icon { font-size:80px; margin-bottom:16px; }
+    .title { font-family:'Fredoka One',cursive; font-size:3rem; color:#a8f0b0; margin:0 0 10px; }
+    .sub { font-size:1rem; color:rgba(255,255,255,0.8); margin-bottom:8px; }
+    .detail { font-size:13px; color:rgba(255,255,255,0.5); margin-bottom:28px; font-style:italic; }
+    .btn { display:inline-block; padding:12px 28px; background:#fff; color:#006B2D; border-radius:8px; text-decoration:none; font-weight:700; font-size:15px; transition:all 0.3s; }
+    .btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,0.2); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">⚠️</div>
+    <div class="title">Algo salió mal</div>
+    <div class="sub">Ocurrió un error inesperado en el sistema.</div>
+    <div class="detail" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+    <a th:href="${backUrl}" class="btn">← Regresar</a>
+  </div>
+</body>
+</html>

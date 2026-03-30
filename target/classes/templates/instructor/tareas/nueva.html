@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nueva Tarea - Instructor SENA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #FFFFFF;
+      color: #161616;
+      display: flex;
+    }
+    .sidebar {
+      width: 250px;
+      background: #006B2D;
+      padding: 20px;
+      height: 100vh;
+      position: fixed;
+      top: 0; left: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 2px 0 10px rgba(0,107,45,0.2);
+    }
+    .sidebar .logo {
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: 600;
+      padding: 10px 0 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      margin-bottom: 10px;
+    }
+    .sidebar a {
+      color: #FFFFFF;
+      text-decoration: none;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+    .sidebar a:hover, .sidebar a.active { background: #008D4D; }
+    .content {
+      margin-left: 250px;
+      padding: 30px;
+      flex-grow: 1;
+      background-color: #FFFFFF;
+    }
+    .page-header {
+      margin-bottom: 24px;
+    }
+    .page-header h1 {
+      color: #006B2D;
+      font-size: 1.6rem;
+    }
+    .card {
+      background: #F0FFF0;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,107,45,0.08);
+      border: 1px solid #e0f0e0;
+      padding: 28px;
+      max-width: 700px;
+    }
+    .alert-error {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .alert-warning {
+      background: #fff3cd;
+      color: #856404;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #006B2D;
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #8d918d;
+      border-radius: 6px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      background: #fff;
+      color: #161616;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #006B2D;
+      box-shadow: 0 0 0 2px rgba(0,107,45,0.15);
+    }
+    .form-group textarea { resize: vertical; min-height: 100px; }
+    .form-hint {
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 4px;
+    }
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .btn-primary {
+      background: #006B2D;
+      color: #fff;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.3s;
+    }
+    .btn-primary:hover:not(:disabled) { background: #008D4D; }
+    .btn-primary:disabled { background: #aaa; cursor: not-allowed; }
+    .btn-secondary {
+      background: #fff;
+      color: #006B2D;
+      border: 2px solid #006B2D;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s;
+    }
+    .btn-secondary:hover { background: #F0FFF0; }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="logo"><i class="fas fa-graduation-cap"></i> SENA Instructor</div>
+    <a th:href="@{/instructor/tareas}"><i class="fas fa-tasks"></i> Mis Tareas</a>
+    <a th:href="@{/instructor/tareas/nueva}" class="active"><i class="fas fa-plus-circle"></i> Nueva Tarea</a>
+    <a th:href="@{/dashboardInstructor}"><i class="fas fa-home"></i> Volver al Dashboard</a>
+    <a th:href="@{/login}" style="margin-top: auto;"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+  </div>
+
+  <div class="content">
+    <div class="page-header">
+      <h1><i class="fas fa-plus-circle"></i> Nueva Tarea</h1>
+    </div>
+
+    <!-- Error general -->
+    <div th:if="${error}" class="alert-error">
+      <i class="fas fa-exclamation-circle"></i>
+      <span th:text="${error}"></span>
+    </div>
+
+    <!-- Sin fichas disponibles -->
+    <div th:if="${fichas == null or #lists.isEmpty(fichas)}" class="alert-warning">
+      <i class="fas fa-exclamation-triangle"></i>
+      No tienes fichas registradas en el sistema. Contacta al administrador para que te asigne fichas antes de crear tareas.
+    </div>
+
+    <div class="card">
+      <form th:action="@{/instructor/tareas/nueva}"
+            th:object="${tareaRequest}"
+            method="post"
+            enctype="multipart/form-data">
+
+        <div class="form-group">
+          <label for="titulo"><i class="fas fa-heading"></i> Título *</label>
+          <input type="text"
+                 id="titulo"
+                 th:field="*{titulo}"
+                 maxlength="200"
+                 placeholder="Ej: Taller de bases de datos"
+                 required
+                 th:disabled="${fichas == null or #lists.isEmpty(fichas)}">
+          <span class="form-hint">Máximo 200 caracteres.</span>
+        </div>
+
+        <div class="form-group">
+          <label for="descripcion"><i class="fas fa-align-left"></i> Descripción</label>
+          <textarea id="descripcion"
+                    th:field="*{descripcion}"
+                    placeholder="Describe los objetivos y requisitos de la tarea..."
+                    th:disabled="${fichas == null or #lists.isEmpty(fichas)}"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="fechaLimite"><i class="fas fa-calendar-alt"></i> Fecha Límite *</label>
+          <input type="datetime-local"
+                 id="fechaLimite"
+                 th:field="*{fechaLimite}"
+                 required
+                 th:disabled="${fichas == null or #lists.isEmpty(fichas)}">
+        </div>
+
+        <div class="form-group">
+          <label for="nombreFicha"><i class="fas fa-users"></i> Ficha *</label>
+          <select id="nombreFicha"
+                  th:field="*{nombreFicha}"
+                  required
+                  th:disabled="${fichas == null or #lists.isEmpty(fichas)}">
+            <option value="">-- Selecciona una ficha --</option>
+            <option th:each="ficha : ${fichas}"
+                    th:value="${ficha}"
+                    th:text="${ficha}"></option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="archivo"><i class="fas fa-paperclip"></i> Archivo adjunto (opcional)</label>
+          <input type="file"
+                 id="archivo"
+                 name="archivo"
+                 accept=".pdf,.docx,.xlsx,.png,.jpg"
+                 th:disabled="${fichas == null or #lists.isEmpty(fichas)}">
+          <span class="form-hint">Formatos permitidos: PDF, DOCX, XLSX, PNG, JPG. Tamaño máximo: 10 MB.</span>
+        </div>
+
+        <div class="btn-row">
+          <button type="submit"
+                  class="btn-primary"
+                  th:disabled="${fichas == null or #lists.isEmpty(fichas)}">
+            <i class="fas fa-save"></i> Guardar Tarea
+          </button>
+          <a th:href="@{/instructor/tareas}" class="btn-secondary">
+            <i class="fas fa-times"></i> Cancelar
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
