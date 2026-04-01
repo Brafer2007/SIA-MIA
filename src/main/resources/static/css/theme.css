@@ -2,83 +2,185 @@
 
 /* Variables tema claro (default) */
 :root {
-  --bg-page:       #ffffff;
-  --bg-content:    #ffffff;
-  --bg-card:       #F0FFF0;
-  --bg-sidebar:    #006B2D;
-  --text-main:     #111111;
-  --text-card:     #000000;
-  --border-card:   #98FB98;
-  --bg-table-head: #F0FFF0;
-  --text-table:    #020202;
-  --shadow:        rgba(0, 107, 45, 0.1);
-  --section-bg:    #ffffff;
-  --input-bg:      #F0FFF0;
-  --input-border:  #98FB98;
-  --input-color:   #000000;
+  --bg-page:        #ffffff;
+  --bg-content:     #ffffff;
+  --bg-card:        #F0FFF0;
+  --text-main:      #111111;
+  --text-card:      #000000;
+  --text-heading:   #006B2D;
+  --border-card:    #98FB98;
+  --bg-table-head:  #F0FFF0;
+  --text-table-th:  #0c0c0c;
+  --text-table-td:  #020202;
+  --border-table:   #98FB98;
+  --shadow:         rgba(0, 107, 45, 0.1);
+  --section-bg:     #ffffff;
+  --input-bg:       #F0FFF0;
+  --input-border:   #98FB98;
+  --input-color:    #000000;
+  --label-color:    inherit;
+  --p-color:        inherit;
+  --strong-color:   inherit;
+  --h2-color:       #006B2D;
+  --h3-color:       #006B2D;
+  --link-color:     #006B2D;
+  --badge-bg:       #e8f5e9;
+  --badge-color:    #155724;
+  --dashboard-header-color: #006B2D;
 }
 
 /* Variables tema oscuro */
 [data-theme="dark"] {
-  --bg-page:       #0f1117;
-  --bg-content:    #0f1117;
-  --bg-card:       #1a1f2e;
-  --bg-sidebar:    #0d1a0d;
-  --text-main:     #e2e8f0;
-  --text-card:     #e2e8f0;
-  --border-card:   #2d4a2d;
-  --bg-table-head: #1a2e1a;
-  --text-table:    #cbd5e1;
-  --shadow:        rgba(0, 0, 0, 0.4);
-  --section-bg:    #1a1f2e;
-  --input-bg:      #1e2535;
-  --input-border:  #2d4a2d;
-  --input-color:   #e2e8f0;
+  --bg-page:        #0d1117;
+  --bg-content:     #0d1117;
+  --bg-card:        #161b27;
+  --text-main:      #e6edf3;
+  --text-card:      #e6edf3;
+  --text-heading:   #4ade80;
+  --border-card:    #30a14e;
+  --bg-table-head:  #1c2a1c;
+  --text-table-th:  #86efac;
+  --text-table-td:  #d1fae5;
+  --border-table:   #2d4a2d;
+  --shadow:         rgba(0, 0, 0, 0.5);
+  --section-bg:     #161b27;
+  --input-bg:       #1c2333;
+  --input-border:   #30a14e;
+  --input-color:    #e6edf3;
+  --label-color:    #86efac;
+  --p-color:        #c9d1d9;
+  --strong-color:   #e6edf3;
+  --h2-color:       #4ade80;
+  --h3-color:       #4ade80;
+  --link-color:     #4ade80;
+  --badge-bg:       #1c3a2a;
+  --badge-color:    #86efac;
+  --dashboard-header-color: #4ade80;
 }
 
-/* Aplicar variables */
+/* ── Transición global ── */
+*, *::before, *::after {
+  transition: background-color 0.25s, color 0.25s, border-color 0.25s;
+}
+
+/* ── Base ── */
 body {
   background-color: var(--bg-page) !important;
   color: var(--text-main) !important;
-  transition: background-color 0.3s, color 0.3s;
 }
 
 .content, .main-content {
   background-color: var(--bg-content) !important;
-  transition: background-color 0.3s;
 }
 
+/* ── Cards ── */
 .card {
   background: var(--bg-card) !important;
   border-color: var(--border-card) !important;
   color: var(--text-card) !important;
   box-shadow: 0 0 15px var(--shadow) !important;
-  transition: background 0.3s, color 0.3s;
 }
 
+/* ── Secciones ── */
 .section {
   background: var(--section-bg) !important;
   box-shadow: 0 0 15px var(--shadow) !important;
-  transition: background 0.3s;
+  color: var(--text-main) !important;
 }
 
+/* ── Tablas ── */
+table { border-color: var(--border-table) !important; }
 th {
   background: var(--bg-table-head) !important;
-  color: var(--text-table) !important;
+  color: var(--text-table-th) !important;
+  border-color: var(--border-table) !important;
 }
-
 td {
-  color: var(--text-table) !important;
-  border-color: var(--border-card) !important;
+  color: var(--text-table-td) !important;
+  border-color: var(--border-table) !important;
 }
 
-input, select, textarea {
+/* ── Inputs ── */
+input:not([type="radio"]):not([type="checkbox"]):not([type="file"]),
+select,
+textarea {
   background: var(--input-bg) !important;
   color: var(--input-color) !important;
   border-color: var(--input-border) !important;
 }
 
-/* Botón toggle tema */
+/* ── Tipografía ── */
+h1, h2, h3, h4, h5, h6 { color: var(--text-heading) !important; }
+p  { color: var(--p-color) !important; }
+label { color: var(--label-color) !important; }
+strong, b { color: var(--strong-color) !important; }
+a:not(.sidebar a):not(.nav-item) { color: var(--link-color) !important; }
+span { color: inherit; }
+
+/* ── Dashboard header ── */
+.dashboard-header { color: var(--dashboard-header-color) !important; }
+.dashboard-header h1,
+.dashboard-header p { color: var(--dashboard-header-color) !important; }
+
+/* ── Doc-list, file-upload ── */
+.doc-list {
+  background: var(--bg-card) !important;
+  border-color: var(--border-card) !important;
+  color: var(--text-card) !important;
+}
+.file-upload {
+  border-color: var(--border-card) !important;
+  color: var(--text-main) !important;
+}
+
+/* ── Modales internos ── */
+[data-theme="dark"] .modal-contenido,
+[data-theme="dark"] [style*="background:white"],
+[data-theme="dark"] [style*="background: white"],
+[data-theme="dark"] [style*="background:#fff"],
+[data-theme="dark"] [style*="background: #fff"],
+[data-theme="dark"] [style*="background:#ffffff"],
+[data-theme="dark"] [style*="background: #ffffff"] {
+  background: #161b27 !important;
+  color: #e6edf3 !important;
+}
+
+/* ── Badges de estado ── */
+[data-theme="dark"] .badge-pendiente  { background: #3a2e00 !important; color: #fde68a !important; }
+[data-theme="dark"] .badge-aprobado,
+[data-theme="dark"] .badge-calificada { background: #1c3a2a !important; color: #86efac !important; }
+[data-theme="dark"] .badge-rechazado,
+[data-theme="dark"] .badge-vencida    { background: #3a1c1c !important; color: #fca5a5 !important; }
+[data-theme="dark"] .badge-entregada  { background: #1c2a3a !important; color: #93c5fd !important; }
+
+/* ── Alertas ── */
+[data-theme="dark"] [style*="background-color: #d4edda"],
+[data-theme="dark"] [style*="background:#d4edda"] {
+  background: #1c3a2a !important; color: #86efac !important;
+  border-color: #30a14e !important;
+}
+[data-theme="dark"] [style*="background-color: #f8d7da"],
+[data-theme="dark"] [style*="background:#f8d7da"] {
+  background: #3a1c1c !important; color: #fca5a5 !important;
+  border-color: #f87171 !important;
+}
+[data-theme="dark"] [style*="background-color: #fff3cd"],
+[data-theme="dark"] [style*="background:#fff3cd"] {
+  background: #3a2e00 !important; color: #fde68a !important;
+  border-color: #fbbf24 !important;
+}
+
+/* ── Fondos inline comunes ── */
+[data-theme="dark"] [style*="background: #f9f9f9"],
+[data-theme="dark"] [style*="background:#f9f9f9"],
+[data-theme="dark"] [style*="background: #F0FFF0"],
+[data-theme="dark"] [style*="background:#F0FFF0"],
+[data-theme="dark"] [style*="background-color: #F0FFF0"],
+[data-theme="dark"] [style*="background-color:#F0FFF0"] {
+  background: #1c2333 !important;
+}
+
+/* ── Botón toggle tema ── */
 .theme-toggle-btn {
   display: flex;
   align-items: center;
@@ -94,8 +196,7 @@ input, select, textarea {
   font-size: 14px;
   width: 100%;
   text-align: left;
-  transition: background 0.2s;
-  margin-top: auto;
+  /* SIN margin-top: auto — se posiciona por flujo normal */
 }
 
 .theme-toggle-btn:hover {
@@ -108,5 +209,5 @@ input, select, textarea {
 }
 
 [data-theme="dark"] .theme-toggle-btn .theme-icon {
-  transform: rotate(180deg);
+  transform: rotate(20deg);
 }
