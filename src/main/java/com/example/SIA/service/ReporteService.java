@@ -160,13 +160,10 @@ public class ReporteService {
 
         Map<String, Long> mapa = new LinkedHashMap<>();
         for (Object[] row : data) {
-    String tipo = row[0] != null ? row[0].toString() : "Sin tipo";
-
-    Number total = (Number) row[1];
-    Long totalFinal = total.longValue();
-
-    mapa.put(tipo, totalFinal);
-}
+            String tipo = row[0] != null ? row[0].toString() : "Sin tipo";
+            Long total = (Long) row[1];
+            mapa.put(tipo, total);
+        }
 
         return mapa;
     }

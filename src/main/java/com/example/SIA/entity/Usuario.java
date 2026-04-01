@@ -22,6 +22,7 @@ public class Usuario {
     // =============================
     // 🔥 HUELLA (BIOMETRÍA)
     // =============================
+    @Lob
     @Column(name = "huella")
     private byte[] huella;
 
