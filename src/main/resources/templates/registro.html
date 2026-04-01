@@ -1,395 +1,445 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" th:href="@{/img/logo_sia_fondo.png}">
+  <meta charset="UTF-8"/>
+  <link rel="icon" type="image/png" th:href="@{/img/logo_sia_fondo.png}">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Registro de Usuario</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <title>Registro - SIA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
-    body {
-      margin: 0;
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
       font-family: 'Poppins', sans-serif;
-      background: url('https://www.bloomberglinea.com/resizer/v2/RAEW7WILHFA3JJHMQAYOWKN4EM.jpeg?auth=2d9996b6e3bd09f86ba0666285d6c9a921996fb4e8ae4470773335616e80f35e&width=800&height=533&quality=80&smart=true') no-repeat center center fixed;
-      background-size: cover;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-      padding: 20px;
-      box-sizing: border-box;
       overflow-x: hidden;
     }
 
-    .form-container {
-      background: rgba(0, 0, 0, 0.75);
-      padding: 40px 35px;
-      border-radius: 15px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-      width: 100%;
-      max-width: 420px;
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #001a0e 0%, #003d1f 30%, #006B2D 60%, #004d20 80%, #001a0e 100%);
+      background-size: 400% 400%;
+      animation: gradientShift 12s ease infinite;
+      display: flex; flex-direction: column;
+    }
+
+    @keyframes gradientShift {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(0,255,174,0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(0,255,174,0.06) 0%, transparent 50%);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ── Header ── */
+    header {
+      position: relative; z-index: 10;
+      padding: 14px 24px;
+      background: rgba(0,0,0,0.25);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(0,255,174,0.15);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .brand { color: #00ffae; font-weight: 700; font-size: 18px; letter-spacing: 2px; }
+    .nav-btn {
+      padding: 7px 18px; font-size: 13px; font-weight: 500;
+      color: #fff; border: 1.5px solid rgba(0,255,174,0.5);
+      border-radius: 20px; text-decoration: none;
+      transition: all 0.3s; background: transparent; cursor: pointer;
+    }
+    .nav-btn:hover { background: #00ffae; color: #000; border-color: #00ffae; }
+
+    /* ── Main ── */
+    main {
+      flex: 1; display: flex; justify-content: center; align-items: flex-start;
+      padding: 30px 20px; position: relative; z-index: 1;
+    }
+
+    /* ── Card ── */
+    .reg-card {
+      width: 100%; max-width: 480px;
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(0,255,174,0.2);
+      border-radius: 24px;
+      padding: 40px 36px;
+      box-shadow:
+        0 0 0 1px rgba(0,255,174,0.05),
+        0 20px 60px rgba(0,0,0,0.5),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      animation: slideUp 0.6s cubic-bezier(0.16,1,0.3,1) both;
       position: relative;
-      color: #fff;
-      text-align: center;
-      box-sizing: border-box;
     }
 
-    h2 {
-      margin-bottom: 25px;
-      font-weight: 600;
-      font-size: 24px;
-      color: #00FF99;
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: 500;
-      color: #fff;
-      text-align: left;
+    .reg-card::before {
+      content: '';
+      position: absolute; top: 0; left: 20%; right: 20%; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,255,174,0.6), transparent);
     }
 
-    input {
-      width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-      margin-bottom: 10px;
-      font-size: 14px;
+    /* ── Robot ── */
+    .robot-wrap { text-align: center; margin-bottom: 6px; }
+    .robot-wrap img {
+      width: 80px; height: 80px; object-fit: contain;
+      filter: drop-shadow(0 0 12px rgba(0,255,174,0.4));
     }
 
-    button {
-      width: 100%;
-      background-color: #00FF99;
-      color: #000;
-      border: none;
-      padding: 12px;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.3s;
-      margin-top: 15px;
-    }
+    /* ── Título ── */
+    .card-title { text-align: center; margin-bottom: 24px; }
+    .card-title h1 { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .card-title p  { font-size: 12px; color: rgba(255,255,255,0.4); }
 
-    button:hover {
-      background-color: #00cc7a;
+    /* ── Errores del servidor ── */
+    .server-errors {
+      background: rgba(255,60,60,0.12);
+      border: 1px solid rgba(255,80,80,0.4);
+      border-radius: 10px; padding: 10px 14px;
+      margin-bottom: 18px; font-size: 13px; color: #ff8080;
     }
-
-    .robot {
-      width: 80px;
-      height: 80px;
-      margin: 0 auto 15px auto;
-    }
-
-    .robot img {
-      width: 100%;
-      animation: bounce 1.5s infinite;
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-
-    .btn-google, .btn-login {
-      margin-top: 10px;
-      background: #555;
-      color: #fff;
-      text-decoration: none;
-      display: block;
-      padding: 12px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    .btn-login {
-      background: #00FF99;
-      color: #000;
-    }
-
-    .btn-google:hover, .btn-login:hover {
-      opacity: 0.85;
-    }
-
-    .error-container {
-      margin-bottom: 10px;
-      background-color: #ff3333;
-      border-radius: 8px;
-      padding: 10px 15px;
-      color: #fff;
-      text-align: left;
-    }
-
-    .error-container ul {
-      list-style: disc;
-      padding-left: 20px;
-      margin: 5px 0 0 0;
-    }
-
+    .server-errors ul { padding-left: 18px; margin-top: 4px; }
     .close-btn {
-      float: right;
-      background: transparent;
-      border: none;
-      font-size: 18px;
-      color: #fff;
-      cursor: pointer;
+      float: right; background: transparent; border: none;
+      font-size: 16px; color: #ff8080; cursor: pointer;
     }
 
-    input.input-error {
-      border: 2px solid #ff4444 !important;
-      background-color: #fff5f5;
+    /* ── Campos ── */
+    .field { margin-bottom: 14px; }
+    .field label {
+      display: block; font-size: 11px; font-weight: 600;
+      color: rgba(255,255,255,0.55); margin-bottom: 6px;
+      text-transform: uppercase; letter-spacing: 0.7px;
+    }
+    .input-wrap { position: relative; display: flex; align-items: center; }
+    .input-wrap .icon {
+      position: absolute; left: 13px; color: rgba(255,255,255,0.3);
+      font-size: 13px; pointer-events: none;
+    }
+    .input-wrap input {
+      width: 100%; padding: 11px 13px 11px 38px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px; color: #fff; font-size: 13px;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.3s; outline: none;
+    }
+    .input-wrap input::placeholder { color: rgba(255,255,255,0.22); }
+    .input-wrap input:focus {
+      border-color: rgba(0,255,174,0.6);
+      background: rgba(0,255,174,0.05);
+      box-shadow: 0 0 0 3px rgba(0,255,174,0.1);
+    }
+    .input-wrap input.input-error {
+      border-color: rgba(255,80,80,0.7) !important;
+      background: rgba(255,60,60,0.06) !important;
+    }
+    .input-wrap .eye {
+      position: absolute; right: 12px; cursor: pointer;
+      color: rgba(255,255,255,0.3); font-size: 13px; transition: color 0.2s;
+    }
+    .input-wrap .eye:hover { color: #00ffae; }
+
+    .field-err {
+      font-size: 11px; color: #ff7070; margin-top: 4px;
+      display: none; padding-left: 2px;
     }
 
-    .field-error-msg {
-      color: #ff6b6b;
-      font-size: 12px;
-      text-align: left;
-      margin: -6px 0 8px;
-      display: none;
-    }
-
-    /* Sugeridor de contraseña */
+    /* ── Sugeridor contraseña ── */
     .pass-wrapper { position: relative; }
     .pass-suggestion {
       display: none;
-      position: absolute;
-      top: calc(100% + 4px);
-      left: 0; right: 0;
-      background: #1a1a1a;
-      border: 1px solid #00FF99;
-      border-radius: 8px;
-      padding: 12px 14px;
-      z-index: 100;
-      text-align: left;
+      position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+      background: rgba(10,30,20,0.97);
+      border: 1px solid rgba(0,255,174,0.4);
+      border-radius: 10px; padding: 12px 14px; z-index: 200;
     }
-    .pass-suggestion p {
-      margin: 0 0 8px;
-      font-size: 12px;
-      color: #aaa;
+    .pass-suggestion p { margin: 0 0 6px; font-size: 11px; color: rgba(255,255,255,0.5); }
+    .suggested-pass {
+      font-family: monospace; font-size: 14px; color: #00ffae;
+      font-weight: 600; letter-spacing: 1px; word-break: break-all;
     }
-    .pass-suggestion .suggested-pass {
-      font-family: monospace;
-      font-size: 15px;
-      color: #00FF99;
-      font-weight: 600;
-      letter-spacing: 1px;
-      word-break: break-all;
+    .btn-use-pass {
+      width: 100%; margin-top: 8px; padding: 7px;
+      background: #00ffae; color: #000; border: none;
+      border-radius: 7px; font-weight: bold; font-size: 12px; cursor: pointer;
     }
-    .pass-suggestion .btn-use-pass {
-      width: 100%;
-      margin-top: 10px;
-      padding: 8px;
-      background: #00FF99;
-      color: #000;
-      border: none;
-      border-radius: 6px;
-      font-weight: bold;
-      font-size: 13px;
-      cursor: pointer;
+    .btn-use-pass:hover { background: #00d996; }
+    .btn-regen {
+      width: 100%; margin-top: 5px; padding: 5px;
+      background: transparent; color: rgba(255,255,255,0.4);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 7px; font-size: 11px; cursor: pointer;
     }
-    .pass-suggestion .btn-use-pass:hover { background: #00cc7a; }
-    .pass-suggestion .btn-regen {
-      width: 100%;
-      margin-top: 6px;
-      padding: 6px;
-      background: transparent;
-      color: #aaa;
-      border: 1px solid #444;
-      border-radius: 6px;
-      font-size: 12px;
-      cursor: pointer;
+    .btn-regen:hover { color: #fff; border-color: rgba(255,255,255,0.4); }
+
+    /* ── Botones principales ── */
+    .btn-primary {
+      width: 100%; padding: 13px; border: none; border-radius: 12px;
+      background: linear-gradient(135deg, #00ffae, #00d996);
+      color: #001a0e; font-weight: 700; font-size: 14px;
+      cursor: pointer; transition: all 0.3s;
+      box-shadow: 0 4px 20px rgba(0,255,174,0.3);
+      font-family: 'Poppins', sans-serif; margin-top: 8px;
     }
-    .pass-suggestion .btn-regen:hover { color: #fff; border-color: #888; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,255,174,0.45); }
+
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 16px 0; color: rgba(255,255,255,0.2); font-size: 12px;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.1);
+    }
+
+    .btn-secondary {
+      width: 100%; padding: 11px; border-radius: 12px;
+      border: 1.5px solid rgba(0,255,174,0.3);
+      background: transparent; color: #00ffae;
+      font-weight: 600; font-size: 13px; cursor: pointer;
+      transition: all 0.3s; font-family: 'Poppins', sans-serif;
+      text-decoration: none; display: block; text-align: center;
+    }
+    .btn-secondary:hover { background: rgba(0,255,174,0.08); border-color: #00ffae; }
 
     @media (max-width: 480px) {
-      body { padding: 12px; align-items: flex-start; }
-      .form-container { padding: 24px 16px; }
-      h2 { font-size: 20px; }
-      input { font-size: 13px; padding: 8px; }
-      button { padding: 10px; font-size: 14px; }
+      .reg-card { padding: 28px 18px; }
+      header { padding: 12px 16px; }
     }
   </style>
 </head>
 <body>
-  <div class="form-container">
-    <div class="robot">
-      <img src="https://i.pinimg.com/originals/4b/cb/1f/4bcb1fb72d1d08efa44efa5ceb712ec7.gif" alt="Robot animado">
-    </div>
+  <header>
+    <span class="brand">SIA · SENA</span>
+    <a th:href="@{/login}" class="nav-btn">Iniciar sesión</a>
+  </header>
 
-    <h2>Registro de Usuario</h2>
+  <main>
+    <div class="reg-card">
 
-
-  <!-- Mensaje de éxito o error -->
-  <div id="mensajeRegistro" th:if="${mensaje}" th:text="${mensaje}" style="display:none;"></div>
-
-  <form th:action="@{/registro/guardar}" method="post" th:object="${usuario}">
-
-      <!-- 🟥 Caja de errores -->
-      <div th:if="${#fields.hasErrors()}" class="error-container">
-        <button class="close-btn" type="button" onclick="this.parentElement.style.display='none'">✖</button>
-        <ul>
-          <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
-        </ul>
+      <div class="robot-wrap">
+        <img src="https://i.pinimg.com/originals/4b/cb/1f/4bcb1fb72d1d08efa44efa5ceb712ec7.gif" alt="Robot SIA">
       </div>
 
-      <label>Nombre de usuario</label>
-      <input type="text" th:field="*{nombreUsuario}" required>
+      <div class="card-title">
+        <h1>Crear cuenta</h1>
+        <p>Completa los datos para registrarte</p>
+      </div>
 
-      <label>Nombres</label>
-      <input type="text" th:field="*{nombres}" required>
+      <!-- Mensaje flash -->
+      <div id="mensajeRegistro" th:if="${mensaje}" th:text="${mensaje}" style="display:none;"></div>
 
-      <label>Apellidos</label>
-      <input type="text" th:field="*{apellidos}" required>
+      <form th:action="@{/registro/guardar}" method="post" th:object="${usuario}">
 
-      <label>Correo Electrónico</label>
-      <input type="email" id="correo" th:field="*{correo}" required />
-      <span class="field-error-msg" id="correo-error">Los correos no coinciden.</span>
-
-      <label>Confirmar Correo Electrónico</label>
-      <input type="email" id="confirmCorreo" placeholder="Repite tu correo" required />
-      <span class="field-error-msg" id="confirmCorreo-error">Los correos no coinciden.</span>
-
-      <label>Número de Documento</label>
-      <input type="text" id="noDocumento" th:field="*{noDocumento}" inputmode="numeric" pattern="[0-9]+" required />
-
-      <label>Contraseña</label>
-      <div class="pass-wrapper">
-        <input type="password" id="passUsuario" th:field="*{passUsuario}" required autocomplete="new-password" />
-        <div class="pass-suggestion" id="passSuggestion">
-          <p>💡 Contraseña sugerida:</p>
-          <div class="suggested-pass" id="suggestedPass"></div>
-          <button type="button" class="btn-use-pass" onclick="usarContrasena()">Usar esta contraseña</button>
-          <button type="button" class="btn-regen" onclick="generarContrasena()">↻ Generar otra</button>
+        <!-- Errores de validación -->
+        <div th:if="${#fields.hasErrors()}" class="server-errors">
+          <button class="close-btn" type="button" onclick="this.parentElement.style.display='none'">✖</button>
+          <ul>
+            <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+          </ul>
         </div>
-      </div>
 
-      <label>Confirmar Contraseña</label>
-      <input type="password" id="confirmPassword" th:field="*{confirmPassword}" required />
-      <span class="field-error-msg" id="pass-error">Las contraseñas no coinciden.</span>
+        <!-- Nombre de usuario -->
+        <div class="field">
+          <label>Nombre de usuario</label>
+          <div class="input-wrap">
+            <i class="fas fa-at icon"></i>
+            <input type="text" th:field="*{nombreUsuario}" placeholder="usuario123" required/>
+          </div>
+        </div>
 
-      <button type="submit">Registrarse</button>
-    </form>
+        <!-- Nombres y Apellidos en fila -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="field">
+            <label>Nombres</label>
+            <div class="input-wrap">
+              <i class="fas fa-user icon"></i>
+              <input type="text" th:field="*{nombres}" placeholder="Juan" required/>
+            </div>
+          </div>
+          <div class="field">
+            <label>Apellidos</label>
+            <div class="input-wrap">
+              <i class="fas fa-user icon"></i>
+              <input type="text" th:field="*{apellidos}" placeholder="Pérez" required/>
+            </div>
+          </div>
+        </div>
 
-    <button class="btn-google" onclick="alert('Registro con Google no disponible aún')">Registrarse con Google</button>
+        <!-- Correo -->
+        <div class="field">
+          <label>Correo electrónico</label>
+          <div class="input-wrap">
+            <i class="fas fa-envelope icon"></i>
+            <input type="email" id="correo" th:field="*{correo}" placeholder="correo@ejemplo.com" required/>
+          </div>
+          <div class="field-err" id="correo-error">Los correos no coinciden.</div>
+        </div>
 
-    <a th:href="@{/login}" class="btn-login">Volver al Login</a>
-  </div>
+        <!-- Confirmar correo -->
+        <div class="field">
+          <label>Confirmar correo</label>
+          <div class="input-wrap">
+            <i class="fas fa-envelope-open icon"></i>
+            <input type="email" id="confirmCorreo" placeholder="Repite tu correo" required/>
+          </div>
+          <div class="field-err" id="confirmCorreo-error">Los correos no coinciden.</div>
+        </div>
+
+        <!-- Documento -->
+        <div class="field">
+          <label>Número de documento</label>
+          <div class="input-wrap">
+            <i class="fas fa-id-card icon"></i>
+            <input type="text" id="noDocumento" th:field="*{noDocumento}"
+                   inputmode="numeric" pattern="[0-9]+" placeholder="1234567890" required/>
+          </div>
+        </div>
+
+        <!-- Contraseña -->
+        <div class="field">
+          <label>Contraseña</label>
+          <div class="pass-wrapper">
+            <div class="input-wrap">
+              <i class="fas fa-lock icon"></i>
+              <input type="password" id="passUsuario" th:field="*{passUsuario}"
+                     placeholder="Mínimo 6 caracteres" required autocomplete="new-password"/>
+              <i class="fas fa-eye-slash eye" id="eyePass" onclick="toggleEye('passUsuario','eyePass')"></i>
+            </div>
+            <div class="pass-suggestion" id="passSuggestion">
+              <p>💡 Contraseña sugerida:</p>
+              <div class="suggested-pass" id="suggestedPass"></div>
+              <button type="button" class="btn-use-pass" onclick="usarContrasena()">Usar esta contraseña</button>
+              <button type="button" class="btn-regen" onclick="generarContrasena()">↻ Generar otra</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Confirmar contraseña -->
+        <div class="field">
+          <label>Confirmar contraseña</label>
+          <div class="input-wrap">
+            <i class="fas fa-lock icon"></i>
+            <input type="password" id="confirmPassword" th:field="*{confirmPassword}"
+                   placeholder="Repite la contraseña" required/>
+            <i class="fas fa-eye-slash eye" id="eyeConfirm" onclick="toggleEye('confirmPassword','eyeConfirm')"></i>
+          </div>
+          <div class="field-err" id="pass-error">Las contraseñas no coinciden.</div>
+        </div>
+
+        <button type="submit" class="btn-primary">
+          <i class="fas fa-user-plus"></i> Registrarse
+        </button>
+      </form>
+
+      <div class="divider">o</div>
+      <a th:href="@{/login}" class="btn-secondary">
+        <i class="fas fa-sign-in-alt"></i> Ya tengo cuenta
+      </a>
+
+    </div>
+  </main>
 
   <script>
-    // SweetAlert para mensajes flash
-    const mensaje = document.getElementById("mensajeRegistro");
-    if(mensaje && mensaje.innerText.trim() !== ""){
+    // SweetAlert flash
+    const msg = document.getElementById('mensajeRegistro');
+    if (msg && msg.innerText.trim()) {
       Swal.fire({
-        icon: mensaje.innerText.includes('correctamente') ? 'success' : 'error',
-        title: mensaje.innerText.includes('correctamente') ? '¡Éxito!' : 'Error',
-        text: mensaje.innerText,
+        icon: msg.innerText.includes('correctamente') ? 'success' : 'error',
+        title: msg.innerText.includes('correctamente') ? '¡Éxito!' : 'Error',
+        text: msg.innerText,
         confirmButtonColor: '#006B2D',
-        timer: 3500,
-        timerProgressBar: true
+        timer: 3500, timerProgressBar: true
       });
     }
 
     // Solo números en documento
-    document.getElementById('noDocumento').addEventListener('input', function() {
-      this.value = this.value.replace(/[^0-9]/g, '');
-    });
-    document.getElementById('noDocumento').addEventListener('keypress', function(e) {
-      if (!/[0-9]/.test(e.key)) e.preventDefault();
-    });
+    const docInput = document.getElementById('noDocumento');
+    docInput.addEventListener('input', () => { docInput.value = docInput.value.replace(/[^0-9]/g, ''); });
+    docInput.addEventListener('keypress', e => { if (!/[0-9]/.test(e.key)) e.preventDefault(); });
 
-    // Generador de contraseña segura
-    function generarContrasena() {
-      const upper = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
-      const lower = 'abcdefghjkmnpqrstuvwxyz';
-      const digits = '23456789';
-      const symbols = '@#$%&*!';
-      const all = upper + lower + digits + symbols;
-      let pass = [
-        upper[Math.floor(Math.random() * upper.length)],
-        lower[Math.floor(Math.random() * lower.length)],
-        digits[Math.floor(Math.random() * digits.length)],
-        symbols[Math.floor(Math.random() * symbols.length)]
-      ];
-      for (let i = 4; i < 12; i++) {
-        pass.push(all[Math.floor(Math.random() * all.length)]);
+    // Toggle ojo
+    function toggleEye(inputId, iconId) {
+      const inp = document.getElementById(inputId);
+      const ico = document.getElementById(iconId);
+      if (inp.type === 'password') {
+        inp.type = 'text';
+        ico.classList.replace('fa-eye-slash', 'fa-eye');
+      } else {
+        inp.type = 'password';
+        ico.classList.replace('fa-eye', 'fa-eye-slash');
       }
-      // Mezclar
-      pass = pass.sort(() => Math.random() - 0.5).join('');
-      document.getElementById('suggestedPass').textContent = pass;
+    }
+
+    // Generador contraseña
+    function generarContrasena() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789@#$%&*!';
+      let pass = [
+        'ABCDEFGHJKLMNPQRSTUVWXYZ'[Math.floor(Math.random()*24)],
+        'abcdefghjkmnpqrstuvwxyz'[Math.floor(Math.random()*23)],
+        '23456789'[Math.floor(Math.random()*8)],
+        '@#$%&*!'[Math.floor(Math.random()*7)]
+      ];
+      for (let i = 4; i < 12; i++) pass.push(chars[Math.floor(Math.random()*chars.length)]);
+      document.getElementById('suggestedPass').textContent =
+        pass.sort(() => Math.random() - 0.5).join('');
     }
 
     function usarContrasena() {
       const pass = document.getElementById('suggestedPass').textContent;
-      const passInput = document.getElementById('passUsuario');
-      const confirmInput = document.getElementById('confirmPassword');
-      passInput.type = 'text';
-      confirmInput.type = 'text';
-      passInput.value = pass;
-      confirmInput.value = pass;
-      // Volver a password tras 1.5s para que el usuario la vea
-      setTimeout(() => {
-        passInput.type = 'password';
-        confirmInput.type = 'password';
-      }, 1500);
+      const p = document.getElementById('passUsuario');
+      const c = document.getElementById('confirmPassword');
+      p.type = c.type = 'text';
+      p.value = c.value = pass;
+      setTimeout(() => { p.type = c.type = 'password'; }, 1500);
       document.getElementById('passSuggestion').style.display = 'none';
       validarPasswords();
     }
 
-    // Mostrar/ocultar sugeridor al hacer foco en contraseña
     const passInput = document.getElementById('passUsuario');
-    const passSuggestion = document.getElementById('passSuggestion');
-
-    passInput.addEventListener('focus', function() {
-      if (!document.getElementById('suggestedPass').textContent) {
-        generarContrasena();
-      }
-      passSuggestion.style.display = 'block';
+    const passSugg  = document.getElementById('passSuggestion');
+    passInput.addEventListener('focus', () => {
+      if (!document.getElementById('suggestedPass').textContent) generarContrasena();
+      passSugg.style.display = 'block';
+    });
+    document.addEventListener('click', e => {
+      if (!passInput.contains(e.target) && !passSugg.contains(e.target))
+        passSugg.style.display = 'none';
     });
 
-    // Cerrar si se hace clic fuera
-    document.addEventListener('click', function(e) {
-      if (!passInput.contains(e.target) && !passSuggestion.contains(e.target)) {
-        passSuggestion.style.display = 'none';
-      }
-    });
-    // Validación correo en tiempo real
+    // Validaciones en tiempo real
     function validarCorreos() {
-      const correo = document.getElementById('correo').value;
-      const confirm = document.getElementById('confirmCorreo').value;
-      const errorCorreo = document.getElementById('correo-error');
-      const errorConfirm = document.getElementById('confirmCorreo-error');
-      const match = correo === confirm;
-      if (confirm.length > 0 && !match) {
-        errorCorreo.style.display = 'block';
-        errorConfirm.style.display = 'block';
-        document.getElementById('correo').classList.add('input-error');
-        document.getElementById('confirmCorreo').classList.add('input-error');
-      } else {
-        errorCorreo.style.display = 'none';
-        errorConfirm.style.display = 'none';
-        document.getElementById('correo').classList.remove('input-error');
-        document.getElementById('confirmCorreo').classList.remove('input-error');
-      }
-      return match;
+      const a = document.getElementById('correo').value;
+      const b = document.getElementById('confirmCorreo').value;
+      const ok = a === b;
+      const show = b.length > 0 && !ok;
+      document.getElementById('correo-error').style.display = show ? 'block' : 'none';
+      document.getElementById('confirmCorreo-error').style.display = show ? 'block' : 'none';
+      document.getElementById('correo').classList.toggle('input-error', show);
+      document.getElementById('confirmCorreo').classList.toggle('input-error', show);
+      return ok;
     }
 
-    // Validación contraseña en tiempo real
     function validarPasswords() {
-      const pass = document.getElementById('passUsuario').value;
-      const confirm = document.getElementById('confirmPassword').value;
-      const error = document.getElementById('pass-error');
-      const match = pass === confirm;
-      if (confirm.length > 0 && !match) {
-        error.style.display = 'block';
-        document.getElementById('passUsuario').classList.add('input-error');
-        document.getElementById('confirmPassword').classList.add('input-error');
-      } else {
-        error.style.display = 'none';
-        document.getElementById('passUsuario').classList.remove('input-error');
-        document.getElementById('confirmPassword').classList.remove('input-error');
-      }
-      return match;
+      const a = document.getElementById('passUsuario').value;
+      const b = document.getElementById('confirmPassword').value;
+      const ok = a === b;
+      const show = b.length > 0 && !ok;
+      document.getElementById('pass-error').style.display = show ? 'block' : 'none';
+      document.getElementById('passUsuario').classList.toggle('input-error', show);
+      document.getElementById('confirmPassword').classList.toggle('input-error', show);
+      return ok;
     }
 
     document.getElementById('correo').addEventListener('input', validarCorreos);
@@ -397,16 +447,15 @@
     document.getElementById('passUsuario').addEventListener('input', validarPasswords);
     document.getElementById('confirmPassword').addEventListener('input', validarPasswords);
 
-    // Bloquear envío si no coinciden
-    document.querySelector('form').addEventListener('submit', function(e) {
-      const correosOk = validarCorreos();
-      const passOk = validarPasswords();
-      if (!correosOk || !passOk) {
+    document.querySelector('form').addEventListener('submit', e => {
+      const cOk = validarCorreos();
+      const pOk = validarPasswords();
+      if (!cOk || !pOk) {
         e.preventDefault();
         Swal.fire({
           icon: 'error',
           title: 'Verifica los campos',
-          text: !correosOk ? 'Los correos no coinciden.' : 'Las contraseñas no coinciden.',
+          text: !cOk ? 'Los correos no coinciden.' : 'Las contraseñas no coinciden.',
           confirmButtonColor: '#006B2D'
         });
       }
