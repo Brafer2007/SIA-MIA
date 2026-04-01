@@ -371,44 +371,200 @@
       </div>
     </section>
 
-    <!-- ---------------- REPORTES ----------
-
------- -->
+    <!-- ---------------- REPORTES ---------------- -->
     <section id="reportes" class="section" style="display:none;">
-      <h2><i class="fas fa-chart-line"></i> Reportes Estadísticos</h2>
-      <div class="cards">
-        <div class="card aprendices">
-          <i class="fas fa-user-graduate"></i>
-          <h3>Aprendices por Programa</h3>
-          <canvas id="chartAprendices"></canvas>
-          <div class="acciones">
-            <a href="/admin/reportes/pdf/aprendices" target="_blank"><button class="btn"><i class="fas fa-eye"></i> Ver PDF</button></a>
-            <a href="/admin/reportes/pdf/aprendices?descargar=true"><button class="btn"><i class="fas fa-file-download"></i> Descargar PDF</button></a>
-          </div>
-        </div>
 
-        <div class="columna-secundaria" style="display:flex; flex-direction:column; gap:20px;">
-          <div class="card secundaria">
-            <i class="fas fa-desktop"></i>
-            <h3>Equipos Registrados</h3>
-            <canvas id="chartEquipos"></canvas>
-            <div class="acciones">
-              <a href="/admin/reportes/pdf/equipos" target="_blank"><button class="btn"><i class="fas fa-eye"></i> Ver PDF</button></a>
-              <a href="/admin/reportes/pdf/equipos?descargar=true"><button class="btn"><i class="fas fa-file-download"></i> Descargar PDF</button></a>
-            </div>
-          </div>
-
-          <div class="card secundaria">
-            <i class="fas fa-user-check"></i>
-            <h3>Usuarios Activos / Inactivos</h3>
-            <canvas id="chartUsuarios"></canvas>
-            <div class="acciones">
-              <a href="/admin/reportes/pdf/usuarios" target="_blank"><button class="btn"><i class="fas fa-eye"></i> Ver PDF</button></a>
-              <a href="/admin/reportes/pdf/usuarios?descargar=true"><button class="btn"><i class="fas fa-file-download"></i> Descargar PDF</button></a>
-            </div>
-          </div>
+      <!-- Header de sección -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; flex-wrap:wrap; gap:12px;">
+        <div>
+          <h2 style="margin:0; font-size:1.4rem; color:var(--verde); display:flex; align-items:center; gap:10px;">
+            <i class="fas fa-chart-line"></i> Reportes Estadísticos
+          </h2>
+          <p style="margin:4px 0 0; font-size:13px; color:#888;">Visualización de datos del sistema SIA</p>
         </div>
       </div>
+
+      <!-- Grid de reportes -->
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:22px;">
+
+        <!-- Card 1: Aprendices por Programa -->
+        <div class="reporte-card" style="
+          background: linear-gradient(145deg, #006B2D 0%, #008D4D 100%);
+          border-radius: 16px;
+          padding: 24px;
+          box-shadow: 0 8px 32px rgba(0,107,45,0.25);
+          display: flex; flex-direction: column; gap: 16px;
+          position: relative; overflow: hidden;
+        ">
+          <div style="position:absolute; top:-20px; right:-20px; width:100px; height:100px;
+            background:rgba(255,255,255,0.06); border-radius:50%;"></div>
+          <div style="position:absolute; bottom:-30px; left:-10px; width:80px; height:80px;
+            background:rgba(255,255,255,0.04); border-radius:50%;"></div>
+
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; position:relative;">
+            <div>
+              <div style="background:rgba(255,255,255,0.15); border-radius:10px; width:44px; height:44px;
+                display:flex; align-items:center; justify-content:center; margin-bottom:10px;">
+                <i class="fas fa-user-graduate" style="color:#fff; font-size:20px;"></i>
+              </div>
+              <h3 style="color:#fff; margin:0; font-size:15px; font-weight:600;">Aprendices</h3>
+              <p style="color:rgba(255,255,255,0.7); margin:2px 0 0; font-size:12px;">Por programa de formación</p>
+            </div>
+          </div>
+
+          <div style="background:rgba(255,255,255,0.08); border-radius:10px; padding:12px;">
+            <canvas id="chartAprendices" style="max-height:200px;"></canvas>
+          </div>
+
+          <div style="display:flex; gap:8px; position:relative;">
+            <a href="/admin/reportes/pdf/aprendices" target="_blank" style="
+              flex:1; text-align:center; padding:9px 0;
+              background:rgba(255,255,255,0.15); color:#fff;
+              border-radius:8px; text-decoration:none; font-size:12px; font-weight:600;
+              border:1px solid rgba(255,255,255,0.2);
+              transition:background 0.2s;
+              display:flex; align-items:center; justify-content:center; gap:5px;
+            " onmouseover="this.style.background='rgba(255,255,255,0.25)'"
+               onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+              <i class="fas fa-eye"></i> Ver PDF
+            </a>
+            <a href="/admin/reportes/pdf/aprendices?descargar=true" style="
+              flex:1; text-align:center; padding:9px 0;
+              background:#fff; color:#006B2D;
+              border-radius:8px; text-decoration:none; font-size:12px; font-weight:700;
+              transition:opacity 0.2s;
+              display:flex; align-items:center; justify-content:center; gap:5px;
+            " onmouseover="this.style.opacity='0.85'"
+               onmouseout="this.style.opacity='1'">
+              <i class="fas fa-download"></i> Descargar
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 2: Equipos Registrados -->
+        <div class="reporte-card" style="
+          background: linear-gradient(145deg, #1a3a6b 0%, #2563eb 100%);
+          border-radius: 16px;
+          padding: 24px;
+          box-shadow: 0 8px 32px rgba(37,99,235,0.25);
+          display: flex; flex-direction: column; gap: 16px;
+          position: relative; overflow: hidden;
+        ">
+          <div style="position:absolute; top:-20px; right:-20px; width:100px; height:100px;
+            background:rgba(255,255,255,0.06); border-radius:50%;"></div>
+          <div style="position:absolute; bottom:-30px; left:-10px; width:80px; height:80px;
+            background:rgba(255,255,255,0.04); border-radius:50%;"></div>
+
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; position:relative;">
+            <div>
+              <div style="background:rgba(255,255,255,0.15); border-radius:10px; width:44px; height:44px;
+                display:flex; align-items:center; justify-content:center; margin-bottom:10px;">
+                <i class="fas fa-desktop" style="color:#fff; font-size:20px;"></i>
+              </div>
+              <h3 style="color:#fff; margin:0; font-size:15px; font-weight:600;">Equipos</h3>
+              <p style="color:rgba(255,255,255,0.7); margin:2px 0 0; font-size:12px;">Equipos registrados por tipo</p>
+            </div>
+          </div>
+
+          <div style="background:rgba(255,255,255,0.08); border-radius:10px; padding:12px;">
+            <canvas id="chartEquipos" style="max-height:200px;"></canvas>
+          </div>
+
+          <div style="display:flex; gap:8px; position:relative;">
+            <a href="/admin/reportes/pdf/equipos" target="_blank" style="
+              flex:1; text-align:center; padding:9px 0;
+              background:rgba(255,255,255,0.15); color:#fff;
+              border-radius:8px; text-decoration:none; font-size:12px; font-weight:600;
+              border:1px solid rgba(255,255,255,0.2);
+              transition:background 0.2s;
+              display:flex; align-items:center; justify-content:center; gap:5px;
+            " onmouseover="this.style.background='rgba(255,255,255,0.25)'"
+               onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+              <i class="fas fa-eye"></i> Ver PDF
+            </a>
+            <a href="/admin/reportes/pdf/equipos?descargar=true" style="
+              flex:1; text-align:center; padding:9px 0;
+              background:#fff; color:#2563eb;
+              border-radius:8px; text-decoration:none; font-size:12px; font-weight:700;
+              transition:opacity 0.2s;
+              display:flex; align-items:center; justify-content:center; gap:5px;
+            " onmouseover="this.style.opacity='0.85'"
+               onmouseout="this.style.opacity='1'">
+              <i class="fas fa-download"></i> Descargar
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 3: Usuarios Activos/Inactivos -->
+        <div class="reporte-card" style="
+          background: linear-gradient(145deg, #7c2d12 0%, #ea580c 100%);
+          border-radius: 16px;
+          padding: 24px;
+          box-shadow: 0 8px 32px rgba(234,88,12,0.25);
+          display: flex; flex-direction: column; gap: 16px;
+          position: relative; overflow: hidden;
+        ">
+          <div style="position:absolute; top:-20px; right:-20px; width:100px; height:100px;
+            background:rgba(255,255,255,0.06); border-radius:50%;"></div>
+          <div style="position:absolute; bottom:-30px; left:-10px; width:80px; height:80px;
+            background:rgba(255,255,255,0.04); border-radius:50%;"></div>
+
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; position:relative;">
+            <div>
+              <div style="background:rgba(255,255,255,0.15); border-radius:10px; width:44px; height:44px;
+                display:flex; align-items:center; justify-content:center; margin-bottom:10px;">
+                <i class="fas fa-user-check" style="color:#fff; font-size:20px;"></i>
+              </div>
+              <h3 style="color:#fff; margin:0; font-size:15px; font-weight:600;">Usuarios</h3>
+              <p style="color:rgba(255,255,255,0.7); margin:2px 0 0; font-size:12px;">Activos vs Inactivos</p>
+            </div>
+          </div>
+
+          <div style="background:rgba(255,255,255,0.08); border-radius:10px; padding:12px;">
+            <canvas id="chartUsuarios" style="max-height:200px;"></canvas>
+          </div>
+
+          <div style="display:flex; gap:8px; position:relative;">
+            <a href="/admin/reportes/pdf/usuarios" target="_blank" style="
+              flex:1; text-align:center; padding:9px 0;
+              background:rgba(255,255,255,0.15); color:#fff;
+              border-radius:8px; text-decoration:none; font-size:12px; font-weight:600;
+              border:1px solid rgba(255,255,255,0.2);
+              transition:background 0.2s;
+              display:flex; align-items:center; justify-content:center; gap:5px;
+            " onmouseover="this.style.background='rgba(255,255,255,0.25)'"
+               onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+              <i class="fas fa-eye"></i> Ver PDF
+            </a>
+            <a href="/admin/reportes/pdf/usuarios?descargar=true" style="
+              flex:1; text-align:center; padding:9px 0;
+              background:#fff; color:#ea580c;
+              border-radius:8px; text-decoration:none; font-size:12px; font-weight:700;
+              transition:opacity 0.2s;
+              display:flex; align-items:center; justify-content:center; gap:5px;
+            " onmouseover="this.style.opacity='0.85'"
+               onmouseout="this.style.opacity='1'">
+              <i class="fas fa-download"></i> Descargar
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Responsive: en móvil una columna -->
+      <style>
+        @media (max-width: 900px) {
+          #reportes > div:last-of-type {
+            grid-template-columns: 1fr !important;
+          }
+        }
+        @media (min-width: 901px) and (max-width: 1200px) {
+          #reportes > div:last-of-type {
+            grid-template-columns: 1fr 1fr !important;
+          }
+        }
+      </style>
+
     </section>
 
     <!-- ---------------- REGISTRO DE ACCESOS ---------------- -->
@@ -591,54 +747,110 @@ function registrarHuella(idUsuario) {
 
     // ---------- Charts (solicitan datos al backend) ----------
     document.addEventListener("DOMContentLoaded", function () {
-      Chart.defaults.color = "#333";
+      Chart.defaults.color = "#fff";
       Chart.defaults.font.family = "Poppins";
-      Chart.defaults.font.size = 14;
+      Chart.defaults.font.size = 12;
 
-      const chartTheme = {
-        barColors: ["#007BFF", "#6F42C1", "#FD7E14", "#20C997", "#FFC107"],
-        doughnutColors: ["#007BFF", "#6F42C1", "#FD7E14", "#20C997", "#FFC107"],
-        pieColors: ["#007BFF", "#6F42C1", "#FD7E14"]
+      const chartOpts = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: { color: "rgba(255,255,255,0.85)", font: { size: 11 }, padding: 12 }
+          },
+          tooltip: {
+            backgroundColor: "rgba(0,0,0,0.75)",
+            titleColor: "#fff",
+            bodyColor: "rgba(255,255,255,0.85)",
+            cornerRadius: 8,
+            padding: 10
+          }
+        }
       };
 
-      // Aprendices por programa
+      // Aprendices por programa — barras verdes
       fetch("/admin/reportes/data/aprendices")
         .then(res => res.json())
         .then(data => {
           if (document.getElementById("chartAprendices")) {
             new Chart(document.getElementById("chartAprendices"), {
               type: "bar",
-              data: { labels: data.labels, datasets: [{ label: "Aprendices", data: data.values, backgroundColor: chartTheme.barColors }] },
-              options: { responsive: true, maintainAspectRatio: false }
+              data: {
+                labels: data.labels,
+                datasets: [{
+                  label: "Aprendices",
+                  data: data.values,
+                  backgroundColor: [
+                    "rgba(255,255,255,0.75)","rgba(255,255,255,0.60)",
+                    "rgba(255,255,255,0.45)","rgba(255,255,255,0.30)",
+                    "rgba(255,255,255,0.20)"
+                  ],
+                  borderColor: "rgba(255,255,255,0.9)",
+                  borderWidth: 1,
+                  borderRadius: 6
+                }]
+              },
+              options: {
+                ...chartOpts,
+                scales: {
+                  x: { ticks: { color: "rgba(255,255,255,0.7)" }, grid: { color: "rgba(255,255,255,0.1)" } },
+                  y: { ticks: { color: "rgba(255,255,255,0.7)" }, grid: { color: "rgba(255,255,255,0.1)" } }
+                }
+              }
             });
           }
-        }).catch(()=>{/* silent */});
+        }).catch(()=>{});
 
-      // Equipos por tipo
+      // Equipos por tipo — doughnut azul
       fetch("/admin/reportes/data/equipos")
         .then(res => res.json())
         .then(data => {
           if (document.getElementById("chartEquipos")) {
             new Chart(document.getElementById("chartEquipos"), {
               type: "doughnut",
-              data: { labels: Object.keys(data), datasets: [{ data: Object.values(data), backgroundColor: chartTheme.doughnutColors }] },
-              options: { responsive: true, maintainAspectRatio: false }
+              data: {
+                labels: Object.keys(data),
+                datasets: [{
+                  data: Object.values(data),
+                  backgroundColor: [
+                    "rgba(255,255,255,0.80)","rgba(255,255,255,0.55)",
+                    "rgba(255,255,255,0.35)","rgba(255,255,255,0.20)",
+                    "rgba(255,255,255,0.12)"
+                  ],
+                  borderColor: "rgba(255,255,255,0.15)",
+                  borderWidth: 2,
+                  hoverOffset: 6
+                }]
+              },
+              options: { ...chartOpts, cutout: "60%" }
             });
           }
-        }).catch(()=>{/* silent */});
+        }).catch(()=>{});
 
-      // Usuarios activos/inactivos
+      // Usuarios activos/inactivos — pie naranja
       fetch("/admin/reportes/data/usuarios")
         .then(res => res.json())
         .then(data => {
           if (document.getElementById("chartUsuarios")) {
             new Chart(document.getElementById("chartUsuarios"), {
               type: "pie",
-              data: { labels: Object.keys(data), datasets: [{ data: Object.values(data), backgroundColor: chartTheme.pieColors }] },
-              options: { responsive: true, maintainAspectRatio: false }
+              data: {
+                labels: Object.keys(data),
+                datasets: [{
+                  data: Object.values(data),
+                  backgroundColor: [
+                    "rgba(255,255,255,0.80)",
+                    "rgba(255,255,255,0.30)"
+                  ],
+                  borderColor: "rgba(255,255,255,0.15)",
+                  borderWidth: 2,
+                  hoverOffset: 6
+                }]
+              },
+              options: { ...chartOpts }
             });
           }
-        }).catch(()=>{/* silent */});
+        }).catch(()=>{});
     });
 
     /* ============================
