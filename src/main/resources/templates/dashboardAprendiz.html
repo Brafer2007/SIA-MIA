@@ -1495,7 +1495,6 @@ function mostrarMensaje(m) {
       });
       window.sesionesAprendizPorDia = sesionesPorDia; // guardar globalmente
 
-      const meses = ["OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
       const nombreDias = ["LUNES", "MARTES", "MIÉRCOLES", "JUEVES", "VIERNES", "SÁBADO", "DOMINGO"];
       const mapaMeses = {
         "ENERO": 0, "FEBRERO": 1, "MARZO": 2, "ABRIL": 3,
@@ -1503,11 +1502,44 @@ function mostrarMensaje(m) {
         "SEPTIEMBRE": 8, "OCTUBRE": 9, "NOVIEMBRE": 10, "DICIEMBRE": 11
       };
 
+      // Detectar meses y año dinámicamente desde los datos reales
+      const añoActual = new Date().getFullYear();
+      const mesesDetectados = new Set();
+      let añoDetectado = añoActual;
+
+      programacion.forEach(p => {
+        if (!p.dia) return;
+        const partes = normalizarDia(p.dia).split(' ');
+        // formato esperado: "1 OCTUBRE" o "1 OCTUBRE 2026"
+        if (partes.length >= 2) {
+          const mesTexto = partes[1];
+          if (mapaMeses[mesTexto] !== undefined) {
+            mesesDetectados.add(mesTexto);
+          }
+          if (partes.length >= 3 && /^\d{4}$/.test(partes[2])) {
+            añoDetectado = parseInt(partes[2]);
+          }
+        }
+      });
+
+      // Si no se detectaron meses, usar los 3 meses del trimestre actual
+      let meses;
+      if (mesesDetectados.size === 0) {
+        const mesHoy = new Date().getMonth(); // 0-indexed
+        const nombresMeses = Object.keys(mapaMeses);
+        // Trimestre actual
+        const trimestreInicio = Math.floor(mesHoy / 3) * 3;
+        meses = nombresMeses.slice(trimestreInicio, trimestreInicio + 3);
+      } else {
+        // Ordenar los meses detectados cronológicamente
+        meses = Array.from(mesesDetectados).sort((a, b) => mapaMeses[a] - mapaMeses[b]);
+      }
+
       let htmlGlobal = '';
 
       meses.forEach(mesTexto => {
         const mes = mapaMeses[mesTexto];
-        const año = 2025;
+        const año = añoDetectado;
         const diasEnMes = new Date(año, mes + 1, 0).getDate();
         const primerDiaSemana = (new Date(año, mes, 1).getDay() + 6) % 7;
 
