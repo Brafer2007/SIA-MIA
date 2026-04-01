@@ -8,6 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" th:href="@{/css/theme.css}"/>
   <style>
     * { box-sizing: border-box; }
     html, body { overflow-x: hidden; }
@@ -115,6 +116,10 @@
   <div class="sidebar">
     <a href="#" onclick="showSection(event,'perfil')"><i class="fas fa-user-edit"></i> Mi Perfil</a>
     <a href="#" onclick="showSection(event,'equipos')"><i class="fas fa-laptop"></i> Equipos</a>
+    <button class="theme-toggle-btn" onclick="toggleTheme()">
+      <i class="theme-icon fas fa-moon"></i>
+      <span class="theme-label">Tema Oscuro</span>
+    </button>
     <a th:href="@{/login}"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
   </div>
 
@@ -294,5 +299,6 @@
       document.getElementById('sidebarOverlay').classList.remove('active');
     }
   </script>
+  <script th:src="@{/js/theme.js}"></script>
 </body>
 </html>

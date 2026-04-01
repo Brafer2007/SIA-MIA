@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" th:href="@{/css/theme.css}"/>
 
   <!-- Estilos optimizados y organizados -->
   <style>
@@ -246,6 +247,10 @@
     <a href="#" onclick="showSection('cronogramas')"><i class="fas fa-calendar-alt"></i> Cronogramas</a>
     <a href="#" onclick="showSection('reportes')"><i class="fas fa-chart-line"></i> Reportes</a>
     <a href="#" onclick="showSection('accesos')"><i class="fas fa-clipboard-list"></i> Registro de Accesos</a>
+    <button class="theme-toggle-btn" onclick="toggleTheme()">
+      <i class="theme-icon fas fa-moon"></i>
+      <span class="theme-label">Tema Oscuro</span>
+    </button>
     <a th:href="@{/login}"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
   </div>
 
@@ -1165,5 +1170,6 @@ function registrarHuella(idUsuario) {
 
   <!-- Enlace oculto para probar error 502 (como en tu original) -->
   <a th:href="@{/probar502}" style="position:fixed;bottom:2px;right:2px;font-size:8px;color:transparent;z-index:9999;">.</a>
+  <script th:src="@{/js/theme.js}"></script>
 </body>
 </html>
