@@ -136,6 +136,19 @@
       cursor: pointer;
     }
 
+    input.input-error {
+      border: 2px solid #ff4444 !important;
+      background-color: #fff5f5;
+    }
+
+    .field-error-msg {
+      color: #ff6b6b;
+      font-size: 12px;
+      text-align: left;
+      margin: -6px 0 8px;
+      display: none;
+    }
+
     @media (max-width: 480px) {
       body { padding: 12px; align-items: flex-start; }
       .form-container { padding: 24px 16px; }
@@ -177,15 +190,22 @@
       <input type="text" th:field="*{apellidos}" required>
 
       <label>Correo Electrónico</label>
-      <input type="email" th:field="*{correo}" required />
+      <input type="email" id="correo" th:field="*{correo}" required />
+      <span class="field-error-msg" id="correo-error">Los correos no coinciden.</span>
+
+      <label>Confirmar Correo Electrónico</label>
+      <input type="email" id="confirmCorreo" placeholder="Repite tu correo" required />
+      <span class="field-error-msg" id="confirmCorreo-error">Los correos no coinciden.</span>
+
       <label>Número de Documento</label>
-      <input type="text" th:field="*{noDocumento}" required />
+      <input type="text" id="noDocumento" th:field="*{noDocumento}" inputmode="numeric" pattern="[0-9]+" required />
 
       <label>Contraseña</label>
-      <input type="password" th:field="*{passUsuario}" required />
+      <input type="password" id="passUsuario" th:field="*{passUsuario}" required />
 
       <label>Confirmar Contraseña</label>
-      <input type="password" th:field="*{confirmPassword}" required />
+      <input type="password" id="confirmPassword" th:field="*{confirmPassword}" required />
+      <span class="field-error-msg" id="pass-error">Las contraseñas no coinciden.</span>
 
       <button type="submit">Registrarse</button>
     </form>
@@ -196,7 +216,7 @@
   </div>
 
   <script>
-    // Mostrar SweetAlert si hay mensaje de éxito o error
+    // SweetAlert para mensajes flash
     const mensaje = document.getElementById("mensajeRegistro");
     if(mensaje && mensaje.innerText.trim() !== ""){
       Swal.fire({
@@ -208,6 +228,73 @@
         timerProgressBar: true
       });
     }
+
+    // Solo números en documento
+    document.getElementById('noDocumento').addEventListener('input', function() {
+      this.value = this.value.replace(/[^0-9]/g, '');
+    });
+    document.getElementById('noDocumento').addEventListener('keypress', function(e) {
+      if (!/[0-9]/.test(e.key)) e.preventDefault();
+    });
+
+    // Validación correo en tiempo real
+    function validarCorreos() {
+      const correo = document.getElementById('correo').value;
+      const confirm = document.getElementById('confirmCorreo').value;
+      const errorCorreo = document.getElementById('correo-error');
+      const errorConfirm = document.getElementById('confirmCorreo-error');
+      const match = correo === confirm;
+      if (confirm.length > 0 && !match) {
+        errorCorreo.style.display = 'block';
+        errorConfirm.style.display = 'block';
+        document.getElementById('correo').classList.add('input-error');
+        document.getElementById('confirmCorreo').classList.add('input-error');
+      } else {
+        errorCorreo.style.display = 'none';
+        errorConfirm.style.display = 'none';
+        document.getElementById('correo').classList.remove('input-error');
+        document.getElementById('confirmCorreo').classList.remove('input-error');
+      }
+      return match;
+    }
+
+    // Validación contraseña en tiempo real
+    function validarPasswords() {
+      const pass = document.getElementById('passUsuario').value;
+      const confirm = document.getElementById('confirmPassword').value;
+      const error = document.getElementById('pass-error');
+      const match = pass === confirm;
+      if (confirm.length > 0 && !match) {
+        error.style.display = 'block';
+        document.getElementById('passUsuario').classList.add('input-error');
+        document.getElementById('confirmPassword').classList.add('input-error');
+      } else {
+        error.style.display = 'none';
+        document.getElementById('passUsuario').classList.remove('input-error');
+        document.getElementById('confirmPassword').classList.remove('input-error');
+      }
+      return match;
+    }
+
+    document.getElementById('correo').addEventListener('input', validarCorreos);
+    document.getElementById('confirmCorreo').addEventListener('input', validarCorreos);
+    document.getElementById('passUsuario').addEventListener('input', validarPasswords);
+    document.getElementById('confirmPassword').addEventListener('input', validarPasswords);
+
+    // Bloquear envío si no coinciden
+    document.querySelector('form').addEventListener('submit', function(e) {
+      const correosOk = validarCorreos();
+      const passOk = validarPasswords();
+      if (!correosOk || !passOk) {
+        e.preventDefault();
+        Swal.fire({
+          icon: 'error',
+          title: 'Verifica los campos',
+          text: !correosOk ? 'Los correos no coinciden.' : 'Las contraseñas no coinciden.',
+          confirmButtonColor: '#006B2D'
+        });
+      }
+    });
   </script>
 </body>
 </html>
