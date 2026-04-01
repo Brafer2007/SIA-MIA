@@ -204,9 +204,50 @@
       color: #666;
     }
     .empty-msg i { font-size: 2.5rem; color: #ccc; margin-bottom: 12px; display: block; }
+
+    /* ===== RESPONSIVE MOBILE ===== */
+    .hamburger-btn {
+      display: none;
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      z-index: 200;
+      background: #006B2D;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      width: 40px;
+      height: 40px;
+      font-size: 20px;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 150;
+    }
+    .sidebar-overlay.active { display: block; }
+    @media (max-width: 768px) {
+      .hamburger-btn { display: block; }
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 160;
+      }
+      .sidebar.open { transform: translateX(0); }
+      .content, .main-content {
+        margin-left: 0 !important;
+        padding: 60px 15px 15px !important;
+      }
+    }
   </style>
 </head>
 <body>
+  <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleSidebar()" aria-label="Abrir menú">&#9776;</button>
   <div class="sidebar">
     <div class="logo"><i class="fas fa-graduation-cap"></i> SENA Instructor</div>
     <a th:href="@{/instructor/tareas}"><i class="fas fa-tasks"></i> Mis Tareas</a>
@@ -214,6 +255,7 @@
     <a th:href="@{/dashboardInstructor}"><i class="fas fa-home"></i> Volver al Dashboard</a>
     <a th:href="@{/login}" style="margin-top: auto;"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
   </div>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
   <div class="content">
     <div class="page-header">
@@ -333,5 +375,15 @@
       </table>
     </div>
   </div>
+  <script>
+    function toggleSidebar() {
+      document.querySelector('.sidebar').classList.toggle('open');
+      document.getElementById('sidebarOverlay').classList.toggle('active');
+    }
+    function closeSidebar() {
+      document.querySelector('.sidebar').classList.remove('open');
+      document.getElementById('sidebarOverlay').classList.remove('active');
+    }
+  </script>
 </body>
 </html>
