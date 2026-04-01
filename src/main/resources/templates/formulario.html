@@ -12,7 +12,9 @@
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f4fdf4;
-            padding: 40px;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-x: hidden;
         }
 
         h2 {
@@ -28,6 +30,13 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             max-width: 600px;
             margin: auto;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 12px; }
+            form { padding: 16px 12px; }
+            h2 { font-size: 18px; }
         }
 
         label {

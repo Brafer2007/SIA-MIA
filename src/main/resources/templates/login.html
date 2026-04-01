@@ -15,25 +15,27 @@
     html, body {
       height: 100%; margin: 0; padding: 0;
       font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
     }
 
     header {
-      padding: 25px; height: 5%; width: 99%;
+      padding: 15px 20px; height: auto; width: 100%;
+      box-sizing: border-box;
       z-index: 5; background-color: #00332c;
     }
 
     .top-right-buttons {
       display: flex; justify-content: flex-end;
-      min-height: 80%; min-width: 80%; margin-inline: 10px;
+      gap: 8px; flex-wrap: wrap;
     }
 
     .top-right-button {
-      padding: 10px 20px; margin-inline: 2px;
+      padding: 8px 16px; margin: 2px;
       background-color: transparent;
       color: #fff; border: 2px solid #00ffae;
       border-radius: 8px; cursor: pointer;
       transition: background-color 0.3s, color 0.3s;
-      text-decoration: none;
+      text-decoration: none; font-size: 14px;
     }
 
     .top-right-button:hover {
@@ -42,13 +44,15 @@
 
     main {
       display: flex; justify-content: center;
-      align-items: center; min-height: 90%;
+      align-items: center; min-height: calc(100vh - 60px);
+      padding: 20px; box-sizing: border-box;
       backdrop-filter: blur(4px);
     }
 
     .main-container {
       background: url('https://www.bloomberglinea.com/resizer/v2/RAEW7WILHFA3JJHMQAYOWKN4EM.jpeg?auth=2d9996b6e3bd09f86ba0666285d6c9a921996fb4e8ae4470773335616e80f35e&width=800&height=533&quality=80&smart=true') no-repeat center center fixed;
       background-size: cover;
+      width: 100%;
     }
 
     .login-container {
@@ -59,9 +63,10 @@
       border-radius: 15px;
       padding: 40px 30px;
       box-shadow: 0 8px 20px rgba(0, 255, 174, 0.2);
-      width: 350px;
+      width: 100%; max-width: 380px;
       animation: fadeInUp 1s ease-out;
       text-align: center;
+      box-sizing: border-box;
     }
 
     .robot {
@@ -135,7 +140,7 @@
       border-radius: 10px;
       padding: 10px 20px;
       font-size: 14px;
-      width: 100%;
+      width: 90%;
       max-width: 340px;
       z-index: 999;
       box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
@@ -164,10 +169,12 @@
       padding: 0;
     }
 
-    @media (max-width: 600px) {
-      .login-container { width: 80%; padding: 20px 15px; }
+    @media (max-width: 480px) {
+      .login-container { padding: 24px 16px; }
       .input-group { flex-direction: column; }
-      .input-group label, .input-group input { width: 100%; }
+      .input-group label { width: 100%; margin-bottom: 4px; }
+      .input-group input { width: 100%; box-sizing: border-box; }
+      .robot { width: 70px; }
     }
   </style>
 <body>
