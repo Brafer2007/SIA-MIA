@@ -211,3 +211,48 @@ span { color: inherit; }
 [data-theme="dark"] .theme-toggle-btn .theme-icon {
   transform: rotate(20deg);
 }
+
+/* ── Iconos de cards en tema oscuro ── */
+[data-theme="dark"] .card i,
+[data-theme="dark"] .card .fas,
+[data-theme="dark"] .card .far,
+[data-theme="dark"] .card .fab,
+[data-theme="dark"] .card .fa {
+  color: #86efac !important;
+  filter: drop-shadow(0 0 6px rgba(74,222,128,0.3));
+}
+
+/* ── Iconos de secciones en tema oscuro ── */
+[data-theme="dark"] .section i,
+[data-theme="dark"] .section .fas,
+[data-theme="dark"] .section .far,
+[data-theme="dark"] .section .fab {
+  color: #86efac !important;
+}
+
+/* ── Iconos de headers h2/h3 en tema oscuro ── */
+[data-theme="dark"] h2 i,
+[data-theme="dark"] h3 i,
+[data-theme="dark"] h2 .fas,
+[data-theme="dark"] h3 .fas {
+  color: #4ade80 !important;
+}
+
+/* ── Iconos de botones — mantener color del botón ── */
+[data-theme="dark"] button i,
+[data-theme="dark"] button .fas,
+[data-theme="dark"] a.btn-link i,
+[data-theme="dark"] a.btn-link .fas {
+  color: inherit !important;
+  filter: none !important;
+}
+
+/* ── Iconos del sidebar — siempre blancos ── */
+[data-theme="dark"] .sidebar i,
+[data-theme="dark"] .sidebar .fas,
+[data-theme="dark"] .sidebar .far,
+[data-theme="dark"] .nav-item i,
+[data-theme="dark"] .nav-item span {
+  color: inherit !important;
+  filter: none !important;
+}
