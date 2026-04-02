@@ -18,19 +18,35 @@
     /* ── Fondo animado ── */
     body {
       min-height: 100vh;
-      background: #006B2D;
+      background: linear-gradient(135deg, #004d20 0%, #006B2D 40%, #008D3A 70%, #005a25 100%);
+      background-size: 300% 300%;
+      animation: bgMove 10s ease infinite;
       display: flex; flex-direction: column;
+      overflow: hidden;
     }
 
-    /* Patrón decorativo de fondo */
+    @keyframes bgMove {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Burbujas flotantes */
     body::before {
       content: '';
       position: fixed; inset: 0;
       background:
-        radial-gradient(circle at 15% 50%, rgba(255,255,255,0.07) 0%, transparent 45%),
-        radial-gradient(circle at 85% 20%, rgba(255,255,255,0.05) 0%, transparent 40%),
-        radial-gradient(circle at 50% 90%, rgba(0,0,0,0.15) 0%, transparent 50%);
+        radial-gradient(circle at 15% 50%, rgba(255,255,255,0.09) 0%, transparent 40%),
+        radial-gradient(circle at 85% 20%, rgba(255,255,255,0.07) 0%, transparent 35%),
+        radial-gradient(circle at 50% 90%, rgba(0,0,0,0.12) 0%, transparent 45%);
       pointer-events: none; z-index: 0;
+      animation: orbs 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes orbs {
+      0%   { transform: scale(1) translate(0, 0); }
+      50%  { transform: scale(1.08) translate(-15px, 10px); }
+      100% { transform: scale(1) translate(10px, -8px); }
     }
 
     /* ── Header ── */
@@ -101,9 +117,10 @@
       text-align: center; margin-bottom: 28px;
     }
     .card-title h1 {
-      font-size: 22px; font-weight: 700; color: #006B2D; margin-bottom: 4px;
+      font-size: 24px; font-weight: 800; color: #006B2D; margin-bottom: 6px;
+      letter-spacing: -0.3px;
     }
-    .card-title p { font-size: 13px; color: #888; }
+    .card-title p { font-size: 13px; color: #555; font-weight: 500; }
 
     /* ── Error ── */
     .alert-error {
@@ -121,9 +138,9 @@
     /* ── Inputs ── */
     .field { margin-bottom: 18px; }
     .field label {
-      display: block; font-size: 12px; font-weight: 600;
-      color: #555; margin-bottom: 7px;
-      text-transform: uppercase; letter-spacing: 0.8px;
+      display: block; font-size: 11px; font-weight: 700;
+      color: #006B2D; margin-bottom: 7px;
+      text-transform: uppercase; letter-spacing: 1px;
     }
     .input-wrap {
       position: relative; display: flex; align-items: center;
