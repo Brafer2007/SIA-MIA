@@ -53,7 +53,10 @@ public class RecuperarPasswordController {
                                     RedirectAttributes ra) {
         try {
             String correoNorm = correo.trim().toLowerCase();
-            Optional<Usuario> opt = usuarioRepository.findByCorreo(correoNorm);
+            log.info("Solicitud de recuperación para correo: {}", correoNorm);
+
+            Optional<Usuario> opt = usuarioRepository.findByCorreoIgnoreCase(correoNorm);
+            log.info("Usuario encontrado: {}", opt.isPresent());
 
             if (opt.isPresent()) {
                 String token = UUID.randomUUID().toString();
@@ -64,6 +67,9 @@ public class RecuperarPasswordController {
                         ? ":" + request.getServerPort() : "");
                 String enlace = baseUrl + "/recuperar-password/nueva?token=" + token;
 
+                log.info("Enviando correo a: {} desde: {}", correoNorm, remitente);
+                log.info("Enlace generado: {}", enlace);
+
                 String cuerpo = "Hola " + opt.get().getNombres() + ",\n\n"
                         + "Recibimos una solicitud para restablecer tu contraseña en SIA.\n\n"
                         + "Haz clic en el siguiente enlace (válido por " + EXPIRACION_MINUTOS + " minutos):\n"
@@ -71,16 +77,17 @@ public class RecuperarPasswordController {
                         + "Si no solicitaste esto, ignora este mensaje.\n\n"
                         + "— Equipo SIA SENA";
 
-                emailService.enviarCorreoIndividual(correoNorm,
+                boolean enviado = emailService.enviarCorreoIndividual(correoNorm,
                         "Recuperación de contraseña - SIA", cuerpo, remitente);
+                log.info("Resultado envío correo: {}", enviado);
             }
         } catch (Exception e) {
             log.error("Error al procesar recuperación de contraseña: {}", e.getMessage(), e);
         }
 
         ra.addFlashAttribute("mensaje",
-                "Si el correo está registrado, recibirás un enlace en los próximos minutos.");
-        return "redirect:/recuperar-password";
+                "Si el correo está registrado, recibirás un enlace en los próximos minutos. Revisa tu bandeja.");
+        return "redirect:/login";
     }
 
     @GetMapping("/nueva")

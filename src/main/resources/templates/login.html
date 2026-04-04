@@ -254,6 +254,11 @@
         <i class="fas fa-check-circle"></i> <span th:text="${exito}"></span>
       </div>
 
+      <!-- Mensaje informativo (ej: correo de recuperación enviado) -->
+      <div th:if="${mensaje}" style="background:#f0fff4; border:1px solid #86efac; border-radius:10px; padding:10px 14px; margin-bottom:20px; font-size:13px; color:#166534;">
+        <i class="fas fa-envelope-open-text"></i> <span th:text="${mensaje}"></span>
+      </div>
+
       <form th:action="@{/login}" method="post">
 
         <div class="field">
