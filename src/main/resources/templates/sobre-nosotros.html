@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <link rel="icon" type="image/png" th:href="@{/img/logo_sia_fondo.png}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sobre Nosotros - SIA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --verde: #006B2D;
+      --verde-claro: #39A900;
+      --verde-oscuro: #004d1f;
+      --gris: #f4f9f4;
+    }
+
+    body { font-family: 'Poppins', sans-serif; background: #fff; color: #1a1a1a; overflow-x: hidden; }
+
+    /* ── NAVBAR ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 48px;
+      background: rgba(0,77,31,0.95);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 2px 20px rgba(0,0,0,0.25);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .nav-logo img { height: 40px; }
+    .nav-logo span { color: #fff; font-weight: 700; font-size: 18px; letter-spacing: 1px; }
+    .nav-links { display: flex; gap: 8px; list-style: none; }
+    .nav-links a {
+      color: rgba(255,255,255,0.85); text-decoration: none;
+      font-size: 14px; font-weight: 500; padding: 8px 18px;
+      border-radius: 25px; transition: all 0.25s;
+    }
+    .nav-links a:hover { background: rgba(255,255,255,0.15); color: #fff; }
+    .nav-links a.btn-login { background: var(--verde-claro); color: #fff; font-weight: 600; }
+    .nav-links a.btn-login:hover { background: #2d8500; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 40vh;
+      background: linear-gradient(135deg, var(--verde-oscuro), var(--verde), var(--verde-claro));
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; padding: 120px 24px 60px;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute;
+      width: 500px; height: 500px;
+      background: rgba(255,255,255,0.04); border-radius: 50%;
+      top: -120px; right: -120px;
+    }
+    .hero-content { position: relative; z-index: 1; }
+    .hero-badge {
+      display: inline-block; background: rgba(255,255,255,0.15);
+      color: #fff; font-size: 13px; font-weight: 500;
+      padding: 6px 18px; border-radius: 20px; margin-bottom: 20px;
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+    .hero h1 { font-size: clamp(28px, 4vw, 48px); font-weight: 700; color: #fff; margin-bottom: 14px; }
+    .hero h1 span { color: #a8f0b0; }
+    .hero p { font-size: 16px; color: rgba(255,255,255,0.85); max-width: 560px; line-height: 1.7; }
+
+    /* ── SECCIÓN PROYECTO ── */
+    .proyecto {
+      padding: 80px 48px;
+      background: var(--gris);
+      text-align: center;
+    }
+    .section-tag {
+      display: inline-block; background: #e6f4ea; color: var(--verde);
+      font-size: 12px; font-weight: 600; padding: 5px 14px;
+      border-radius: 20px; margin-bottom: 14px;
+      text-transform: uppercase; letter-spacing: 1px;
+    }
+    .proyecto h2 { font-size: clamp(22px, 3vw, 32px); font-weight: 700; color: var(--verde-oscuro); margin-bottom: 16px; }
+    .proyecto p { font-size: 16px; color: #555; max-width: 700px; margin: 0 auto; line-height: 1.8; }
+
+    /* ── EQUIPO ── */
+    .equipo {
+      padding: 80px 48px;
+      background: #fff;
+      text-align: center;
+    }
+    .equipo h2 { font-size: clamp(22px, 3vw, 32px); font-weight: 700; color: var(--verde-oscuro); margin-bottom: 12px; }
+    .equipo > p { font-size: 16px; color: #555; max-width: 560px; margin: 0 auto 56px; line-height: 1.7; }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 28px; max-width: 1100px; margin: 0 auto;
+    }
+
+    .team-card {
+      background: #fff; border-radius: 20px; padding: 32px 20px 24px;
+      box-shadow: 0 4px 24px rgba(0,107,45,0.1);
+      border: 1px solid #e8f5e9;
+      transition: transform 0.3s, box-shadow 0.3s;
+      text-align: center;
+    }
+    .team-card:hover { transform: translateY(-8px); box-shadow: 0 16px 40px rgba(0,107,45,0.18); }
+
+    .team-avatar {
+      width: 100px; height: 100px; border-radius: 50%;
+      object-fit: cover; margin: 0 auto 16px; display: block;
+      border: 3px solid var(--verde-claro);
+    }
+    .team-avatar-placeholder {
+      width: 100px; height: 100px; border-radius: 50%;
+      margin: 0 auto 16px; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, var(--verde), var(--verde-claro));
+      border: 3px solid var(--verde-claro);
+    }
+    .team-avatar-placeholder i { font-size: 40px; color: rgba(255,255,255,0.9); }
+
+    .team-card h3 { font-size: 16px; font-weight: 700; color: var(--verde-oscuro); margin-bottom: 4px; }
+    .team-card .role-label {
+      font-size: 12px; color: var(--verde); font-weight: 600;
+      margin-bottom: 12px; display: block;
+    }
+    .team-card p { font-size: 13px; color: #666; line-height: 1.6; }
+
+    .team-card .social-links {
+      display: flex; justify-content: center; gap: 10px; margin-top: 14px;
+    }
+    .team-card .social-links a {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--gris); color: var(--verde);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
+    .team-card .social-links a:hover { background: var(--verde); color: #fff; }
+
+    /* ── TECNOLOGÍAS ── */
+    .tecnologias {
+      padding: 70px 48px;
+      background: var(--gris);
+      text-align: center;
+    }
+    .tecnologias h2 { font-size: clamp(20px, 2.5vw, 28px); font-weight: 700; color: var(--verde-oscuro); margin-bottom: 36px; }
+    .tech-grid {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 16px;
+      max-width: 800px; margin: 0 auto;
+    }
+    .tech-badge {
+      background: #fff; border: 1.5px solid #d1fae5;
+      border-radius: 30px; padding: 10px 22px;
+      font-size: 14px; font-weight: 600; color: var(--verde-oscuro);
+      display: flex; align-items: center; gap: 8px;
+      box-shadow: 0 2px 8px rgba(0,107,45,0.08);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .tech-badge:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,107,45,0.15); }
+    .tech-badge i { color: var(--verde-claro); font-size: 16px; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--verde-oscuro); color: rgba(255,255,255,0.7);
+      text-align: center; padding: 28px 24px; font-size: 13px;
+    }
+    footer strong { color: #a8f0b0; }
+
+    @media (max-width: 768px) {
+      nav { padding: 12px 20px; }
+      .proyecto, .equipo, .tecnologias { padding: 60px 20px; }
+      .team-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 480px) {
+      .team-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <a class="nav-logo" th:href="@{/}">
+      <img src="https://www.sena.edu.co/Style%20Library/alayout/images/logoSena.png" alt="SENA"
+           onerror="this.src='/img/logo_sia_fondo.png'">
+      <span>SIA</span>
+    </a>
+    <ul class="nav-links">
+      <li><a th:href="@{/}"><i class="fas fa-home"></i> Inicio</a></li>
+      <li><a th:href="@{/vistas}"><i class="fas fa-compass"></i> Explora</a></li>
+      <li><a th:href="@{/login}" class="btn-login"><i class="fas fa-sign-in-alt"></i> Ingresar</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">👥 El equipo detrás de SIA</div>
+      <h1>Sobre <span>Nosotros</span></h1>
+      <p>Somos cinco aprendices del SENA apasionados por la tecnología, comprometidos con crear soluciones que mejoren la experiencia educativa.</p>
+    </div>
+  </section>
+
+  <!-- PROYECTO -->
+  <section class="proyecto">
+    <div class="section-tag">El proyecto</div>
+    <h2>¿Qué es SIA?</h2>
+    <p>
+      SIA (Software de Ingreso y Automatización) es una plataforma web desarrollada como proyecto de formación en el SENA.
+      Centraliza el control de acceso, asistencia, tareas, mensajería y reportes para aprendices, instructores y personal administrativo.
+      <!-- Modifica este texto con la descripción real del proyecto -->
+    </p>
+  </section>
+
+  <!-- EQUIPO -->
+  <section class="equipo">
+    <div class="section-tag">El equipo</div>
+    <h2>Nuestro Equipo</h2>
+    <p>Conoce a las personas que hicieron posible este proyecto.</p>
+
+    <div class="team-grid">
+
+      <!-- Integrante 1 — reemplaza el placeholder por <img src="..." class="team-avatar"> -->
+      <div class="team-card">
+        <div class="team-avatar-placeholder"><i class="fas fa-user"></i></div>
+        <h3>Nombre Integrante 1</h3>
+        <span class="role-label">Rol en el proyecto</span>
+        <p>Descripción breve del integrante, sus habilidades y aporte al proyecto.</p>
+        <div class="social-links">
+          <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
+          <a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+
+      <!-- Integrante 2 -->
+      <div class="team-card">
+        <div class="team-avatar-placeholder"><i class="fas fa-user"></i></div>
+        <h3>Nombre Integrante 2</h3>
+        <span class="role-label">Rol en el proyecto</span>
+        <p>Descripción breve del integrante, sus habilidades y aporte al proyecto.</p>
+        <div class="social-links">
+          <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
+          <a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+
+      <!-- Integrante 3 -->
+      <div class="team-card">
+        <div class="team-avatar-placeholder"><i class="fas fa-user"></i></div>
+        <h3>Nombre Integrante 3</h3>
+        <span class="role-label">Rol en el proyecto</span>
+        <p>Descripción breve del integrante, sus habilidades y aporte al proyecto.</p>
+        <div class="social-links">
+          <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
+          <a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+
+      <!-- Integrante 4 -->
+      <div class="team-card">
+        <div class="team-avatar-placeholder"><i class="fas fa-user"></i></div>
+        <h3>Nombre Integrante 4</h3>
+        <span class="role-label">Rol en el proyecto</span>
+        <p>Descripción breve del integrante, sus habilidades y aporte al proyecto.</p>
+        <div class="social-links">
+          <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
+          <a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+
+      <!-- Integrante 5 -->
+      <div class="team-card">
+        <div class="team-avatar-placeholder"><i class="fas fa-user"></i></div>
+        <h3>Nombre Integrante 5</h3>
+        <span class="role-label">Rol en el proyecto</span>
+        <p>Descripción breve del integrante, sus habilidades y aporte al proyecto.</p>
+        <div class="social-links">
+          <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
+          <a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TECNOLOGÍAS -->
+  <section class="tecnologias">
+    <div class="section-tag">Stack</div>
+    <h2>Tecnologías utilizadas</h2>
+    <div class="tech-grid">
+      <div class="tech-badge"><i class="fab fa-java"></i> Java 17</div>
+      <div class="tech-badge"><i class="fas fa-leaf"></i> Spring Boot 3</div>
+      <div class="tech-badge"><i class="fas fa-database"></i> MySQL</div>
+      <div class="tech-badge"><i class="fab fa-html5"></i> Thymeleaf</div>
+      <div class="tech-badge"><i class="fab fa-css3-alt"></i> CSS3</div>
+      <div class="tech-badge"><i class="fab fa-js"></i> JavaScript</div>
+      <div class="tech-badge"><i class="fas fa-qrcode"></i> ZXing QR</div>
+      <div class="tech-badge"><i class="fas fa-plug"></i> WebSocket</div>
+      <div class="tech-badge"><i class="fas fa-file-pdf"></i> iText PDF</div>
+      <div class="tech-badge"><i class="fab fa-docker"></i> Docker</div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>&copy; 2025 <strong>SENA</strong> · Software de Ingreso y Automatización · Todos los derechos reservados.</p>
+  </footer>
+
+</body>
+</html>
