@@ -6,12 +6,10 @@ import com.example.SIA.dto.TareaRequest;
 import com.example.SIA.entity.Aprendiz;
 import com.example.SIA.entity.EntregaTarea;
 import com.example.SIA.entity.Instructor;
-import com.example.SIA.entity.Notificacion;
 import com.example.SIA.entity.Tarea;
 import com.example.SIA.repository.AprendizRepository;
 import com.example.SIA.repository.EntregaTareaRepository;
 import com.example.SIA.repository.InstructorRepository;
-import com.example.SIA.repository.NotificacionRepository;
 import com.example.SIA.repository.ProgramacionRepository;
 import com.example.SIA.repository.TareaRepository;
 import com.example.SIA.websocket.NotificationWebSocketHandler;
@@ -34,7 +32,6 @@ public class TareaService {
     private final ProgramacionRepository programacionRepository;
     private final AprendizRepository aprendizRepository;
     private final EntregaTareaRepository entregaTareaRepository;
-    private final NotificacionRepository notificacionRepository;
     private final ArchivoService archivoService;
 
     @Autowired
@@ -45,14 +42,12 @@ public class TareaService {
                         ProgramacionRepository programacionRepository,
                         AprendizRepository aprendizRepository,
                         EntregaTareaRepository entregaTareaRepository,
-                        NotificacionRepository notificacionRepository,
                         ArchivoService archivoService) {
         this.tareaRepository = tareaRepository;
         this.instructorRepository = instructorRepository;
         this.programacionRepository = programacionRepository;
         this.aprendizRepository = aprendizRepository;
         this.entregaTareaRepository = entregaTareaRepository;
-        this.notificacionRepository = notificacionRepository;
         this.archivoService = archivoService;
     }
 
@@ -119,23 +114,11 @@ public class TareaService {
             }
         }
 
-        // Notificar a los aprendices de la ficha
+        // Notificar vía WebSocket a los aprendices de la ficha
         String ficha = tarea.getNombreFicha();
-        List<Aprendiz> aprendices = aprendizRepository.findByFichaContainedIn(ficha);
-
-        for (int i = 0; i < aprendices.size(); i++) {
-            Notificacion notificacion = new Notificacion();
-            notificacion.setMensaje("Nueva tarea: " + tarea.getTitulo());
-            notificacion.setTipo("nueva_tarea");
-            notificacion.setCategoria("tareas");
-            notificacion.setPrioridad("media");
-            notificacionRepository.save(notificacion);
-        }
-
-        // Notificar vía WebSocket
         NotificacionDTO notificacionDTO = new NotificacionDTO(
                 "nueva_tarea",
-                "Nueva tarea",
+                "📋 Nueva tarea",
                 "Nueva tarea: " + tarea.getTitulo(),
                 instructor.getNombreCompleto(),
                 ficha

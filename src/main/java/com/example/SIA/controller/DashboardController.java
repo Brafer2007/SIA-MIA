@@ -129,11 +129,22 @@ public class DashboardController {
         return "dashboardAdministrador";
     }
 
-    // ✅ Obtener notificaciones NO leídas
+    // ✅ Obtener notificaciones NO leídas — solo las relevantes para el admin
     @GetMapping("/dashboard/admin/notificaciones")
     @ResponseBody
     public List<Notificacion> obtenerNotificaciones() {
-        return notificacionService.obtenerNoLeidas();
+        return notificacionService.obtenerNoLeidas().stream()
+                .filter(n -> {
+                    String tipo = n.getTipo();
+                    // Solo mostrar al admin: registros de usuarios, certificados, accesos
+                    // Excluir: nueva_tarea, inasistencia, incapacidad (son para aprendices/instructores)
+                    return tipo == null
+                        || tipo.equals("usuario_registro")
+                        || tipo.equals("certificado")
+                        || tipo.equals("acceso")
+                        || tipo.equals("general");
+                })
+                .collect(java.util.stream.Collectors.toList());
     }
 
     // ✅ Marcar notificaciones como leídas

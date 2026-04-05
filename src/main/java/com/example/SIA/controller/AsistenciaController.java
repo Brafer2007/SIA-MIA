@@ -3,13 +3,11 @@ package com.example.SIA.controller;
 import com.example.SIA.dto.NotificacionDTO;
 import com.example.SIA.entity.Aprendiz;
 import com.example.SIA.entity.Instructor;
-import com.example.SIA.entity.Notificacion;
 import com.example.SIA.entity.RegistroAsistencia;
 import com.example.SIA.entity.Usuario;
 import com.example.SIA.repository.AprendizRepository;
 import com.example.SIA.repository.AsistenciaRepository;
 import com.example.SIA.repository.InstructorRepository;
-import com.example.SIA.repository.NotificacionRepository;
 import com.example.SIA.websocket.NotificationWebSocketHandler;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfPCell;
@@ -37,19 +35,16 @@ public class AsistenciaController {
     private final AsistenciaRepository asistenciaRepository;
     private final AprendizRepository aprendizRepository;
     private final InstructorRepository instructorRepository;
-    private final NotificacionRepository notificacionRepository;
 
     @Autowired
     private NotificationWebSocketHandler notificationWebSocketHandler;
 
     public AsistenciaController(AsistenciaRepository asistenciaRepository,
                                 AprendizRepository aprendizRepository,
-                                InstructorRepository instructorRepository,
-                                NotificacionRepository notificacionRepository) {
+                                InstructorRepository instructorRepository) {
         this.asistenciaRepository = asistenciaRepository;
         this.aprendizRepository = aprendizRepository;
         this.instructorRepository = instructorRepository;
-        this.notificacionRepository = notificacionRepository;
     }
 
     private Integer getIdInstructor(HttpSession session) {
@@ -169,13 +164,6 @@ public class AsistenciaController {
         String nombreInstructor = instructor != null ? instructor.getNombreCompleto() : "Instructor";
         String diaStr = (fecha != null && !fecha.isBlank()) ? fecha : LocalDate.now().toString();
         String ficha = aprendiz.getFichaFormacion();
-
-        Notificacion notificacion = new Notificacion();
-        notificacion.setMensaje("Inasistencia registrada el " + diaStr + " por " + nombreInstructor);
-        notificacion.setTipo("inasistencia");
-        notificacion.setCategoria("asistencia");
-        notificacion.setPrioridad("alta");
-        notificacionRepository.save(notificacion);
 
         NotificacionDTO dto = new NotificacionDTO("inasistencia", "⚠️ Inasistencia registrada",
                 "Se registró tu inasistencia el " + diaStr + ". Instructor: " + nombreInstructor,
