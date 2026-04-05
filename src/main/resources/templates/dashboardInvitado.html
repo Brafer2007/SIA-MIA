@@ -300,5 +300,12 @@
     }
   </script>
   <script th:src="@{/js/theme.js}"></script>
+  <script th:src="@{/js/notificaciones.js}"></script>
+  <script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+      const idU = /*[[${idUsuario}]]*/ 0;
+      if (idU) siaNotif.init({ tipo: 'aprendiz', id: String(idU) });
+    });
+  </script>
 </body>
 </html>

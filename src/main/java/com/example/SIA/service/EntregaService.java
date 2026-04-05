@@ -1,5 +1,6 @@
 package com.example.SIA.service;
 
+import com.example.SIA.dto.NotificacionDTO;
 import com.example.SIA.dto.TareaAprendizDTO;
 import com.example.SIA.entity.Aprendiz;
 import com.example.SIA.entity.EntregaTarea;
@@ -7,6 +8,8 @@ import com.example.SIA.entity.Tarea;
 import com.example.SIA.repository.AprendizRepository;
 import com.example.SIA.repository.EntregaTareaRepository;
 import com.example.SIA.repository.TareaRepository;
+import com.example.SIA.websocket.NotificationWebSocketHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +26,9 @@ public class EntregaService {
     private final EntregaTareaRepository entregaTareaRepository;
     private final AprendizRepository aprendizRepository;
     private final ArchivoService archivoService;
+
+    @Autowired
+    private NotificationWebSocketHandler notificationWebSocketHandler;
 
     public EntregaService(TareaRepository tareaRepository,
                           EntregaTareaRepository entregaTareaRepository,

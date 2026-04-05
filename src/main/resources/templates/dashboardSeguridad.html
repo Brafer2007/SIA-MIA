@@ -1056,6 +1056,13 @@
 
     </script>
     <script th:src="@{/js/theme.js}"></script>
+    <script th:src="@{/js/notificaciones.js}"></script>
+    <script th:inline="javascript">
+      document.addEventListener('DOMContentLoaded', function() {
+        const idU = /*[[${idUsuario}]]*/ 0;
+        siaNotif.init({ tipo: 'seguridad', id: idU ? String(idU) : 'seguridad' });
+      });
+    </script>
 </body>
 
 </html>

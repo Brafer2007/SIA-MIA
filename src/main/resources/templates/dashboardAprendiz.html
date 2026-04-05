@@ -2119,6 +2119,15 @@ function closeSidebar() {
 }
 </script>
 <script th:src="@{/js/theme.js}"></script>
+<script th:src="@{/js/notificaciones.js}"></script>
+<script th:inline="javascript">
+  document.addEventListener('DOMContentLoaded', function() {
+    const ficha = '[[${aprendiz.fichaFormacion}]]'.replace(/"/g,'').replace(/%22/g,'').trim();
+    if (ficha) {
+      siaNotif.init({ tipo: 'aprendiz', id: ficha });
+    }
+  });
+</script>
 </body>
 
 </html>
