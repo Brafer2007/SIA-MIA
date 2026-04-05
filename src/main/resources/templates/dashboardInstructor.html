@@ -3322,6 +3322,15 @@ function closeSidebar() {
 }
 </script>
 <script th:src="@{/js/theme.js}"></script>
+<script th:src="@{/js/notificaciones.js}"></script>
+<script th:inline="javascript">
+  // El init del WS ya lo hace hookNotiWS — solo inicializamos la UI
+  document.addEventListener('DOMContentLoaded', function() {
+    if (window.siaNotif) {
+      siaNotif.init({ tipo: 'instructor', id: String([[${idInstructor}]]) });
+    }
+  });
+</script>
 
 </body>
 

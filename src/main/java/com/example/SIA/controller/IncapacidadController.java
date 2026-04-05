@@ -101,6 +101,33 @@ public class IncapacidadController {
         }
 
         incapacidadRepository.save(inc);
+
+        // Notificar a los instructores de la ficha del aprendiz
+        try {
+            String ficha = aprendiz.getFichaFormacion();
+            String nombreAprendiz = aprendiz.getUsuario() != null
+                    ? (aprendiz.getUsuario().getNombres() + " " + aprendiz.getUsuario().getApellidos()).trim()
+                    : "Un aprendiz";
+            if (ficha != null && !ficha.isBlank()) {
+                // Buscar instructores de la ficha
+                java.util.List<com.example.SIA.entity.Programacion> programaciones =
+                        programacionRepository.findByNombreFicha(ficha);
+                java.util.Set<Integer> instructoresNotificados = new java.util.HashSet<>();
+                for (com.example.SIA.entity.Programacion p : programaciones) {
+                    if (p.getInstructor() != null && instructoresNotificados.add(p.getInstructor().getId())) {
+                        NotificacionDTO dto = new NotificacionDTO(
+                                "incapacidad",
+                                "🏥 Nueva incapacidad",
+                                nombreAprendiz + " subió una incapacidad (" + inc.getFechaInicio() + " al " + inc.getFechaFin() + ")",
+                                nombreAprendiz, ficha
+                        );
+                        dto.setSonar(true);
+                        notificationWebSocketHandler.notificarInstructor(String.valueOf(p.getInstructor().getId()), dto);
+                    }
+                }
+            }
+        } catch (Exception ignored) {}
+
         resp.put("ok", true);
         return ResponseEntity.ok(resp);
     }

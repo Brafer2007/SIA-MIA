@@ -126,7 +126,9 @@ public class EntregaService {
             entregaExistente.setComentarioInstructor(null);
             entregaExistente.setFechaCalificacion(null);
             try {
-                return entregaTareaRepository.save(entregaExistente);
+                EntregaTarea guardada = entregaTareaRepository.save(entregaExistente);
+                notificarInstructorEntrega(tarea, aprendizRepository.findById(idAprendiz).orElse(null));
+                return guardada;
             } catch (Exception e) {
                 archivoService.eliminarArchivo(nuevaRuta);
                 throw new RuntimeException("Error al persistir la entrega en base de datos: " + e.getMessage(), e);
@@ -141,11 +143,35 @@ public class EntregaService {
             nueva.setRutaArchivo(nuevaRuta);
             nueva.setFechaEntrega(LocalDateTime.now());
             try {
-                return entregaTareaRepository.save(nueva);
+                EntregaTarea guardada = entregaTareaRepository.save(nueva);
+                notificarInstructorEntrega(tarea, aprendiz);
+                return guardada;
             } catch (Exception e) {
                 archivoService.eliminarArchivo(nuevaRuta);
                 throw new RuntimeException("Error al persistir la entrega en base de datos: " + e.getMessage(), e);
             }
+        }
+    }
+
+    /** Notifica al instructor cuando un aprendiz entrega una tarea */
+    private void notificarInstructorEntrega(Tarea tarea, Aprendiz aprendiz) {
+        try {
+            if (tarea.getInstructor() == null || aprendiz == null) return;
+            String idInstructor = String.valueOf(tarea.getInstructor().getId());
+            String nombreAprendiz = aprendiz.getUsuario() != null
+                    ? (aprendiz.getUsuario().getNombres() + " " + aprendiz.getUsuario().getApellidos()).trim()
+                    : "Un aprendiz";
+            NotificacionDTO dto = new NotificacionDTO(
+                    "tarea_entregada",
+                    "📋 Nueva entrega de tarea",
+                    nombreAprendiz + " entregó: " + tarea.getTitulo(),
+                    nombreAprendiz,
+                    tarea.getNombreFicha()
+            );
+            dto.setSonar(true);
+            notificationWebSocketHandler.notificarInstructor(idInstructor, dto);
+        } catch (Exception e) {
+            // No interrumpir el flujo principal si falla la notificación
         }
     }
 }

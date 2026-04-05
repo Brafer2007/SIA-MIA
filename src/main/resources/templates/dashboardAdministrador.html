@@ -138,57 +138,7 @@
     #reportes .btn { background: var(--vinotinto); color: #fff; padding:10px 16px; border-radius:6px; }
     #reportes canvas { max-height: 350px; }
 
-    /* --- Notificaciones: campana y modal --- */
-    .campana-flotante {
-      position: fixed;
-      top: 20px;
-      right: 30px;
-      z-index: 1200;
-      font-size: 24px;
-      cursor: pointer;
-      color: #333;
-    }
-    .noti-count {
-      position: absolute;
-      top: -6px;
-      right: -10px;
-      background: red;
-      color: white;
-      padding: 2px 6px;
-      border-radius: 50%;
-      font-size: 12px;
-    }
-
-    .modal-noti {
-      display: none;
-      position: fixed;
-      z-index: 1300;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.5);
-    }
-    .modal-contenido {
-      background-color: #fff;
-      margin: 8% auto;
-      padding: 20px;
-      border-radius: 8px;
-      width: 520px;
-      max-height: 75vh;
-      overflow-y: auto;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
-      animation: fadeIn 0.18s ease-out;
-    }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-
-    .btn-cerrar { margin-top: 10px; background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
-
-    .noti-item { padding: 8px 10px; margin-bottom: 10px; border-left: 4px solid #ccc; background: #fafafa; border-radius: 4px; }
-    .baja { border-left-color: #4CAF50; }
-    .media { border-left-color: #FFC107; }
-    .alta { border-left-color: #FF5722; }
-    .critica { border-left-color: #D50000; }
+    /* --- Notificaciones: estilos legacy eliminados, usa notificaciones.js --- */
 
     /* ===== RESPONSIVE MOBILE ===== */
     .hamburger-btn {
@@ -619,26 +569,6 @@
 
   </div>
 
-  <!-- ---------------- CAMPANA Y MODAL DE NOTIFICACIONES ---------------- -->
-  <div id="campana" class="campana-flotante" title="Notificaciones">
-    <i class="fas fa-bell"></i>
-    <span id="contadorNotificaciones" class="noti-count"></span>
-  </div>
-
-  <div id="modalNotificaciones" class="modal-noti" aria-hidden="true">
-    <div class="modal-contenido" role="dialog" aria-modal="true" aria-labelledby="notiTitulo">
-      <h3 id="notiTitulo">📢 Notificaciones del sistema</h3>
-
-      <!-- ÚNICO contenedor de notificaciones: NO duplicar -->
-      <div id="listaNotificaciones" aria-live="polite"></div>
-
-      <div style="display:flex; justify-content:space-between; margin-top:15px;">
-        <button onclick="marcarLeidas()" class="btn-cerrar">Marcar como leídas</button>
-        <button onclick="cerrarModal()" class="btn-cerrar">Cerrar</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Sonido -->
   <audio id="sonidoNotificacion" src="/sounds/notificacion.mp3" preload="auto"></audio>
 
@@ -857,108 +787,32 @@ function registrarHuella(idUsuario) {
     });
 
     /* ============================
-       SISTEMA DE NOTIFICACIONES
+       SISTEMA DE NOTIFICACIONES — usa siaNotif (notificaciones.js)
        ============================ */
 
-    let notificacionesPrevias = 0;
-
-    function cargarNotificaciones() {
+    // Polling cada 6s al endpoint del admin, alimenta el sistema unificado
+    let _adminNotiPrevias = 0;
+    function _pollAdminNotificaciones() {
       fetch('/dashboard/admin/notificaciones')
-        .then(r => {
-          if (!r.ok) throw new Error('Respuesta no OK');
-          return r.json();
-        })
+        .then(r => r.ok ? r.json() : [])
         .then(data => {
-          // Sonido/animación cuando llegan nuevas
-          if (Array.isArray(data) && data.length > notificacionesPrevias) {
-            try { document.getElementById("sonidoNotificacion").play(); } catch(e){/* autoplay policy */ }
-            const bell = document.getElementById("campana");
-            bell.classList.add("new");
-            setTimeout(()=>bell.classList.remove("new"), 600);
-          }
-
-          notificacionesPrevias = Array.isArray(data) ? data.length : 0;
-          document.getElementById("contadorNotificaciones").innerText = notificacionesPrevias > 0 ? notificacionesPrevias : "";
-
-          // Construir HTML
-          let html = "";
-          if (!Array.isArray(data) || data.length === 0) {
-            html = `<p style="text-align:center; color:#888;">No hay notificaciones pendientes</p>`;
-          } else {
-            data.forEach(n => {
-              // seguridad: escapar valores mínimos si vienen mal formados
-              const categoria = n.categoria ? n.categoria : 'General';
-              const mensaje = n.mensaje ? n.mensaje : '';
-              const fecha = n.fecha ? new Date(n.fecha).toLocaleString() : '';
-              const clase = n.prioridad ? n.prioridad : '';
-              html += `
-                <div class="noti-item ${clase}">
-                  <strong>${categoria.toUpperCase()}</strong><br>
-                  ${mensaje}<br>
-                  <small style="color:#666;">${fecha}</small>
-                </div>
-              `;
-            });
-          }
-
-          // Insertar contenido SOLO en el modal
-          const container = document.querySelector("#modalNotificaciones #listaNotificaciones");
-          if (container) container.innerHTML = html;
+          if (!Array.isArray(data)) return;
+          const nuevas = data.slice(0, data.length - _adminNotiPrevias);
+          nuevas.forEach(n => {
+            if (window.siaNotif) {
+              siaNotif.agregar({
+                tipo: n.tipo || 'general',
+                titulo: (n.categoria || 'Sistema').toUpperCase(),
+                mensaje: n.mensaje || '',
+                fecha: n.fecha
+              });
+            }
+          });
+          _adminNotiPrevias = data.length;
         })
-        .catch(err => {
-          console.warn('No se pudieron cargar notificaciones', err);
-          const container = document.querySelector("#modalNotificaciones #listaNotificaciones");
-          if (container) container.innerHTML = `<p style="text-align:center;color:#888;">Error al cargar notificaciones</p>`;
-        });
+        .catch(() => {});
     }
-
-    // Polling ligero: cada 4s actualiza contador / animación
-    setInterval(cargarNotificaciones, 4000);
-
-    // Abrir modal sin marcar como leídas
-    document.getElementById("campana").onclick = function() {
-      cargarNotificaciones(); // carga antes de abrir
-      const modal = document.getElementById("modalNotificaciones");
-      if (modal) {
-        modal.style.display = "block";
-        modal.setAttribute("aria-hidden", "false");
-      }
-    };
-
-    // Marcar como leídas (cuando admin lo decida)
-    function marcarLeidas() {
-      fetch('/dashboard/admin/notificaciones/leidas', { method: 'POST' })
-        .then(response => {
-          if (!response.ok) throw new Error('Error al marcar leídas');
-          // limpiar contador y recargar vista
-          document.getElementById("contadorNotificaciones").innerText = "";
-          notificacionesPrevias = 0;
-          cargarNotificaciones();
-        })
-        .catch(err => {
-          console.warn('Error al marcar notificaciones leídas', err);
-          // feedback visual
-          Swal.fire('Error', 'No se pudo marcar como leídas.', 'error');
-        });
-    }
-
-    function cerrarModal() {
-      const modal = document.getElementById("modalNotificaciones");
-      if (modal) {
-        modal.style.display = "none";
-        modal.setAttribute("aria-hidden", "true");
-      }
-    }
-
-    // Cerrar modal al hacer clic fuera del contenido
-    window.addEventListener('click', function (e) {
-      const modal = document.getElementById("modalNotificaciones");
-      const contenido = document.querySelector('#modalNotificaciones .modal-contenido');
-      if (modal && contenido && modal.style.display === 'block' && !contenido.contains(e.target) && !document.getElementById('campana').contains(e.target)) {
-        modal.style.display = 'none';
-        modal.setAttribute("aria-hidden", "true");
-      }
-    });
+    setInterval(_pollAdminNotificaciones, 6000);
 
     // FUNCIONES PARA GESTIÓN DE CRONOGRAMAS (ADMIN)
     // ================================================
@@ -1386,5 +1240,11 @@ function registrarHuella(idUsuario) {
   <!-- Enlace oculto para probar error 502 (como en tu original) -->
   <a th:href="@{/probar502}" style="position:fixed;bottom:2px;right:2px;font-size:8px;color:transparent;z-index:9999;">.</a>
   <script th:src="@{/js/theme.js}"></script>
+  <script th:src="@{/js/notificaciones.js}"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (window.siaNotif) siaNotif.init({});
+    });
+  </script>
 </body>
 </html>
