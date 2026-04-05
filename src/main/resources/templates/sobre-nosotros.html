@@ -65,7 +65,7 @@
       max-width: 700px;
       height: auto;
       object-fit: contain;
-      opacity: 0.04;
+      opacity: 0.06;
       pointer-events: none;
       z-index: 0;
       user-select: none;
@@ -201,6 +201,13 @@
   </style>
 </head>
 <body>
+
+  <!-- Marca de agua global — logo SIA centrado en toda la pantalla -->
+  <img src="/img/logo_sia_fondo.png"
+       alt=""
+       class="watermark-logo"
+       aria-hidden="true"
+       onerror="this.style.display='none'">
 
   <!-- NAVBAR -->
   <nav>
