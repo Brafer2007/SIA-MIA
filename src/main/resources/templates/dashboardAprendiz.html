@@ -1913,20 +1913,20 @@ function verDetalleTareaAp(idTarea) {
       }
 
       if (t.estadoEntrega === 'VENCIDA') {
-        html += `<div style="background:#fff3cd; color:#856404; padding:12px 16px; border-radius:8px; margin-bottom:16px;"><i class="fas fa-exclamation-triangle"></i> El plazo de entrega ha vencido.</div>`;
+        html += `<div style="background:#fff3cd; color:#856404; padding:12px 16px; border-radius:8px; margin-bottom:16px;"><i class="fas fa-exclamation-triangle"></i> El plazo venció, pero aún puedes entregar. El instructor verá que es una <strong>entrega tardía</strong>.</div>`;
       }
 
-      if (t.estadoEntrega === 'PENDIENTE' || t.estadoEntrega === 'ENTREGADA') {
-        const label = t.estadoEntrega === 'ENTREGADA' ? 'Reemplazar Entrega' : 'Subir Entrega';
+      if (t.estadoEntrega === 'PENDIENTE' || t.estadoEntrega === 'ENTREGADA' || t.estadoEntrega === 'VENCIDA') {
+        const label = t.estadoEntrega === 'ENTREGADA' ? 'Reemplazar Entrega' : t.estadoEntrega === 'VENCIDA' ? '⏰ Entrega Tardía' : 'Subir Entrega';
         html += `<div style="background:#F0FFF0; border:1px solid #e0f0e0; border-radius:10px; padding:20px;">
           <h3 style="color:#006B2D; margin:0 0 14px;"><i class="fas fa-upload"></i> ${label}</h3>
           ${t.estadoEntrega === 'ENTREGADA' ? `<div style="background:#d4edda; color:#155724; padding:10px 14px; border-radius:7px; margin-bottom:14px;"><i class="fas fa-check-circle"></i> Ya realizaste una entrega. Puedes reemplazarla.</div>` : ''}
           <div id="entrega-ap-err" style="display:none; background:#f8d7da; color:#721c24; padding:10px 14px; border-radius:7px; margin-bottom:14px;"></div>
           <form id="form-entrega-ap" onsubmit="submitEntregaAp(event, ${t.idTarea})" enctype="multipart/form-data">
             <div style="margin-bottom:14px;">
-              <label style="display:block; font-weight:600; color:#006B2D; margin-bottom:5px;">Archivo *</label>
-              <input type="file" id="ap-archivo" name="archivo" accept=".pdf,.docx,.xlsx,.png,.jpg" required style="width:100%; padding:9px 12px; border:1px solid #8d918d; border-radius:6px; background:#fff;">
-              <span style="font-size:0.8rem; color:#666;">PDF, DOCX, XLSX, PNG, JPG — máx. 20 MB</span>
+              <label style="display:block; font-weight:600; color:#006B2D; margin-bottom:5px;">Archivo * (solo PDF)</label>
+              <input type="file" id="ap-archivo" name="archivo" accept=".pdf,application/pdf" required style="width:100%; padding:9px 12px; border:1px solid #8d918d; border-radius:6px; background:#fff;">
+              <span style="font-size:0.8rem; color:#dc2626;">⚠ Solo se aceptan archivos PDF — máx. 20 MB</span>
             </div>
             <button type="submit" id="btn-entregar-ap" style="background:#006B2D; color:#fff; border:none; padding:10px 22px; border-radius:7px; font-weight:600; cursor:pointer;">
               <i class="fas fa-cloud-upload-alt"></i> Enviar Entrega

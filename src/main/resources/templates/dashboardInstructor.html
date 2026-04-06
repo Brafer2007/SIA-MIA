@@ -2465,15 +2465,32 @@ function renderTablaTareas(tareas) {
       <td style="padding:10px 14px;">${escHtml(t.titulo)}</td>
       <td style="padding:10px 14px;">${escHtml(t.nombreFicha)}</td>
       <td style="padding:10px 14px;">${fecha}</td>
-      <td style="padding:10px 14px; text-align:center;">
+      <td style="padding:10px 14px; text-align:center; display:flex; gap:6px; justify-content:center;">
         <button onclick="mostrarVistaEntregas(${t.id})" style="background:#006B2D; color:#fff; border:none; padding:6px 14px; border-radius:6px; cursor:pointer; font-size:0.85rem;">
           <i class="fas fa-eye"></i> Ver Entregas
+        </button>
+        <button onclick="eliminarTareaInst(${t.id})" style="background:#dc3545; color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:0.85rem;">
+          <i class="fas fa-trash"></i> Eliminar
         </button>
       </td>
     </tr>`;
   });
   html += '</tbody></table>';
   body.innerHTML = html;
+}
+
+function eliminarTareaInst(id) {
+  if (!confirm('¿Seguro que deseas eliminar esta tarea? Se eliminarán también todas las entregas asociadas.')) return;
+  fetch('/instructor/tareas/api/' + id + '/eliminar', { method: 'DELETE' })
+    .then(r => r.json())
+    .then(data => {
+      if (data.ok) {
+        mostrarVistaListaTareas();
+      } else {
+        alert('Error: ' + (data.error || 'No se pudo eliminar'));
+      }
+    })
+    .catch(() => alert('Error de conexión al eliminar'));
 }
 
 function cargarFichasEnSelect() {
