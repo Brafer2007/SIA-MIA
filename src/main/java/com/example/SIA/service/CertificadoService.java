@@ -132,10 +132,13 @@ public class CertificadoService {
             document.open();
 
             // LOGO
-            Image logo = Image.getInstance("src/main/resources/static/img/sena.png");
-            logo.scaleToFit(90, 90);
-            logo.setAlignment(Image.ALIGN_CENTER);
-            document.add(logo);
+            java.io.InputStream logoStream = getClass().getResourceAsStream("/static/img/sena.png");
+            if (logoStream != null) {
+                Image logo = Image.getInstance(logoStream.readAllBytes());
+                logo.scaleToFit(90, 90);
+                logo.setAlignment(Image.ALIGN_CENTER);
+                document.add(logo);
+            }
 
             agregarCentrado(document, "SENA", 14, true);
             agregarCentrado(document, "REGIONAL DISTRITO CAPITAL", 10, false);
@@ -183,10 +186,13 @@ public class CertificadoService {
                     FontFactory.getFont(FontFactory.HELVETICA, 10)
             ));
 
-            Image firma = Image.getInstance("src/main/resources/static/img/firma.jpg");
-            firma.scaleToFit(120, 60);
-            firma.setAlignment(Image.ALIGN_CENTER);
-            document.add(firma);
+            java.io.InputStream firmaStream = getClass().getResourceAsStream("/static/img/firma.jpg");
+            if (firmaStream != null) {
+                Image firma = Image.getInstance(firmaStream.readAllBytes());
+                firma.scaleToFit(120, 60);
+                firma.setAlignment(Image.ALIGN_CENTER);
+                document.add(firma);
+            }
 
             agregarCentrado(document,
                     "JORGE ORLANDO VALLEJO SUÁREZ\n" +
