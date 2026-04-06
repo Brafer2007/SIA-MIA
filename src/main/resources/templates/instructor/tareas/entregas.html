@@ -139,6 +139,7 @@
       font-weight: 600;
     }
     .badge-entregado { background: #d4edda; color: #155724; }
+    .badge-tardio    { background: #fff3cd; color: #856404; border: 1px solid #ffc107; }
     .badge-pendiente { background: #e2e3e5; color: #383d41; }
     .btn-download {
       background: #006B2D;
@@ -300,7 +301,11 @@
                     class="badge badge-entregado">
                 <i class="fas fa-check"></i> Entregado
               </span>
-              <span th:if="${entrega.estadoEntrega != 'ENTREGADO'}"
+              <span th:if="${entrega.estadoEntrega == 'TARDIO'}"
+                    class="badge badge-tardio">
+                <i class="fas fa-clock"></i> Tardío
+              </span>
+              <span th:if="${entrega.estadoEntrega != 'ENTREGADO' and entrega.estadoEntrega != 'TARDIO'}"
                     class="badge badge-pendiente">
                 <i class="fas fa-clock"></i> Pendiente
               </span>

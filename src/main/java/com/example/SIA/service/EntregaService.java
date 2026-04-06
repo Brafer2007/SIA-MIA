@@ -93,18 +93,24 @@ public class EntregaService {
 
     /**
      * Procesa la entrega de un aprendiz para una tarea.
-     * Reemplaza la entrega anterior si existe.
+     * Solo acepta PDF. Permite entrega tardía pero la marca como tal.
      */
     @Transactional
     public EntregaTarea entregar(Long idTarea, Integer idAprendiz, MultipartFile archivo) {
         Tarea tarea = tareaRepository.findById(idTarea)
                 .orElseThrow(() -> new IllegalArgumentException("Tarea no encontrada con id: " + idTarea));
 
-        if (!LocalDateTime.now().isBefore(tarea.getFechaLimite())) {
-            throw new IllegalArgumentException("El plazo de entrega ha vencido");
+        // Validar que sea PDF
+        String nombreArchivo = archivo.getOriginalFilename() != null ? archivo.getOriginalFilename().toLowerCase() : "";
+        String contentType = archivo.getContentType() != null ? archivo.getContentType().toLowerCase() : "";
+        if (!nombreArchivo.endsWith(".pdf") && !contentType.contains("pdf")) {
+            throw new IllegalArgumentException("Solo se permiten archivos PDF. No se aceptan Word, Excel ni otros formatos.");
         }
 
         archivoService.validarArchivo(archivo, 20 * 1024 * 1024L);
+
+        // Determinar si es entrega tardía
+        boolean esTardia = LocalDateTime.now().isAfter(tarea.getFechaLimite());
 
         Optional<EntregaTarea> entregaExistenteOpt =
                 entregaTareaRepository.findByTarea_IdAndAprendiz_IdAprendiz(idTarea, idAprendiz);
@@ -122,12 +128,13 @@ public class EntregaService {
             archivoService.eliminarArchivo(rutaAnterior);
             entregaExistente.setRutaArchivo(nuevaRuta);
             entregaExistente.setFechaEntrega(LocalDateTime.now());
+            entregaExistente.setEntregaTardia(esTardia);
             entregaExistente.setNota(null);
             entregaExistente.setComentarioInstructor(null);
             entregaExistente.setFechaCalificacion(null);
             try {
                 EntregaTarea guardada = entregaTareaRepository.save(entregaExistente);
-                notificarInstructorEntrega(tarea, aprendizRepository.findById(idAprendiz).orElse(null));
+                notificarInstructorEntrega(tarea, aprendizRepository.findById(idAprendiz).orElse(null), esTardia);
                 return guardada;
             } catch (Exception e) {
                 archivoService.eliminarArchivo(nuevaRuta);
@@ -142,9 +149,10 @@ public class EntregaService {
             nueva.setAprendiz(aprendiz);
             nueva.setRutaArchivo(nuevaRuta);
             nueva.setFechaEntrega(LocalDateTime.now());
+            nueva.setEntregaTardia(esTardia);
             try {
                 EntregaTarea guardada = entregaTareaRepository.save(nueva);
-                notificarInstructorEntrega(tarea, aprendiz);
+                notificarInstructorEntrega(tarea, aprendiz, esTardia);
                 return guardada;
             } catch (Exception e) {
                 archivoService.eliminarArchivo(nuevaRuta);
@@ -154,24 +162,18 @@ public class EntregaService {
     }
 
     /** Notifica al instructor cuando un aprendiz entrega una tarea */
-    private void notificarInstructorEntrega(Tarea tarea, Aprendiz aprendiz) {
+    private void notificarInstructorEntrega(Tarea tarea, Aprendiz aprendiz, boolean esTardia) {
         try {
             if (tarea.getInstructor() == null || aprendiz == null) return;
             String idInstructor = String.valueOf(tarea.getInstructor().getId());
             String nombreAprendiz = aprendiz.getUsuario() != null
                     ? (aprendiz.getUsuario().getNombres() + " " + aprendiz.getUsuario().getApellidos()).trim()
                     : "Un aprendiz";
-            NotificacionDTO dto = new NotificacionDTO(
-                    "tarea_entregada",
-                    "📋 Nueva entrega de tarea",
-                    nombreAprendiz + " entregó: " + tarea.getTitulo(),
-                    nombreAprendiz,
-                    tarea.getNombreFicha()
-            );
+            String titulo = esTardia ? "⏰ Entrega tardía" : "📋 Nueva entrega de tarea";
+            String msg = nombreAprendiz + (esTardia ? " entregó TARDE: " : " entregó: ") + tarea.getTitulo();
+            NotificacionDTO dto = new NotificacionDTO("tarea_entregada", titulo, msg, nombreAprendiz, tarea.getNombreFicha());
             dto.setSonar(true);
             notificationWebSocketHandler.notificarInstructor(idInstructor, dto);
-        } catch (Exception e) {
-            // No interrumpir el flujo principal si falla la notificación
-        }
+        } catch (Exception e) { /* no interrumpir */ }
     }
 }

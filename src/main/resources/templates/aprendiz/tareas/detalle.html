@@ -372,12 +372,19 @@
       <span>El plazo de entrega ha vencido. Ya no es posible subir archivos para esta tarea.</span>
     </div>
 
-    <!-- Formulario de entrega (solo PENDIENTE o ENTREGADA) -->
-    <div th:if="${tarea.estadoEntrega == 'PENDIENTE' or tarea.estadoEntrega == 'ENTREGADA'}" class="card">
+    <!-- Formulario de entrega (PENDIENTE, ENTREGADA o VENCIDA — siempre se puede entregar) -->
+    <div th:if="${tarea.estadoEntrega == 'PENDIENTE' or tarea.estadoEntrega == 'ENTREGADA' or tarea.estadoEntrega == 'VENCIDA'}" class="card">
       <h2><i class="fas fa-upload"></i>
         <span th:if="${tarea.estadoEntrega == 'PENDIENTE'}">Subir Entrega</span>
         <span th:if="${tarea.estadoEntrega == 'ENTREGADA'}">Reemplazar Entrega</span>
+        <span th:if="${tarea.estadoEntrega == 'VENCIDA'}">Entrega Tardía</span>
       </h2>
+
+      <!-- Aviso entrega tardía -->
+      <div th:if="${tarea.estadoEntrega == 'VENCIDA'}" style="background:#fff3cd; border:1px solid #ffc107; border-radius:8px; padding:12px 16px; margin-bottom:16px; color:#856404; display:flex; align-items:center; gap:8px;">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>El plazo venció, pero aún puedes entregar. El instructor verá que es una <strong>entrega tardía</strong>.</span>
+      </div>
 
       <div th:if="${tarea.estadoEntrega == 'ENTREGADA'}" class="alert-success" style="margin-bottom:16px;">
         <i class="fas fa-check-circle"></i>
@@ -388,13 +395,15 @@
             method="post"
             enctype="multipart/form-data">
         <div class="form-group">
-          <label for="archivo"><i class="fas fa-file"></i> Archivo de entrega</label>
+          <label for="archivo"><i class="fas fa-file-pdf"></i> Archivo de entrega (solo PDF)</label>
           <input type="file"
                  id="archivo"
                  name="archivo"
-                 accept=".pdf,.docx,.xlsx,.png,.jpg"
+                 accept=".pdf,application/pdf"
                  required
-                 class="form-control">
+                 class="form-control"
+                 onchange="validarPDF(this)">
+          <p class="file-hint" style="color:#dc2626;">⚠ Solo se aceptan archivos PDF. Word y Excel no están permitidos.</p>
           <p class="file-hint">Formatos permitidos: PDF, DOCX, XLSX, PNG, JPG. Tamaño máximo: 20 MB.</p>
         </div>
         <button type="submit" class="btn-primary">
@@ -413,6 +422,29 @@
       document.querySelector('.sidebar').classList.remove('open');
       document.getElementById('sidebarOverlay').classList.remove('active');
     }
+
+    function validarPDF(input) {
+      const archivo = input.files[0];
+      if (!archivo) return;
+      const esPDF = archivo.type === 'application/pdf' || archivo.name.toLowerCase().endsWith('.pdf');
+      if (!esPDF) {
+        alert('❌ Solo se permiten archivos PDF.\nNo se aceptan Word (.docx), Excel (.xlsx) ni otros formatos.');
+        input.value = '';
+      }
+    }
+
+    // Bloquear submit si no es PDF
+    document.querySelector('form[enctype]')?.addEventListener('submit', function(e) {
+      const input = document.getElementById('archivo');
+      if (input && input.files.length > 0) {
+        const archivo = input.files[0];
+        const esPDF = archivo.type === 'application/pdf' || archivo.name.toLowerCase().endsWith('.pdf');
+        if (!esPDF) {
+          e.preventDefault();
+          alert('❌ Solo se permiten archivos PDF.');
+        }
+      }
+    });
   </script>
 </body>
 </html>

@@ -163,7 +163,7 @@ public class TareaService {
 
             if (entregaOpt.isPresent()) {
                 EntregaTarea entrega = entregaOpt.get();
-                dto.setEstadoEntrega("ENTREGADO");
+                dto.setEstadoEntrega(entrega.isEntregaTardia() ? "TARDIO" : "ENTREGADO");
                 dto.setFechaEntrega(entrega.getFechaEntrega());
                 dto.setIdEntrega(entrega.getId());
                 dto.setRutaArchivo(entrega.getRutaArchivo());
@@ -199,5 +199,28 @@ public class TareaService {
         entrega.setComentarioInstructor(comentario);
         entrega.setFechaCalificacion(LocalDateTime.now());
         entregaTareaRepository.save(entrega);
+    }
+
+    /**
+     * Elimina una tarea y todas sus entregas asociadas.
+     */
+    @Transactional
+    public void eliminarTarea(Long idTarea, Integer idInstructor) {
+        Tarea tarea = tareaRepository.findById(idTarea)
+                .orElseThrow(() -> new IllegalArgumentException("Tarea no encontrada"));
+        if (!tarea.getInstructor().getId().equals(idInstructor)) {
+            throw new IllegalArgumentException("No tienes permiso para eliminar esta tarea");
+        }
+        // Eliminar entregas primero
+        List<EntregaTarea> entregas = entregaTareaRepository.findByTarea_Id(idTarea);
+        for (EntregaTarea e : entregas) {
+            archivoService.eliminarArchivo(e.getRutaArchivo());
+        }
+        entregaTareaRepository.deleteAll(entregas);
+        // Eliminar archivo adjunto de la tarea si existe
+        if (tarea.getRutaArchivo() != null) {
+            archivoService.eliminarArchivo(tarea.getRutaArchivo());
+        }
+        tareaRepository.delete(tarea);
     }
 }

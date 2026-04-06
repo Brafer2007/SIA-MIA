@@ -33,6 +33,8 @@ public class EntregaTarea {
 
     private LocalDateTime fechaCalificacion;
 
+    private boolean entregaTardia = false;
+
     public EntregaTarea() {}
 
     public Long getId() { return id; }
@@ -58,4 +60,7 @@ public class EntregaTarea {
 
     public LocalDateTime getFechaCalificacion() { return fechaCalificacion; }
     public void setFechaCalificacion(LocalDateTime fechaCalificacion) { this.fechaCalificacion = fechaCalificacion; }
+
+    public boolean isEntregaTardia() { return entregaTardia; }
+    public void setEntregaTardia(boolean entregaTardia) { this.entregaTardia = entregaTardia; }
 }

@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -257,6 +258,27 @@ public class TareaController {
         }
         try {
             tareaService.calificar(idEntrega, nota, comentario, idInstructor);
+            resp.put("ok", true);
+            return ResponseEntity.ok(resp);
+        } catch (IllegalArgumentException e) {
+            resp.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(resp);
+        }
+    }
+
+    @DeleteMapping("/api/{id}/eliminar")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> apiEliminar(
+            @PathVariable Long id,
+            HttpSession session) {
+        Map<String, Object> resp = new HashMap<>();
+        Integer idInstructor = getIdInstructor(session);
+        if (idInstructor == null) {
+            resp.put("error", "No autenticado");
+            return ResponseEntity.status(401).body(resp);
+        }
+        try {
+            tareaService.eliminarTarea(id, idInstructor);
             resp.put("ok", true);
             return ResponseEntity.ok(resp);
         } catch (IllegalArgumentException e) {
