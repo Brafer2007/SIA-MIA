@@ -366,10 +366,8 @@
       </div>
     </div>
 
-    <!-- Mensaje plazo vencido -->
-    <div th:if="${tarea.estadoEntrega == 'VENCIDA'}" class="alert-warning">
-      <i class="fas fa-exclamation-triangle"></i>
-      <span>El plazo de entrega ha vencido. Ya no es posible subir archivos para esta tarea.</span>
+    <!-- Mensaje plazo vencido — ahora se puede entregar tardíamente -->
+    <div th:if="${tarea.estadoEntrega == 'VENCIDA'}" class="alert-warning" style="display:none;">
     </div>
 
     <!-- Formulario de entrega (PENDIENTE, ENTREGADA o VENCIDA — siempre se puede entregar) -->
@@ -404,7 +402,7 @@
                  class="form-control"
                  onchange="validarPDF(this)">
           <p class="file-hint" style="color:#dc2626;">⚠ Solo se aceptan archivos PDF. Word y Excel no están permitidos.</p>
-          <p class="file-hint">Formatos permitidos: PDF, DOCX, XLSX, PNG, JPG. Tamaño máximo: 20 MB.</p>
+          <p class="file-hint">Tamaño máximo: 20 MB.</p>
         </div>
         <button type="submit" class="btn-primary">
           <i class="fas fa-cloud-upload-alt"></i> Enviar Entrega
