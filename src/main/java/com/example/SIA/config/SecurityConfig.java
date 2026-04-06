@@ -48,7 +48,7 @@ public class SecurityConfig {
             HttpServletResponse response = (HttpServletResponse) res;
             response.setHeader("X-Powered-By", "");
             response.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
-            response.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+            response.setHeader("Permissions-Policy", "camera=*, microphone=(), geolocation=()");
             response.setHeader("Content-Security-Policy",
                 "default-src 'self'; " +
                 "script-src 'self' 'unsafe-inline' 'unsafe-eval' " +
