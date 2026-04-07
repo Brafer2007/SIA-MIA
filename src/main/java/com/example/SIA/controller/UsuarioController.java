@@ -101,21 +101,23 @@ public class UsuarioController {
     public String actualizarUsuario(@ModelAttribute UsuarioUpdateRequest request) {
         usuarioService.actualizarUsuario(request);
 
-        // Actualizar ficha y programa si se enviaron
-        if (request.getFichaFormacion() != null || request.getProgramaFormacion() != null) {
+        // Actualizar ficha y programa solo si el usuario es Aprendiz y hay datos reales
+        boolean tieneFicha = request.getFichaFormacion() != null && !request.getFichaFormacion().isBlank();
+        boolean tienePrograma = request.getProgramaFormacion() != null && !request.getProgramaFormacion().isBlank();
+        if (tieneFicha || tienePrograma) {
             List<Aprendiz> aprendices = aprendizService.findByUsuarioId(request.getIdUsuario());
-            Aprendiz aprendiz = aprendices.isEmpty() ? new Aprendiz() : aprendices.get(0);
-            Usuario usuarioEntity = usuarioService.findById(request.getIdUsuario());
-            aprendiz.setUsuario(usuarioEntity);
-            if (request.getFichaFormacion() != null && !request.getFichaFormacion().isBlank())
-                aprendiz.setFichaFormacion(request.getFichaFormacion());
-            if (request.getProgramaFormacion() != null && !request.getProgramaFormacion().isBlank())
-                aprendiz.setProgramaFormacion(request.getProgramaFormacion());
-            // Marcar perfil completo si tiene los datos mínimos
-            if (aprendiz.getFichaFormacion() != null && !aprendiz.getFichaFormacion().isBlank()
-                    && aprendiz.getProgramaFormacion() != null && !aprendiz.getProgramaFormacion().isBlank())
-                aprendiz.setPerfilCompleto(1);
-            aprendizService.actualizarAprendiz(aprendiz);
+            // Solo actualizar si ya existe el registro de aprendiz, o si hay ficha Y programa
+            if (!aprendices.isEmpty() || (tieneFicha && tienePrograma)) {
+                Aprendiz aprendiz = aprendices.isEmpty() ? new Aprendiz() : aprendices.get(0);
+                Usuario usuarioEntity = usuarioService.findById(request.getIdUsuario());
+                aprendiz.setUsuario(usuarioEntity);
+                if (tieneFicha) aprendiz.setFichaFormacion(request.getFichaFormacion());
+                if (tienePrograma) aprendiz.setProgramaFormacion(request.getProgramaFormacion());
+                if (aprendiz.getFichaFormacion() != null && !aprendiz.getFichaFormacion().isBlank()
+                        && aprendiz.getProgramaFormacion() != null && !aprendiz.getProgramaFormacion().isBlank())
+                    aprendiz.setPerfilCompleto(1);
+                aprendizService.actualizarAprendiz(aprendiz);
+            }
         }
 
         return "redirect:/dashboard/admin";

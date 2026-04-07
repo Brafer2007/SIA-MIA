@@ -50,7 +50,7 @@
     <input type="text" th:field="*{noDocumento}" id="noDocumento">
 
     <label for="clave">Contraseña (dejar en blanco para no cambiar)</label>
-    <input type="password" th:field="*{clave}" id="clave" placeholder="Dejar en blanco">
+    <input type="password" name="clave" id="clave" placeholder="Dejar en blanco" autocomplete="new-password">
 
     <label for="idPerfil">Perfil</label>
     <select th:field="*{idPerfil}" id="idPerfil" required>

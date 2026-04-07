@@ -62,9 +62,12 @@ public class RecuperarPasswordController {
                 String token = UUID.randomUUID().toString();
                 tokens.put(token, new Object[]{correoNorm, LocalDateTime.now().plusMinutes(EXPIRACION_MINUTOS)});
 
-                String baseUrl = request.getScheme() + "://" + request.getServerName()
-                        + (request.getServerPort() != 80 && request.getServerPort() != 443
-                        ? ":" + request.getServerPort() : "");
+                // Construir URL base respetando el proxy de Render (X-Forwarded headers)
+                String scheme = Optional.ofNullable(request.getHeader("X-Forwarded-Proto"))
+                        .orElse(request.getScheme());
+                String host = Optional.ofNullable(request.getHeader("X-Forwarded-Host"))
+                        .orElse(request.getServerName());
+                String baseUrl = scheme + "://" + host;
                 String enlace = baseUrl + "/recuperar-password/nueva?token=" + token;
 
                 log.info("Enviando correo a: {} desde: {}", correoNorm, remitente);
@@ -123,7 +126,7 @@ public class RecuperarPasswordController {
         }
 
         String correo = (String) info[0];
-        Optional<Usuario> opt = usuarioRepository.findByCorreo(correo);
+        Optional<Usuario> opt = usuarioRepository.findByCorreoIgnoreCase(correo);
         if (opt.isPresent()) {
             Usuario u = opt.get();
             u.setPassUsuario(passwordEncoder.encode(password)); // ← BCrypt
