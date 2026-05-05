@@ -5,7 +5,7 @@
     <link rel="icon" type="image/png" th:href="@{/img/logo_sia_fondo.png}">
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Detalle de Tarea - Aprendiz SENA</title>
+  <title>Detalle de Tarea - Aprendiz SIA</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
@@ -19,7 +19,7 @@
     }
     .sidebar {
       width: 250px;
-      background: #006B2D;
+      background: #5b21b6;
       padding: 20px;
       height: 100vh;
       position: fixed;
@@ -27,7 +27,7 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      box-shadow: 2px 0 10px rgba(0,107,45,0.2);
+      box-shadow: 2px 0 10px rgba(91,33,182,0.2);
     }
     .sidebar .logo {
       color: #fff;
@@ -61,11 +61,11 @@
       align-items: center;
       margin-bottom: 24px;
     }
-    .page-header h1 { color: #006B2D; font-size: 1.6rem; }
+    .page-header h1 { color: #5b21b6; font-size: 1.6rem; }
     .btn-back {
       background: #fff;
-      color: #006B2D;
-      border: 2px solid #006B2D;
+      color: #5b21b6;
+      border: 2px solid #5b21b6;
       padding: 8px 18px;
       border-radius: 8px;
       font-family: 'Poppins', sans-serif;
@@ -111,13 +111,13 @@
     .card {
       background: #F0FFF0;
       border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0,107,45,0.08);
+      box-shadow: 0 0 15px rgba(91,33,182,0.08);
       border: 1px solid #e0f0e0;
       padding: 24px;
       margin-bottom: 24px;
     }
     .card h2 {
-      color: #006B2D;
+      color: #5b21b6;
       font-size: 1.1rem;
       margin-bottom: 16px;
       display: flex;
@@ -177,7 +177,7 @@
     }
     .nota-box {
       background: #fff;
-      border: 2px solid #006B2D;
+      border: 2px solid #5b21b6;
       border-radius: 10px;
       padding: 16px 20px;
       display: flex;
@@ -187,7 +187,7 @@
     .nota-valor {
       font-size: 2rem;
       font-weight: 600;
-      color: #006B2D;
+      color: #5b21b6;
     }
     .nota-label { font-size: 0.85rem; color: #666; }
     .comentario-box {
@@ -219,11 +219,11 @@
     }
     .form-control:focus {
       outline: none;
-      border-color: #006B2D;
-      box-shadow: 0 0 0 3px rgba(0,107,45,0.1);
+      border-color: #5b21b6;
+      box-shadow: 0 0 0 3px rgba(91,33,182,0.1);
     }
     .btn-primary {
-      background: #006B2D;
+      background: #5b21b6;
       color: #fff;
       border: none;
       padding: 10px 24px;
@@ -250,7 +250,7 @@
       top: 12px;
       left: 12px;
       z-index: 200;
-      background: #006B2D;
+      background: #5b21b6;
       color: #fff;
       border: none;
       border-radius: 6px;
@@ -287,7 +287,7 @@
 <body>
   <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleSidebar()" aria-label="Abrir menú">&#9776;</button>
   <div class="sidebar">
-    <div class="logo"><i class="fas fa-user-graduate"></i> SENA Aprendiz</div>
+    <div class="logo"><i class="fas fa-user-graduate"></i> SIA Aprendiz</div>
     <a th:href="@{/aprendiz/tareas}"><i class="fas fa-tasks"></i> Mis Tareas</a>
     <a th:href="@{/dashboardAprendiz}"><i class="fas fa-home"></i> Volver al Dashboard</a>
     <a th:href="@{/login}" style="margin-top: auto;"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>

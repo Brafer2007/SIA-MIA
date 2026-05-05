@@ -12,12 +12,12 @@
   <style>
     * { box-sizing: border-box; }
     html, body { overflow-x: hidden; }
-    body { margin:0; font-family:'Poppins',sans-serif; background:#fff; color:#006B2D; display:flex; }
+    body { margin:0; font-family:'Poppins',sans-serif; background:#fff; color:#5b21b6; display:flex; }
 
     .sidebar {
-      width:250px; background:#006B2D; padding:20px; height:100vh;
+      width:250px; background:#5b21b6; padding:20px; height:100vh;
       position:fixed; top:0; left:0; display:flex; flex-direction:column;
-      gap:15px; box-shadow:2px 0 10px rgba(0,107,45,0.2);
+      gap:15px; box-shadow:2px 0 10px rgba(91,33,182,0.2);
     }
     .sidebar a {
       color:#fff; text-decoration:none; font-weight:600;
@@ -28,7 +28,7 @@
     .sidebar a.active { background:#014F27; box-shadow:inset 2px 0 0 #a3d9a5; }
 
     .content { margin-left:270px; padding:30px; flex-grow:1; background:#fff; }
-    .dashboard-header { text-align:center; margin-bottom:30px; color:#006B2D; }
+    .dashboard-header { text-align:center; margin-bottom:30px; color:#5b21b6; }
 
     .cards {
       display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
@@ -36,15 +36,15 @@
     }
     .card {
       background:#F0FFF0; padding:20px; border-radius:10px; text-align:center;
-      box-shadow:0 0 15px rgba(0,107,45,0.1); transition:transform 0.3s;
+      box-shadow:0 0 15px rgba(91,33,182,0.1); transition:transform 0.3s;
       cursor:pointer; color:#000; border:1px solid #98FB98;
     }
-    .card:hover { transform:translateY(-5px); border:1px solid #006B2D; }
+    .card:hover { transform:translateY(-5px); border:1px solid #5b21b6; }
     .card i { font-size:40px; color:#050505; margin-bottom:15px; }
 
     .section {
       display:none; margin-top:20px; background:#fff; padding:20px;
-      border-radius:10px; box-shadow:0 0 15px rgba(0,107,45,0.1); color:#121312;
+      border-radius:10px; box-shadow:0 0 15px rgba(91,33,182,0.1); color:#121312;
     }
 
     table { width:100%; border-collapse:collapse; margin-top:20px; }
@@ -75,7 +75,7 @@
       top: 12px;
       left: 12px;
       z-index: 200;
-      background: #006B2D;
+      background: #5b21b6;
       color: #fff;
       border: none;
       border-radius: 6px;
@@ -154,7 +154,7 @@
           <div style="background:#d4edda; border:1px solid #c3e6cb; color:#155724; padding:10px; border-radius:5px; margin-bottom:15px; text-align:center;">
             <i class="fas fa-check-circle"></i> <strong>Perfil Completado</strong>
           </div>
-          <h3 style="color:#006B2D"><i class="fas fa-id-badge"></i> Información Personal</h3>
+          <h3 style="color:#5b21b6"><i class="fas fa-id-badge"></i> Información Personal</h3>
           <p><strong>Nombres:</strong> <span th:text="${usuario.nombres}"></span></p>
           <p><strong>Apellidos:</strong> <span th:text="${usuario.apellidos}"></span></p>
           <p><strong>Correo:</strong> <span th:text="${usuario.correo}"></span></p>
@@ -163,7 +163,7 @@
           <p><strong>Programa de Formación:</strong> <span th:text="${aprendiz.programaFormacion}"></span></p>
 
           <a href="/aprendiz/formulario">
-            <button style="margin-top:15px; background:#006B2D; color:white; border:none; border-radius:5px; padding:8px 18px; font-weight:bold; cursor:pointer;">
+            <button style="margin-top:15px; background:#5b21b6; color:white; border:none; border-radius:5px; padding:8px 18px; font-weight:bold; cursor:pointer;">
               <i class="fas fa-edit"></i> Editar Datos Personales
             </button>
           </a>
@@ -179,8 +179,8 @@
           </button>
 
           <div id="qrVista" style="display:none; text-align:center; margin-top:15px;">
-            <h4 style="color:#006B2D">Mi Código QR</h4>
-            <img id="qrImagen" src="" alt="QR" style="border:2px solid #006B2D; border-radius:10px; padding:5px;">
+            <h4 style="color:#5b21b6">Mi Código QR</h4>
+            <img id="qrImagen" src="" alt="QR" style="border:2px solid #5b21b6; border-radius:10px; padding:5px;">
           </div>
         </div>
       </div>

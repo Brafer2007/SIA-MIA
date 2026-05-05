@@ -6,7 +6,7 @@
     <link rel="icon" type="image/png" th:href="@{/img/logo_sia_fondo.png}">
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard Aprendiz SENA</title>
+  <title>Dashboard Aprendiz</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -16,14 +16,14 @@
       margin: 0;
       font-family: 'Poppins', sans-serif;
       background-color: #fff;
-      color: #006B2D;
+      color: #5b21b6;
       display: flex;
       overflow-x: hidden;
     }
 
     .sidebar {
       width: 250px;
-      background: #006B2D;
+      background: #5b21b6;
       padding: 20px;
       height: 100vh;
       position: fixed;
@@ -32,7 +32,7 @@
       display: flex;
       flex-direction: column;
       gap: 15px;
-      box-shadow: 2px 0 10px rgba(0, 107, 45, 0.2);
+      box-shadow: 2px 0 10px rgba(91, 33, 182, 0.2);
     }
 
     .sidebar a {
@@ -67,7 +67,7 @@
     .dashboard-header {
       text-align: center;
       margin-bottom: 30px;
-      color: #006B2D;
+      color: #5b21b6;
     }
 
     .cards {
@@ -81,7 +81,7 @@
       padding: 20px;
       border-radius: 10px;
       text-align: center;
-      box-shadow: 0 0 15px rgba(0, 107, 45, 0.1);
+      box-shadow: 0 0 15px rgba(91, 33, 182, 0.1);
       transition: transform 0.3s;
       cursor: pointer;
       color: #000;
@@ -90,8 +90,8 @@
 
     .card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 5px 15px rgba(0, 107, 45, 0.15);
-      border: 1px solid #006B2D;
+      box-shadow: 0 5px 15px rgba(91, 33, 182, 0.15);
+      border: 1px solid #5b21b6;
     }
 
     .card i {
@@ -106,7 +106,7 @@
       background: #fff;
       padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0, 107, 45, 0.1);
+      box-shadow: 0 0 15px rgba(91, 33, 182, 0.1);
       color: #121312;
     }
 
@@ -164,7 +164,7 @@
     }
 
     .file-upload {
-      border: 2px dashed #006B2D;
+      border: 2px dashed #5b21b6;
       padding: 20px;
       text-align: center;
       border-radius: 5px;
@@ -217,7 +217,7 @@
     }
 
     .chat-bubble.own {
-      background: #006B2D;
+      background: #5b21b6;
       color: #ffffff;
       border-top-right-radius: 6px;
     }
@@ -240,7 +240,7 @@
       top: 12px;
       left: 12px;
       z-index: 200;
-      background: #006B2D;
+      background: #5b21b6;
       color: #fff;
       border: none;
       border-radius: 6px;
@@ -298,7 +298,7 @@
 
   <div class="content">
     <div class="dashboard-header">
-      <h1>Panel del Aprendiz SENA</h1>
+      <h1>Panel del Aprendiz</h1>
       <p>Bienvenido a tu espacio de formación</p>
     </div>
 
@@ -336,7 +336,7 @@
         <i class="fas fa-info-circle" style="font-size:2em; color:#aaa; margin-bottom:10px; display:block;"></i>
         <p>Completa tu perfil con tu ficha de formación para ver tu horario.</p>
         <a href="/aprendiz/formulario">
-          <button style="background:#006B2D; color:white; margin-top:8px;">
+          <button style="background:#5b21b6; color:white; margin-top:8px;">
             <i class="fas fa-user-plus"></i> Completar Perfil
           </button>
         </a>
@@ -354,7 +354,7 @@
         <div style="overflow-x:auto; margin-bottom:20px;">
           <table style="width:100%; border-collapse:collapse; font-size:14px;">
             <thead>
-              <tr style="background:#006B2D; color:white;">
+              <tr style="background:#5b21b6; color:white;">
                 <th style="padding:10px; text-align:left;">Día</th>
                 <th style="padding:10px; text-align:left;">Curso</th>
                 <th style="padding:10px; text-align:left;">Hora</th>
@@ -380,7 +380,7 @@
         </div>
         <div style="text-align:center;">
           <button onclick="abrirCalendarioAprendiz()"
-            style="background:#006B2D; color:#fff; font-size:1em; padding:10px 24px;">
+            style="background:#5b21b6; color:#fff; font-size:1em; padding:10px 24px;">
             <i class="fas fa-calendar-week"></i> Ver Calendario Completo
           </button>
         </div>
@@ -393,7 +393,7 @@
           style="background:white; margin:5% auto; padding:20px; width:90%; max-width:1000px; border-radius:8px; position:relative;">
           <span onclick="cerrarCalendarioAprendiz()"
             style="position:absolute; top:10px; right:15px; font-size:24px; cursor:pointer; font-weight:bold;">&times;</span>
-          <h2 style="text-align:center; color:#006B2D;">Programación Trimestral</h2>
+          <h2 style="text-align:center; color:#5b21b6;">Programación Trimestral</h2>
           <div style="text-align:right; margin-bottom:10px;">
             <div style="display:inline-block; margin-right:15px;"><span style="color:#d63031;">🎉</span> Festivo</div>
             <div style="display:inline-block;"><span style="color:green;">✔️</span> Clase Programada</div>
@@ -407,8 +407,8 @@
 
       <!-- Panel Detalle Día -->
       <div id="detalle-dia"
-        style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:white; padding:20px; border:2px solid #006B2D; border-radius:8px; z-index:1001; width:300px; box-shadow:0 0 15px rgba(0,0,0,0.3);">
-        <h3 style="margin-top:0; color:#006B2D; border-bottom:1px solid #ccc; padding-bottom:5px;">Detalle del Día</h3>
+        style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:white; padding:20px; border:2px solid #5b21b6; border-radius:8px; z-index:1001; width:300px; box-shadow:0 0 15px rgba(0,0,0,0.3);">
+        <h3 style="margin-top:0; color:#5b21b6; border-bottom:1px solid #ccc; padding-bottom:5px;">Detalle del Día</h3>
         <div id="contenido-detalle-dia"></div>
         <button onclick="cerrarDetalleDia()" style="margin-top:10px; width:100%; background:#666;">Cerrar</button>
       </div>
@@ -423,7 +423,7 @@
           <div style="background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center;">
             <i class="fas fa-check-circle"></i> <strong>Perfil Completado</strong>
           </div>
-          <h3 style="color:#006B2D"><i class="fas fa-id-badge"></i> Información Personal</h3>
+          <h3 style="color:#5b21b6"><i class="fas fa-id-badge"></i> Información Personal</h3>
           <p><strong>Nombres:</strong> <span th:text="${usuario.nombres}"></span></p>
           <p><strong>Apellidos:</strong> <span th:text="${usuario.apellidos}"></span></p>
           <p><strong>Correo:</strong> <span th:text="${usuario.correo}"></span></p>
@@ -434,7 +434,7 @@
           <!-- Botones -->
           <a href="/aprendiz/formulario">
             <button
-              style="margin-top:15px; background:#006B2D; color:white; border:none; border-radius:5px; padding:8px 18px; font-weight:bold; cursor:pointer;">
+              style="margin-top:15px; background:#5b21b6; color:white; border:none; border-radius:5px; padding:8px 18px; font-weight:bold; cursor:pointer;">
               <i class="fas fa-edit"></i> Editar Datos Personales
             </button>
           </a>
@@ -451,9 +451,9 @@
 
           <!-- Contenedor QR dinámico -->
           <div id="qrVista" style="display:none; text-align:center; margin-top:15px;">
-            <h4 style="color:#006B2D">Mi Código QR</h4>
+            <h4 style="color:#5b21b6">Mi Código QR</h4>
             <img id="qrImagen" src="" alt="QR del aprendiz"
-              style="border:2px solid #006B2D; border-radius:10px; padding:5px;">
+              style="border:2px solid #5b21b6; border-radius:10px; padding:5px;">
           </div>
         </div>
       </div>
@@ -564,7 +564,7 @@
 
     <div class="certificado-item">
       <i class="fas fa-file-pdf pdf-icon"></i>
-      <span>Constancia de Formación SENA</span>
+      <span>Constancia de Formación</span>
     </div>
 
     <a href="/certificados/aprendiz/aprendiz"
@@ -582,32 +582,32 @@
 
       <!-- Formulario subir -->
       <div style="background:#F0FFF0; border:1px solid #e0f0e0; border-radius:10px; padding:20px; margin-bottom:20px; max-width:560px;">
-        <h3 style="color:#006B2D; margin:0 0 14px;"><i class="fas fa-cloud-upload-alt"></i> Subir Nueva Incapacidad</h3>
+        <h3 style="color:#5b21b6; margin:0 0 14px;"><i class="fas fa-cloud-upload-alt"></i> Subir Nueva Incapacidad</h3>
         <div id="inc-ap-msg-ok" style="display:none; background:#d4edda; color:#155724; padding:10px 14px; border-radius:7px; margin-bottom:12px;"></div>
         <div id="inc-ap-msg-err" style="display:none; background:#f8d7da; color:#721c24; padding:10px 14px; border-radius:7px; margin-bottom:12px;"></div>
         <form id="form-incapacidad-ap" onsubmit="subirIncapacidadAp(event)" enctype="multipart/form-data">
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
             <div>
-              <label style="display:block; font-weight:600; color:#006B2D; margin-bottom:4px;">Fecha inicio *</label>
+              <label style="display:block; font-weight:600; color:#5b21b6; margin-bottom:4px;">Fecha inicio *</label>
               <input type="date" id="inc-fecha-inicio" required style="width:100%; padding:8px 10px; border:1px solid #8d918d; border-radius:6px; font-family:inherit;">
             </div>
             <div>
-              <label style="display:block; font-weight:600; color:#006B2D; margin-bottom:4px;">Fecha fin *</label>
+              <label style="display:block; font-weight:600; color:#5b21b6; margin-bottom:4px;">Fecha fin *</label>
               <input type="date" id="inc-fecha-fin" required style="width:100%; padding:8px 10px; border:1px solid #8d918d; border-radius:6px; font-family:inherit;">
             </div>
           </div>
           <div style="margin-bottom:14px;">
-            <label style="display:block; font-weight:600; color:#006B2D; margin-bottom:4px;">Documento (PDF/imagen, máx. 10 MB)</label>
+            <label style="display:block; font-weight:600; color:#5b21b6; margin-bottom:4px;">Documento (PDF/imagen, máx. 10 MB)</label>
             <input type="file" id="inc-archivo" name="archivo" accept=".pdf,.jpg,.jpeg,.png" style="width:100%; padding:8px 10px; border:1px solid #8d918d; border-radius:6px; background:#fff;">
           </div>
-          <button type="submit" style="background:#006B2D; color:#fff; border:none; padding:9px 20px; border-radius:7px; font-weight:600; cursor:pointer;">
+          <button type="submit" style="background:#5b21b6; color:#fff; border:none; padding:9px 20px; border-radius:7px; font-weight:600; cursor:pointer;">
             <i class="fas fa-paper-plane"></i> Enviar Incapacidad
           </button>
         </form>
       </div>
 
       <!-- Historial -->
-      <h3 style="color:#006B2D; margin-bottom:12px;"><i class="fas fa-history"></i> Mis Incapacidades</h3>
+      <h3 style="color:#5b21b6; margin-bottom:12px;"><i class="fas fa-history"></i> Mis Incapacidades</h3>
       <div id="inc-ap-historial"><p style="color:#888;">Cargando...</p></div>
     </section>
 
@@ -655,7 +655,7 @@
       <h2 style="display:flex; justify-content:space-between; align-items:center;">
         <span><i class="fas fa-car"></i> Mis Vehículos</span>
         <div style="display:flex; gap:10px;">
-          <button class="btn" onclick="toggleFormularioVehiculoAprendiz()" style="background:#006B2D; color:white;"><i class="fas fa-plus"></i> Registrar Vehículo</button>
+          <button class="btn" onclick="toggleFormularioVehiculoAprendiz()" style="background:#5b21b6; color:white;"><i class="fas fa-plus"></i> Registrar Vehículo</button>
           <button class="btn" onclick="showParquederoAprendiz()" style="background:#ff8c00; color:white;"><i class="fas fa-parking"></i> Ver Parquedero</button>
         </div>
       </h2>
@@ -673,7 +673,7 @@
           <input type="number" id="capacidadAprendiz" placeholder="Capacidad de personas" required style="grid-column: 2/2;">
           <textarea id="observacionesAprendiz" placeholder="Observaciones" style="grid-column: 1/-1;"></textarea>
           <div style="grid-column: 1/-1; display: flex; gap: 10px; justify-content: flex-end;">
-            <button type="submit" class="btn" style="background: #006B2D; color: white;">Guardar</button>
+            <button type="submit" class="btn" style="background: #5b21b6; color: white;">Guardar</button>
             <button type="button" class="btn" onclick="toggleFormularioVehiculoAprendiz()" style="background: #dc3545; color: white;">Cancelar</button>
           </div>
         </form>
@@ -717,7 +717,7 @@
     <section id="tareas" class="section">
       <!-- Vista: lista de tareas -->
       <div id="tareas-ap-lista">
-        <h2 style="color:#006B2D;"><i class="fas fa-clipboard-list"></i> Mis Tareas</h2>
+        <h2 style="color:#5b21b6;"><i class="fas fa-clipboard-list"></i> Mis Tareas</h2>
         <div id="tareas-ap-msg-ok" style="display:none; background:#d4edda; color:#155724; padding:10px 14px; border-radius:7px; margin-bottom:14px;"></div>
         <div id="tareas-ap-msg-err" style="display:none; background:#f8d7da; color:#721c24; padding:10px 14px; border-radius:7px; margin-bottom:14px;"></div>
         <div id="tareas-ap-container"><p style="color:#888;">Cargando tareas...</p></div>
@@ -726,10 +726,10 @@
       <!-- Vista: detalle + entrega -->
       <div id="tareas-ap-detalle" style="display:none;">
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
-          <button onclick="mostrarListaTareasAp()" style="background:#fff; color:#006B2D; border:2px solid #006B2D; padding:7px 14px; border-radius:7px; font-weight:600; cursor:pointer;">
+          <button onclick="mostrarListaTareasAp()" style="background:#fff; color:#5b21b6; border:2px solid #5b21b6; padding:7px 14px; border-radius:7px; font-weight:600; cursor:pointer;">
             <i class="fas fa-arrow-left"></i> Volver
           </button>
-          <h2 style="color:#006B2D; margin:0;" id="tareas-ap-titulo-detalle"></h2>
+          <h2 style="color:#5b21b6; margin:0;" id="tareas-ap-titulo-detalle"></h2>
         </div>
         <div id="tareas-ap-detalle-content"></div>
       </div>
@@ -738,9 +738,9 @@
     <!-- === MI ASISTENCIA === -->
     <section id="mi-asistencia" class="section">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
-        <h2 style="color:#006B2D; margin:0;"><i class="fas fa-calendar-check"></i> Mi Asistencia</h2>
+        <h2 style="color:#5b21b6; margin:0;"><i class="fas fa-calendar-check"></i> Mi Asistencia</h2>
         <a href="/asistencia/reporte/aprendiz/pdf" target="_blank"
-           style="background:#006B2D; color:#fff; padding:9px 18px; border-radius:7px; font-weight:600; text-decoration:none; display:flex; align-items:center; gap:7px;">
+           style="background:#5b21b6; color:#fff; padding:9px 18px; border-radius:7px; font-weight:600; text-decoration:none; display:flex; align-items:center; gap:7px;">
           <i class="fas fa-file-pdf"></i> Descargar Reporte PDF
         </a>
       </div>
@@ -751,20 +751,20 @@
   <div style="display:flex; width:100%; height:100%; border-radius:10px; overflow:hidden;">
 
     <!-- Lista de chats -->
-    <div style="width:28%; background:#006B2D; padding:16px 12px; overflow-y:auto; flex-shrink:0;">
+    <div style="width:28%; background:#5b21b6; padding:16px 12px; overflow-y:auto; flex-shrink:0;">
       <p style="color:#a7f3c0; font-size:11px; font-weight:700; margin:0 0 12px; text-transform:uppercase; letter-spacing:1px;">CHATS</p>
       <ul id="fichas-chat" style="list-style:none; padding:0; margin:0;"></ul>
     </div>
 
     <!-- Ventana de chat -->
     <div style="flex:1; display:flex; flex-direction:column; background:#28a745; overflow:hidden;">
-      <div style="background:#006B2D; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+      <div style="background:#5b21b6; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
         <h3 id="titulo-chat" style="margin:0; color:white; font-size:15px; font-weight:600;"></h3>
         <span id="chat-estado-ap" style="font-size:11px; color:#a7f3c0;"></span>
       </div>
       <div id="mensajes-grupo" style="flex:1; overflow-y:auto; padding:12px; display:flex; flex-direction:column; gap:6px;"></div>
 
-      <form id="form-chat" style="display:flex; gap:8px; padding:10px 14px; background:#006B2D; align-items:center; flex-shrink:0;" onsubmit="return false;">
+      <form id="form-chat" style="display:flex; gap:8px; padding:10px 14px; background:#5b21b6; align-items:center; flex-shrink:0;" onsubmit="return false;">
         <label style="cursor:pointer; font-size:20px; flex:0 0 auto; display:flex; align-items:center; color:white;">
           📎
           <input type="file" id="archivo-mensaje" style="display:none;" onchange="uploadFileAprendiz()">
@@ -773,7 +773,7 @@
                style="flex:1; border-radius:20px; border:none; padding:9px 16px; background:#f0fff0; color:#111; font-size:14px; outline:none;"
                onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();enviarMensajeAprendiz(event);}">
         <button type="button" onclick="enviarMensajeAprendiz(event)"
-                style="flex:0 0 auto; padding:9px 20px; background:#39A900; color:white; border:none; border-radius:20px; font-weight:600; cursor:pointer; font-size:14px;">Enviar</button>
+                style="flex:0 0 auto; padding:9px 20px; background:#7c3aed; color:white; border:none; border-radius:20px; font-weight:600; cursor:pointer; font-size:14px;">Enviar</button>
       </form>
     </div>
 
@@ -817,7 +817,7 @@ function mostrarNotificacionVisual(notificacion) {
     position: fixed;
     top: 20px;
     right: 20px;
-    background: linear-gradient(135deg, #006B2D 0%, #008D4D 100%);
+    background: linear-gradient(135deg, #5b21b6 0%, #008D4D 100%);
     color: white;
     padding: 15px 20px;
     border-radius: 8px;
@@ -1548,7 +1548,7 @@ function mostrarMensaje(m) {
         const diasEnMes = new Date(año, mes + 1, 0).getDate();
         const primerDiaSemana = (new Date(año, mes, 1).getDay() + 6) % 7;
 
-        let html = `<h3 style="text-align:center; margin-top:20px; color:#006B2D;">${mesTexto} ${año}</h3>`;
+        let html = `<h3 style="text-align:center; margin-top:20px; color:#5b21b6;">${mesTexto} ${año}</h3>`;
         html += `<table style="border-collapse:collapse; width:100%; font-size:0.9em; background:white; border:1px solid #ccc;">
                       <thead style="background:#f0f0f0;">
                         <tr>${nombreDias.map(d => `<th style="padding:8px; border:1px solid #ccc;">${d}</th>`).join('')}</tr>
@@ -1842,7 +1842,7 @@ function cargarTareasAp() {
         VENCIDA:    'background:#f8d7da; color:#721c24;'
       };
       let html = `<table style="width:100%; border-collapse:collapse;">
-        <thead><tr style="background:#006B2D; color:#fff;">
+        <thead><tr style="background:#5b21b6; color:#fff;">
           <th style="padding:10px 14px; text-align:left;">Título</th>
           <th style="padding:10px 14px; text-align:left;">Instructor</th>
           <th style="padding:10px 14px; text-align:center;">Fecha Límite</th>
@@ -1858,7 +1858,7 @@ function cargarTareasAp() {
           <td style="padding:10px 14px; text-align:center;">${fecha}</td>
           <td style="padding:10px 14px; text-align:center;"><span style="padding:3px 10px; border-radius:10px; font-size:0.78rem; font-weight:600; ${bs}">${t.estadoEntrega}</span></td>
           <td style="padding:10px 14px; text-align:center;">
-            <button onclick="verDetalleTareaAp(${t.idTarea})" style="background:#006B2D; color:#fff; border:none; padding:6px 14px; border-radius:6px; cursor:pointer; font-size:0.85rem;">
+            <button onclick="verDetalleTareaAp(${t.idTarea})" style="background:#5b21b6; color:#fff; border:none; padding:6px 14px; border-radius:6px; cursor:pointer; font-size:0.85rem;">
               <i class="fas fa-eye"></i> Ver
             </button>
           </td>
@@ -1901,13 +1901,13 @@ function verDetalleTareaAp(idTarea) {
           <div><span style="font-size:0.8rem; color:#666; font-weight:600; text-transform:uppercase;">Estado</span><br><span style="padding:3px 10px; border-radius:10px; font-size:0.78rem; font-weight:600; ${bs}">${t.estadoEntrega}</span></div>
         </div>
         ${t.descripcion ? `<div style="background:#fff; border:1px solid #e0f0e0; border-radius:8px; padding:12px; margin-top:8px;">${escApHtml(t.descripcion)}</div>` : ''}
-        ${t.tieneArchivoTarea && t.rutaArchivoTarea ? `<div style="background:#e8f5e9; border:1px solid #a5d6a7; border-radius:8px; padding:10px 14px; margin-top:10px; color:#2e7d32; display:flex; align-items:center; gap:10px;"><i class="fas fa-paperclip"></i> <span>El instructor adjuntó un archivo.</span> <a href="/${t.rutaArchivoTarea}" target="_blank" download style="background:#006B2D; color:#fff; padding:5px 12px; border-radius:6px; text-decoration:none; font-size:0.85rem; margin-left:auto;"><i class="fas fa-download"></i> Descargar</a></div>` : ''}
+        ${t.tieneArchivoTarea && t.rutaArchivoTarea ? `<div style="background:#e8f5e9; border:1px solid #a5d6a7; border-radius:8px; padding:10px 14px; margin-top:10px; color:#2e7d32; display:flex; align-items:center; gap:10px;"><i class="fas fa-paperclip"></i> <span>El instructor adjuntó un archivo.</span> <a href="/${t.rutaArchivoTarea}" target="_blank" download style="background:#5b21b6; color:#fff; padding:5px 12px; border-radius:6px; text-decoration:none; font-size:0.85rem; margin-left:auto;"><i class="fas fa-download"></i> Descargar</a></div>` : ''}
       </div>`;
 
       if (t.estadoEntrega === 'CALIFICADA') {
-        html += `<div style="background:#F0FFF0; border:2px solid #006B2D; border-radius:10px; padding:18px; margin-bottom:16px;">
-          <h3 style="color:#006B2D; margin:0 0 10px;"><i class="fas fa-star"></i> Calificación</h3>
-          <div style="font-size:2rem; font-weight:600; color:#006B2D;">${t.nota != null ? t.nota : '—'} <span style="font-size:1rem; color:#666;">/ 5.0</span></div>
+        html += `<div style="background:#F0FFF0; border:2px solid #5b21b6; border-radius:10px; padding:18px; margin-bottom:16px;">
+          <h3 style="color:#5b21b6; margin:0 0 10px;"><i class="fas fa-star"></i> Calificación</h3>
+          <div style="font-size:2rem; font-weight:600; color:#5b21b6;">${t.nota != null ? t.nota : '—'} <span style="font-size:1rem; color:#666;">/ 5.0</span></div>
           ${t.comentarioInstructor ? `<p style="margin-top:10px; font-weight:600; font-size:0.9rem;">Comentario:</p><div style="background:#fff; border:1px solid #e0f0e0; border-radius:8px; padding:12px;">${escApHtml(t.comentarioInstructor)}</div>` : ''}
         </div>`;
       }
@@ -1919,16 +1919,16 @@ function verDetalleTareaAp(idTarea) {
       if (t.estadoEntrega === 'PENDIENTE' || t.estadoEntrega === 'ENTREGADA' || t.estadoEntrega === 'VENCIDA') {
         const label = t.estadoEntrega === 'ENTREGADA' ? 'Reemplazar Entrega' : t.estadoEntrega === 'VENCIDA' ? '⏰ Entrega Tardía' : 'Subir Entrega';
         html += `<div style="background:#F0FFF0; border:1px solid #e0f0e0; border-radius:10px; padding:20px;">
-          <h3 style="color:#006B2D; margin:0 0 14px;"><i class="fas fa-upload"></i> ${label}</h3>
+          <h3 style="color:#5b21b6; margin:0 0 14px;"><i class="fas fa-upload"></i> ${label}</h3>
           ${t.estadoEntrega === 'ENTREGADA' ? `<div style="background:#d4edda; color:#155724; padding:10px 14px; border-radius:7px; margin-bottom:14px;"><i class="fas fa-check-circle"></i> Ya realizaste una entrega. Puedes reemplazarla.</div>` : ''}
           <div id="entrega-ap-err" style="display:none; background:#f8d7da; color:#721c24; padding:10px 14px; border-radius:7px; margin-bottom:14px;"></div>
           <form id="form-entrega-ap" onsubmit="submitEntregaAp(event, ${t.idTarea})" enctype="multipart/form-data">
             <div style="margin-bottom:14px;">
-              <label style="display:block; font-weight:600; color:#006B2D; margin-bottom:5px;">Archivo * (solo PDF)</label>
+              <label style="display:block; font-weight:600; color:#5b21b6; margin-bottom:5px;">Archivo * (solo PDF)</label>
               <input type="file" id="ap-archivo" name="archivo" accept=".pdf,application/pdf" required style="width:100%; padding:9px 12px; border:1px solid #8d918d; border-radius:6px; background:#fff;">
               <span style="font-size:0.8rem; color:#dc2626;">⚠ Solo se aceptan archivos PDF — máx. 20 MB</span>
             </div>
-            <button type="submit" id="btn-entregar-ap" style="background:#006B2D; color:#fff; border:none; padding:10px 22px; border-radius:7px; font-weight:600; cursor:pointer;">
+            <button type="submit" id="btn-entregar-ap" style="background:#5b21b6; color:#fff; border:none; padding:10px 22px; border-radius:7px; font-weight:600; cursor:pointer;">
               <i class="fas fa-cloud-upload-alt"></i> Enviar Entrega
             </button>
           </form>
@@ -2030,7 +2030,7 @@ function cargarIncapacidadesAp() {
         RECHAZADA: 'background:#f8d7da; color:#721c24;'
       };
       let html = `<table style="width:100%; border-collapse:collapse;">
-        <thead><tr style="background:#006B2D; color:#fff;">
+        <thead><tr style="background:#5b21b6; color:#fff;">
           <th style="padding:9px 12px; text-align:left;">Período</th>
           <th style="padding:9px 12px; text-align:center;">Estado</th>
           <th style="padding:9px 12px; text-align:left;">Observación</th>
@@ -2039,7 +2039,7 @@ function cargarIncapacidadesAp() {
       data.forEach(i => {
         const bs = badgeMap[i.estado] || '';
         const doc = i.rutaArchivo
-          ? `<a href="/${i.rutaArchivo}" target="_blank" style="background:#006B2D; color:#fff; padding:4px 10px; border-radius:5px; text-decoration:none; font-size:0.82rem;"><i class="fas fa-download"></i> Ver</a>`
+          ? `<a href="/${i.rutaArchivo}" target="_blank" style="background:#5b21b6; color:#fff; padding:4px 10px; border-radius:5px; text-decoration:none; font-size:0.82rem;"><i class="fas fa-download"></i> Ver</a>`
           : '—';
         html += `<tr style="border-bottom:1px solid #e0f0e0;">
           <td style="padding:9px 12px;">${i.fechaInicio} → ${i.fechaFin}</td>
@@ -2086,7 +2086,7 @@ function cargarHistorialAsistenciaAp() {
         <div style="background:#f8d7da; color:#721c24; padding:10px 18px; border-radius:8px; font-weight:600;">❌ Ausentes: ${ausentes}</div>
       </div>
       <table style="width:100%; border-collapse:collapse;">
-        <thead><tr style="background:#006B2D; color:#fff;">
+        <thead><tr style="background:#5b21b6; color:#fff;">
           <th style="padding:10px 14px; text-align:left;">Fecha</th>
           <th style="padding:10px 14px; text-align:center;">Estado</th>
           <th style="padding:10px 14px; text-align:left;">Instructor</th>

@@ -18,7 +18,7 @@
 
     body {
       min-height: 100vh;
-      background: linear-gradient(135deg, #004d20 0%, #006B2D 40%, #008D3A 70%, #005a25 100%);
+      background: linear-gradient(135deg, #2e1065 0%, #5b21b6 40%, #6d28d9 70%, #005a25 100%);
       background-size: 300% 300%;
       animation: bgMove 10s ease infinite;
       display: flex; flex-direction: column;
@@ -88,7 +88,7 @@
     .reg-card::before {
       content: '';
       position: absolute; top: 0; left: 0; right: 0; height: 5px;
-      background: linear-gradient(90deg, #006B2D, #39A900, #006B2D);
+      background: linear-gradient(90deg, #5b21b6, #7c3aed, #5b21b6);
       border-radius: 24px 24px 0 0;
     }
 
@@ -96,7 +96,7 @@
     .robot-wrap { text-align: center; margin-bottom: 6px; }
     .robot-wrap img {
       width: 80px; height: 80px; object-fit: contain;
-      filter: drop-shadow(0 4px 12px rgba(0,107,45,0.3));
+      filter: drop-shadow(0 4px 12px rgba(91,33,182,0.3));
     }
 
     /* ── Título ── */
@@ -139,9 +139,9 @@
     }
     .input-wrap input::placeholder { color: #bbb; }
     .input-wrap input:focus {
-      border-color: #006B2D;
+      border-color: #5b21b6;
       background: #f0fff4;
-      box-shadow: 0 0 0 3px rgba(0,107,45,0.1);
+      box-shadow: 0 0 0 3px rgba(91,33,182,0.1);
     }
     .input-wrap input.input-error {
       border-color: #fca5a5 !important;
@@ -151,7 +151,7 @@
       position: absolute; right: 12px; cursor: pointer;
       color: #aaa; font-size: 13px; transition: color 0.2s;
     }
-    .input-wrap .eye:hover { color: #006B2D; }
+    .input-wrap .eye:hover { color: #5b21b6; }
 
     .field-err { font-size: 11px; color: #dc2626; margin-top: 4px; display: none; padding-left: 2px; }
 
@@ -186,13 +186,13 @@
     /* ── Botones principales ── */
     .btn-primary {
       width: 100%; padding: 13px; border: none; border-radius: 12px;
-      background: linear-gradient(135deg, #006B2D, #39A900);
+      background: linear-gradient(135deg, #5b21b6, #7c3aed);
       color: #fff; font-weight: 700; font-size: 14px;
       cursor: pointer; transition: all 0.3s;
-      box-shadow: 0 4px 20px rgba(0,107,45,0.3);
+      box-shadow: 0 4px 20px rgba(91,33,182,0.3);
       font-family: 'Poppins', sans-serif; margin-top: 8px;
     }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,107,45,0.45); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(91,33,182,0.45); }
 
     .divider {
       display: flex; align-items: center; gap: 12px;
@@ -204,8 +204,8 @@
 
     .btn-secondary {
       width: 100%; padding: 11px; border-radius: 12px;
-      border: 1.5px solid #006B2D;
-      background: transparent; color: #006B2D;
+      border: 1.5px solid #5b21b6;
+      background: transparent; color: #5b21b6;
       font-weight: 600; font-size: 13px; cursor: pointer;
       transition: all 0.3s; font-family: 'Poppins', sans-serif;
       text-decoration: none; display: block; text-align: center;
@@ -220,7 +220,7 @@
 </head>
 <body>
   <header>
-    <span class="brand">SIA · SENA</span>
+    <span class="brand">SIA ·</span>
     <a th:href="@{/login}" class="nav-btn">Iniciar sesión</a>
   </header>
 
@@ -358,7 +358,7 @@
         icon: msg.innerText.includes('correctamente') ? 'success' : 'error',
         title: msg.innerText.includes('correctamente') ? '¡Éxito!' : 'Error',
         text: msg.innerText,
-        confirmButtonColor: '#006B2D',
+        confirmButtonColor: '#5b21b6',
         timer: 3500, timerProgressBar: true
       });
     }
@@ -455,7 +455,7 @@
           icon: 'error',
           title: 'Verifica los campos',
           text: !cOk ? 'Los correos no coinciden.' : 'Las contraseñas no coinciden.',
-          confirmButtonColor: '#006B2D'
+          confirmButtonColor: '#5b21b6'
         });
       }
     });

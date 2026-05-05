@@ -140,7 +140,7 @@ public class CertificadoService {
                 document.add(logo);
             }
 
-            agregarCentrado(document, "SENA", 14, true);
+            agregarCentrado(document, "SIA", 14, true);
             agregarCentrado(document, "REGIONAL DISTRITO CAPITAL", 10, false);
             agregarCentrado(document, "CENTRO DE SERVICIOS FINANCIEROS", 10, false);
 

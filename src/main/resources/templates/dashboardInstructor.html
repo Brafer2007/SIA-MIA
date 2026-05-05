@@ -6,7 +6,7 @@
     <link rel="icon" type="image/png" th:href="@{/img/logo_sia_fondo.png}">
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard Instructor SENA</title>
+  <title>Dashboard Instructor</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css}">
   <link rel="stylesheet" th:href="@{/css/theme.css}"/>
@@ -17,14 +17,14 @@
       background-color: #FFFFFF;
       /* White background based on content area in image */
       color: #161616;
-      /* Dark green text for general content, matching SENA logo text */
+      /* Dark green text for general content, matching logo text */
       display: flex;
       overflow-x: hidden;
     }
 
     .sidebar {
       width: 250px;
-      background: #006B2D;
+      background: #5b21b6;
       padding: 20px;
       height: 100vh;
       position: fixed;
@@ -33,7 +33,7 @@
       display: flex;
       flex-direction: column;
       gap: 15px;
-      box-shadow: 2px 0 10px rgba(0, 107, 45, 0.2);
+      box-shadow: 2px 0 10px rgba(91, 33, 182, 0.2);
     }
 
     .sidebar a {
@@ -68,7 +68,7 @@
     .dashboard-header {
       text-align: center;
       margin-bottom: 30px;
-      color: #006B2D;
+      color: #5b21b6;
       /* Dark green header text */
     }
 
@@ -84,7 +84,7 @@
       padding: 20px;
       border-radius: 10px;
       text-align: center;
-      box-shadow: 0 0 15px rgba(0, 107, 45, 0.1);
+      box-shadow: 0 0 15px rgba(91, 33, 182, 0.1);
       /* Subtle green shadow */
       transition: transform 0.3s;
       cursor: pointer;
@@ -96,7 +96,7 @@
 
     .card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 5px 15px rgba(0, 107, 45, 0.15);
+      box-shadow: 0 5px 15px rgba(91, 33, 182, 0.15);
       /* More pronounced green shadow on hover */
       border: 1px solid #171817;
       /* Dark green border on hover */
@@ -105,7 +105,7 @@
     .card i {
       font-size: 40px;
       color: #1c1c1d;
-      /* Bright SENA green for icons, from "¡Comienza ahora!" button */
+      /* Bright green for icons, from "¡Comienza ahora!" button */
       margin-bottom: 15px;
     }
 
@@ -116,7 +116,7 @@
       /* White section background */
       padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0, 107, 45, 0.1);
+      box-shadow: 0 0 15px rgba(91, 33, 182, 0.1);
       /* Subtle green shadow */
       color: #111111;
       /* Dark green section text */
@@ -140,14 +140,14 @@
 
     th {
       background: #ffffff;
-      /* Bright SENA green for table headers */
+      /* Bright green for table headers */
       color: #171817;
       /* Dark green text on green header */
     }
 
     button {
       background: #eff5ef;
-      /* Bright SENA green for buttons */
+      /* Bright green for buttons */
       color: #000000;
       /* Dark green text for buttons */
       border: none;
@@ -187,13 +187,13 @@
     }
 
     .file-upload {
-      border: 2px dashed #006B2D;
+      border: 2px dashed #5b21b6;
       /* Dark green dashed border */
       padding: 20px;
       text-align: center;
       border-radius: 5px;
       margin: 15px 0;
-      color: #006B2D;
+      color: #5b21b6;
       /* Dark green file upload text */
     }
 
@@ -203,7 +203,7 @@
       padding: 15px;
       border-radius: 5px;
       margin: 10px 0;
-      color: #006B2D;
+      color: #5b21b6;
       /* Dark green doc list text */
       border: 1px solid #98FB98;
       /* Light green border */
@@ -226,7 +226,7 @@
 
     .badge-aprobado {
       background: #20860d;
-      /* Bright SENA green for approved */
+      /* Bright green for approved */
       color: #f3f7f3;
       /* Dark green text on bright green badge */
     }
@@ -244,7 +244,7 @@
       z-index: 1200;
       font-size: 24px;
       cursor: pointer;
-      color: #006B2D;
+      color: #5b21b6;
     }
     .noti-count {
       position: absolute;
@@ -278,12 +278,12 @@
       animation: fadeInNoti 0.18s ease-out;
     }
     @keyframes fadeInNoti { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
-    .btn-cerrar-noti { margin-top:10px; background:#006B2D; color:white; border:none; padding:8px 16px; border-radius:4px; cursor:pointer; }
+    .btn-cerrar-noti { margin-top:10px; background:#5b21b6; color:white; border:none; padding:8px 16px; border-radius:4px; cursor:pointer; }
     .noti-item { padding:10px 12px; margin-bottom:10px; border-left:4px solid #ccc; background:#fafafa; border-radius:4px; font-size:14px; }
     .noti-item.mensaje { border-left-color: #007bff; }
-    .noti-item.tarea_creada { border-left-color: #39A900; }
+    .noti-item.tarea_creada { border-left-color: #7c3aed; }
     .noti-item.tarea_entregada { border-left-color: #ff8c00; }
-    .noti-item.estado_solicitud { border-left-color: #006B2D; }
+    .noti-item.estado_solicitud { border-left-color: #5b21b6; }
     .noti-item .noti-titulo { font-weight: 600; margin-bottom: 4px; }
     .noti-item .noti-hora { font-size: 11px; color: #888; margin-top: 4px; }
 
@@ -335,7 +335,7 @@
     }
 
     .chat-bubble.own {
-      background: #006B2D;
+      background: #5b21b6;
       color: #ffffff;
       border-top-right-radius: 6px;
     }
@@ -352,7 +352,7 @@
     }
 
     #mensajes > div:first-child {
-      background: #006B2D !important;
+      background: #5b21b6 !important;
       color: #ffffff !important;
       border-radius: 10px 0 0 10px;
       padding: 12px !important;
@@ -382,7 +382,7 @@
   top: 12px;
   left: 12px;
   z-index: 200;
-  background: #006B2D;
+  background: #5b21b6;
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -441,7 +441,7 @@
 
   <div class="content">
     <div class="dashboard-header">
-      <h1>Panel del Instructor SENA</h1>
+      <h1>Panel del Instructor</h1>
       <p>Bienvenido, <span th:text="${usuario}">Usuario</span></p>
     </div>
 
@@ -475,7 +475,7 @@
 
         <!-- Datos personales -->
         <div style="flex:1; min-width:280px; background:#F0FFF0; border:1px solid #98FB98; border-radius:10px; padding:24px;">
-          <h3 style="margin-top:0; color:#006B2D;">Información Personal</h3>
+          <h3 style="margin-top:0; color:#5b21b6;">Información Personal</h3>
           <div style="display:grid; gap:12px; font-size:15px;">
             <p style="margin:0; border-bottom:1px solid #d1fae5; padding-bottom:8px;">
               <span style="color:#555; font-weight:600;">Nombres:</span>
@@ -502,13 +502,13 @@
 
         <!-- QR -->
         <div style="flex:0 0 auto; text-align:center; background:#F0FFF0; border:1px solid #98FB98; border-radius:10px; padding:24px;">
-          <h3 style="margin-top:0; color:#006B2D;">Mi Código QR</h3>
+          <h3 style="margin-top:0; color:#5b21b6;">Mi Código QR</h3>
           <p style="color:#555; font-size:13px; margin-bottom:16px;">Presenta este QR al guardia para registrar tu ingreso o salida.</p>
           <img id="qr-instructor-img" src="/aprendiz/instructor/qr-img"
                alt="QR Instructor"
-               style="width:220px; height:220px; border:3px solid #006B2D; border-radius:8px; display:block; margin:0 auto 16px;">
+               style="width:220px; height:220px; border:3px solid #5b21b6; border-radius:8px; display:block; margin:0 auto 16px;">
           <a href="/aprendiz/instructor/qr-img" download
-             style="display:inline-block; background:#006B2D; color:white; padding:8px 20px; border-radius:6px; text-decoration:none; font-weight:600; font-size:14px;">
+             style="display:inline-block; background:#5b21b6; color:white; padding:8px 20px; border-radius:6px; text-decoration:none; font-weight:600; font-size:14px;">
             <i class="fas fa-download"></i> Descargar QR
           </a>
         </div>
@@ -520,7 +520,7 @@
       <h2><i class="fas fa-calendar-alt"></i> Mi Cronograma</h2>
       <button onclick="abrirCalendarioGeneral()" style="
   margin-top: 10px;
-  background: #006B2D;
+  background: #5b21b6;
   color: white;
   border: none;
   padding: 8px 16px;
@@ -533,7 +533,7 @@
       <!-- Selector de instrucor -->
       <div style="margin-top: 15px; padding: 10px; background: #f9f9f9; border-radius: 5px;">
         <label for="selector-instructor" style="font-weight: bold; margin-right: 10px;">Ver cronograma de:</label>
-        <select id="selector-instructor" style="padding: 8px; border: 1px solid #006B2D; border-radius: 4px;">
+        <select id="selector-instructor" style="padding: 8px; border: 1px solid #5b21b6; border-radius: 4px;">
           <option value="">-- Mi Cronograma --</option>
         </select>
       </div>
@@ -582,7 +582,7 @@
 
         <div style="text-align: right; margin-bottom: 10px;">
           <button onclick="imprimirCalendario()" style="
-        background: #006B2D;
+        background: #5b21b6;
         color: white;
         border: none;
         padding: 6px 12px;
@@ -627,11 +627,11 @@
       cursor: pointer;
     ">×</button>
 
-        <h3 style="margin-top: 0; color: #006B2D;">Calendario Trimestral del Instructor</h3>
+        <h3 style="margin-top: 0; color: #5b21b6;">Calendario Trimestral del Instructor</h3>
 
         <div style="text-align: right; margin-bottom: 10px;">
           <button onclick="exportarCalendarioGeneral()" style="
-        background: #006B2D;
+        background: #5b21b6;
         color: white;
         border: none;
         padding: 6px 12px;
@@ -771,7 +771,7 @@
           <option value="CIERRE">Cierre (Entregar la llave)</option>
         </select>
 
-        <button onclick="enviarSolicitudAula()" type="button" id="btn-enviar-solicitud" style="margin-top: 15px; background:#006B2D; color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; font-weight:bold;">
+        <button onclick="enviarSolicitudAula()" type="button" id="btn-enviar-solicitud" style="margin-top: 15px; background:#5b21b6; color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; font-weight:bold;">
           <i class="fas fa-paper-plane"></i> Enviar Solicitud a Seguridad
         </button>
       </div>
@@ -888,20 +888,20 @@
   <div style="display:flex; width:100%; height:100%; border-radius:10px; overflow:hidden;">
 
     <!-- Lista de fichas -->
-    <div style="width:28%; background:#006B2D; padding:16px 12px; overflow-y:auto; flex-shrink:0;">
+    <div style="width:28%; background:#5b21b6; padding:16px 12px; overflow-y:auto; flex-shrink:0;">
       <p style="color:#a7f3c0; font-size:11px; font-weight:700; margin:0 0 12px; text-transform:uppercase; letter-spacing:1px;">FICHAS</p>
       <ul id="fichas-chat" style="list-style:none; padding:0; margin:0;"></ul>
     </div>
 
     <!-- Ventana de chat -->
     <div style="flex:1; display:flex; flex-direction:column; background:#28a745; overflow:hidden;">
-      <div style="background:#006B2D; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+      <div style="background:#5b21b6; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
         <h3 id="titulo-chat" style="margin:0; color:white; font-size:15px; font-weight:600;"></h3>
         <span id="chat-estado" style="font-size:11px; color:#a7f3c0;"></span>
       </div>
       <div id="mensajes-grupo" style="flex:1; overflow-y:auto; padding:12px; display:flex; flex-direction:column; gap:6px;"></div>
 
-      <form id="form-chat" style="display:flex; gap:8px; padding:10px 14px; background:#006B2D; align-items:center; flex-shrink:0;" onsubmit="return false;">
+      <form id="form-chat" style="display:flex; gap:8px; padding:10px 14px; background:#5b21b6; align-items:center; flex-shrink:0;" onsubmit="return false;">
         <label style="cursor:pointer; font-size:20px; flex:0 0 auto; display:flex; align-items:center; color:white;">
           📎
           <input type="file" id="archivo-mensaje" style="display:none;" onchange="uploadFileInstructor()">
@@ -910,7 +910,7 @@
                style="flex:1; border-radius:20px; border:none; padding:9px 16px; background:#f0fff0; color:#111; font-size:14px; outline:none;"
                onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();enviarMensajeChat(event);}">
         <button type="button" onclick="enviarMensajeChat(event)"
-                style="flex:0 0 auto; padding:9px 20px; background:#39A900; color:white; border:none; border-radius:20px; font-weight:600; cursor:pointer; font-size:14px;">Enviar</button>
+                style="flex:0 0 auto; padding:9px 20px; background:#7c3aed; color:white; border:none; border-radius:20px; font-weight:600; cursor:pointer; font-size:14px;">Enviar</button>
       </form>
     </div>
 
@@ -1000,7 +1000,7 @@
       <form id="upload-form" enctype="multipart/form-data">
         <input type="file" id="file" name="file" accept=".xlsx,.xls,.csv" required>
         <button type="submit"
-          style="padding: 10px; background: #006B2D; color: white; border: none; border-radius: 5px;">
+          style="padding: 10px; background: #5b21b6; color: white; border: none; border-radius: 5px;">
           <i class="fas fa-upload"></i> Subir Archivo
         </button>
       </form>
@@ -1013,19 +1013,19 @@
     <!-- ============================================================ -->
     <section id="asistencia" class="section">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
-        <h2 style="color:#006B2D; margin:0;"><i class="fas fa-user-check"></i> Registro de Asistencia</h2>
+        <h2 style="color:#5b21b6; margin:0;"><i class="fas fa-user-check"></i> Registro de Asistencia</h2>
         <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
           <div>
-            <label style="font-weight:600; color:#006B2D; margin-right:6px;">Ficha:</label>
+            <label style="font-weight:600; color:#5b21b6; margin-right:6px;">Ficha:</label>
             <select id="asist-ficha" onchange="cargarAsistencia()" style="padding:7px 12px; border:1px solid #8d918d; border-radius:6px; font-family:inherit; background:#fff; min-width:180px;">
               <option value="">Cargando fichas...</option>
             </select>
           </div>
           <div>
-            <label style="font-weight:600; color:#006B2D; margin-right:6px;">Fecha:</label>
+            <label style="font-weight:600; color:#5b21b6; margin-right:6px;">Fecha:</label>
             <input type="date" id="asist-fecha" onchange="cargarAsistencia()" style="padding:7px 12px; border:1px solid #8d918d; border-radius:6px; font-family:inherit;">
           </div>
-          <button onclick="guardarTodasAsistencias()" style="background:#006B2D; color:#fff; border:none; padding:9px 18px; border-radius:7px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:7px;">
+          <button onclick="guardarTodasAsistencias()" style="background:#5b21b6; color:#fff; border:none; padding:9px 18px; border-radius:7px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:7px;">
             <i class="fas fa-save"></i> Guardar Todo
           </button>
           <a id="btn-reporte-semanal" href="/asistencia/reporte/instructor/pdf" target="_blank"
@@ -1041,7 +1041,7 @@
       <!-- Sub-sección: Incapacidades pendientes -->
       <div style="margin-top:28px; border-top:2px solid #e0f0e0; padding-top:20px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <h3 style="color:#006B2D; margin:0;"><i class="fas fa-file-medical"></i> Incapacidades de la Ficha</h3>
+          <h3 style="color:#5b21b6; margin:0;"><i class="fas fa-file-medical"></i> Incapacidades de la Ficha</h3>
         </div>
         <div id="inc-inst-container"><p style="color:#888;">Selecciona una ficha arriba para ver incapacidades.</p></div>
       </div>
@@ -1052,16 +1052,16 @@
     <!-- ============================================================ -->
     <section id="incapacidades-inst" class="section">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
-        <h2 style="color:#006B2D; margin:0;"><i class="fas fa-file-medical"></i> Incapacidades</h2>
+        <h2 style="color:#5b21b6; margin:0;"><i class="fas fa-file-medical"></i> Incapacidades</h2>
         <div style="display:flex; gap:10px; align-items:center;">
-          <label style="font-weight:600; color:#006B2D;">Filtrar:</label>
+          <label style="font-weight:600; color:#5b21b6;">Filtrar:</label>
           <select id="inc-filtro-estado" onchange="filtrarIncapacidadesInst()" style="padding:7px 12px; border:1px solid #8d918d; border-radius:6px; font-family:inherit; background:#fff;">
             <option value="">Todas</option>
             <option value="PENDIENTE" selected>Pendientes</option>
             <option value="APROBADA">Aprobadas</option>
             <option value="RECHAZADA">Rechazadas</option>
           </select>
-          <button onclick="cargarTodasIncapacidades()" style="background:#006B2D; color:#fff; border:none; padding:8px 16px; border-radius:7px; font-weight:600; cursor:pointer;">
+          <button onclick="cargarTodasIncapacidades()" style="background:#5b21b6; color:#fff; border:none; padding:8px 16px; border-radius:7px; font-weight:600; cursor:pointer;">
             <i class="fas fa-sync"></i> Actualizar
           </button>
         </div>
@@ -1076,8 +1076,8 @@
     <!-- ============================================================ -->    <section id="tareas" class="section">
       <div id="tareas-vista-lista">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-          <h2 style="color:#006B2D; margin:0;"><i class="fas fa-clipboard-list"></i> Mis Tareas</h2>
-          <button onclick="mostrarVistaNuevaTarea()" style="background:#006B2D; color:#fff; border:none; padding:9px 18px; border-radius:7px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:7px;">
+          <h2 style="color:#5b21b6; margin:0;"><i class="fas fa-clipboard-list"></i> Mis Tareas</h2>
+          <button onclick="mostrarVistaNuevaTarea()" style="background:#5b21b6; color:#fff; border:none; padding:9px 18px; border-radius:7px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:7px;">
             <i class="fas fa-plus"></i> Nueva Tarea
           </button>
         </div>
@@ -1090,10 +1090,10 @@
 
       <div id="tareas-vista-nueva" style="display:none;">
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
-          <button onclick="mostrarVistaListaTareas()" style="background:#fff; color:#006B2D; border:2px solid #006B2D; padding:7px 14px; border-radius:7px; font-weight:600; cursor:pointer;">
+          <button onclick="mostrarVistaListaTareas()" style="background:#fff; color:#5b21b6; border:2px solid #5b21b6; padding:7px 14px; border-radius:7px; font-weight:600; cursor:pointer;">
             <i class="fas fa-arrow-left"></i> Volver
           </button>
-          <h2 style="color:#006B2D; margin:0;"><i class="fas fa-plus-circle"></i> Nueva Tarea</h2>
+          <h2 style="color:#5b21b6; margin:0;"><i class="fas fa-plus-circle"></i> Nueva Tarea</h2>
         </div>
         <div id="nueva-tarea-error" style="display:none; background:#f8d7da; color:#721c24; padding:10px 14px; border-radius:7px; margin-bottom:14px;"></div>
         <div id="nueva-tarea-sin-fichas" style="display:none; background:#fff3cd; color:#856404; padding:10px 14px; border-radius:7px; margin-bottom:14px;">
@@ -1101,33 +1101,33 @@
         </div>
         <form id="form-nueva-tarea" enctype="multipart/form-data" onsubmit="submitNuevaTarea(event)" style="background:#F0FFF0; padding:22px; border-radius:10px; border:1px solid #e0f0e0; max-width:620px;">
           <div style="margin-bottom:14px;">
-            <label style="display:block; font-weight:600; color:#006B2D; margin-bottom:5px;">Título *</label>
+            <label style="display:block; font-weight:600; color:#5b21b6; margin-bottom:5px;">Título *</label>
             <input type="text" id="nt-titulo" maxlength="200" placeholder="Ej: Taller de bases de datos" required style="width:100%; padding:9px 12px; border:1px solid #8d918d; border-radius:6px; font-family:inherit;">
           </div>
           <div style="margin-bottom:14px;">
-            <label style="display:block; font-weight:600; color:#006B2D; margin-bottom:5px;">Descripción</label>
+            <label style="display:block; font-weight:600; color:#5b21b6; margin-bottom:5px;">Descripción</label>
             <textarea id="nt-descripcion" rows="3" placeholder="Describe los objetivos..." style="width:100%; padding:9px 12px; border:1px solid #8d918d; border-radius:6px; font-family:inherit; resize:vertical;"></textarea>
           </div>
           <div style="margin-bottom:14px;">
-            <label style="display:block; font-weight:600; color:#006B2D; margin-bottom:5px;">Fecha Límite *</label>
+            <label style="display:block; font-weight:600; color:#5b21b6; margin-bottom:5px;">Fecha Límite *</label>
             <input type="datetime-local" id="nt-fecha" required style="width:100%; padding:9px 12px; border:1px solid #8d918d; border-radius:6px; font-family:inherit;">
           </div>
           <div style="margin-bottom:14px;">
-            <label style="display:block; font-weight:600; color:#006B2D; margin-bottom:5px;">Ficha *</label>
+            <label style="display:block; font-weight:600; color:#5b21b6; margin-bottom:5px;">Ficha *</label>
             <select id="nt-ficha" required style="width:100%; padding:9px 12px; border:1px solid #8d918d; border-radius:6px; font-family:inherit; background:#fff;">
               <option value="">-- Selecciona una ficha --</option>
             </select>
           </div>
           <div style="margin-bottom:18px;">
-            <label style="display:block; font-weight:600; color:#006B2D; margin-bottom:5px;">Archivo adjunto (opcional)</label>
+            <label style="display:block; font-weight:600; color:#5b21b6; margin-bottom:5px;">Archivo adjunto (opcional)</label>
             <input type="file" id="nt-archivo" accept=".pdf,.docx,.xlsx,.png,.jpg" style="width:100%; padding:9px 12px; border:1px solid #8d918d; border-radius:6px; background:#fff;">
             <span style="font-size:0.8rem; color:#666;">PDF, DOCX, XLSX, PNG, JPG — máx. 10 MB</span>
           </div>
           <div style="display:flex; gap:10px;">
-            <button type="submit" id="btn-guardar-tarea" style="background:#006B2D; color:#fff; border:none; padding:10px 22px; border-radius:7px; font-weight:600; cursor:pointer;">
+            <button type="submit" id="btn-guardar-tarea" style="background:#5b21b6; color:#fff; border:none; padding:10px 22px; border-radius:7px; font-weight:600; cursor:pointer;">
               <i class="fas fa-save"></i> Guardar Tarea
             </button>
-            <button type="button" onclick="mostrarVistaListaTareas()" style="background:#fff; color:#006B2D; border:2px solid #006B2D; padding:10px 22px; border-radius:7px; font-weight:600; cursor:pointer;">
+            <button type="button" onclick="mostrarVistaListaTareas()" style="background:#fff; color:#5b21b6; border:2px solid #5b21b6; padding:10px 22px; border-radius:7px; font-weight:600; cursor:pointer;">
               Cancelar
             </button>
           </div>
@@ -1136,10 +1136,10 @@
 
       <div id="tareas-vista-entregas" style="display:none;">
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
-          <button onclick="mostrarVistaListaTareas()" style="background:#fff; color:#006B2D; border:2px solid #006B2D; padding:7px 14px; border-radius:7px; font-weight:600; cursor:pointer;">
+          <button onclick="mostrarVistaListaTareas()" style="background:#fff; color:#5b21b6; border:2px solid #5b21b6; padding:7px 14px; border-radius:7px; font-weight:600; cursor:pointer;">
             <i class="fas fa-arrow-left"></i> Volver
           </button>
-          <h2 style="color:#006B2D; margin:0;"><i class="fas fa-clipboard-check"></i> Entregas</h2>
+          <h2 style="color:#5b21b6; margin:0;"><i class="fas fa-clipboard-check"></i> Entregas</h2>
         </div>
         <div id="entregas-msg-exito" style="display:none; background:#d4edda; color:#155724; padding:10px 14px; border-radius:7px; margin-bottom:14px;"></div>
         <div id="entregas-msg-error" style="display:none; background:#f8d7da; color:#721c24; padding:10px 14px; border-radius:7px; margin-bottom:14px;"></div>
@@ -1167,7 +1167,7 @@
   bottom: 20px;
   right: 20px;
   background: white;
-  border: 1px solid #006B2D;
+  border: 1px solid #5b21b6;
   padding: 15px;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
@@ -1220,7 +1220,7 @@ function mostrarNotificacionVisual(notificacion) {
     position: fixed;
     top: 20px;
     right: 20px;
-    background: linear-gradient(135deg, #006B2D 0%, #008D4D 100%);
+    background: linear-gradient(135deg, #5b21b6 0%, #008D4D 100%);
     color: white;
     padding: 15px 20px;
     border-radius: 8px;
@@ -1451,7 +1451,7 @@ function showSection(eOrId, maybeId) {
 
       let tabla = `
       <table style="width:100%; border-collapse: collapse; margin-top: 10px;">
-        <thead style="background: #006B2D; color: white;">
+        <thead style="background: #5b21b6; color: white;">
           <tr>
             <th>Ficha</th><th>Programa</th><th>Curso</th><th>Ambiente</th><th>Hora</th><th>Trimestre</th><th>Acciones</th>
           </tr>
@@ -1623,7 +1623,7 @@ function showSection(eOrId, maybeId) {
           "SEPTIEMBRE": 8, "OCTUBRE": 9, "NOVIEMBRE": 10, "DICIEMBRE": 11
         };
 
-        // Mapeo de trimestres a sus meses (configuración SENA)
+        // Mapeo de trimestres a sus meses (configuración)
         const trimestresAMeses = {
           "1": ["ENERO", "FEBRERO", "MARZO"],
           "2": ["ABRIL", "MAYO", "JUNIO"],
@@ -1677,7 +1677,7 @@ function showSection(eOrId, maybeId) {
           const diasEnMes = new Date(año, mes + 1, 0).getDate();
           const primerDiaSemana = (new Date(año, mes, 1).getDay() + 6) % 7;
 
-          let html = `<h3 style="text-align:center; margin-top:20px; color:#006B2D;">${mesTexto} ${año}</h3>`;
+          let html = `<h3 style="text-align:center; margin-top:20px; color:#5b21b6;">${mesTexto} ${año}</h3>`;
           html += `<table style="border-collapse:collapse; width:100%; font-size:0.9em; background:white; border:1px solid #ccc;">
                   <thead style="background:#f0f0f0;">
                     <tr>${nombreDias.map(d => `<th style="padding:8px; border:1px solid #ccc;">${d}</th>`).join('')}</tr>
@@ -1756,8 +1756,8 @@ function showSection(eOrId, maybeId) {
           
           const htmlMeses = mesesReales.map(m => generarMes(m)).join('<hr style="margin: 20px 0;">');
           return `
-            <div style="margin-bottom: 40px; padding: 20px; background: #f9f9f9; border-left: 4px solid #006B2D;">
-              <h2 style="color: #006B2D; margin-top: 0;">Trimestre ${trimestre}</h2>
+            <div style="margin-bottom: 40px; padding: 20px; background: #f9f9f9; border-left: 4px solid #5b21b6;">
+              <h2 style="color: #5b21b6; margin-top: 0;">Trimestre ${trimestre}</h2>
               ${htmlMeses}
             </div>
           `;
@@ -1858,7 +1858,7 @@ function showSection(eOrId, maybeId) {
       <strong>Ambiente:</strong> ${s.aula}<br>
       <button onclick="abrirChatFicha('${s.nombreFicha}')" style="
         margin-top: 6px;
-        background: #006B2D;
+        background: #5b21b6;
         color: white;
         border: none;
         padding: 6px 12px;
@@ -2417,7 +2417,7 @@ function cargarTareas() {
       let filtroHtml = '';
       if (fichas.length > 1) {
         filtroHtml = `<div style="margin-bottom:12px; display:flex; align-items:center; gap:10px;">
-          <label style="font-weight:600; color:#006B2D;">Filtrar por ficha:</label>
+          <label style="font-weight:600; color:#5b21b6;">Filtrar por ficha:</label>
           <select id="filtro-ficha-tareas" onchange="filtrarTareasPorFicha()" style="padding:7px 12px; border:1px solid #8d918d; border-radius:6px; font-family:inherit; background:#fff; min-width:200px;">
             <option value="">Todas las fichas</option>
             ${fichas.map(f => `<option value="${escHtml(f)}">${escHtml(f)}</option>`).join('')}
@@ -2445,7 +2445,7 @@ function renderTablaTareas(tareas) {
     return;
   }
   let html = `<table style="width:100%; border-collapse:collapse;">
-    <thead><tr style="background:#006B2D; color:#fff;">
+    <thead><tr style="background:#5b21b6; color:#fff;">
       <th style="padding:10px 14px; text-align:left;">Título</th>
       <th style="padding:10px 14px; text-align:left;">Ficha</th>
       <th style="padding:10px 14px; text-align:left;">Fecha Límite</th>
@@ -2458,7 +2458,7 @@ function renderTablaTareas(tareas) {
       <td style="padding:10px 14px;">${escHtml(t.nombreFicha)}</td>
       <td style="padding:10px 14px;">${fecha}</td>
       <td style="padding:10px 14px; text-align:center; display:flex; gap:6px; justify-content:center;">
-        <button onclick="mostrarVistaEntregas(${t.id})" style="background:#006B2D; color:#fff; border:none; padding:6px 14px; border-radius:6px; cursor:pointer; font-size:0.85rem;">
+        <button onclick="mostrarVistaEntregas(${t.id})" style="background:#5b21b6; color:#fff; border:none; padding:6px 14px; border-radius:6px; cursor:pointer; font-size:0.85rem;">
           <i class="fas fa-eye"></i> Ver Entregas
         </button>
         <button onclick="eliminarTareaInst(${t.id})" style="background:#dc3545; color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:0.85rem;">
@@ -2560,7 +2560,7 @@ function cargarEntregas(idTarea) {
         return;
       }
       let html = `<table style="width:100%; border-collapse:collapse;">
-        <thead><tr style="background:#006B2D; color:#fff;">
+        <thead><tr style="background:#5b21b6; color:#fff;">
           <th style="padding:10px 12px; text-align:left;">Nombre</th>
           <th style="padding:10px 12px; text-align:center;">Estado</th>
           <th style="padding:10px 12px; text-align:center;">Fecha Entrega</th>
@@ -2574,14 +2574,14 @@ function cargarEntregas(idTarea) {
           ? 'background:#d4edda; color:#155724;'
           : 'background:#e2e3e5; color:#383d41;';
         const descarga = e.rutaArchivo
-          ? `<a href="/${e.rutaArchivo}" target="_blank" style="background:#006B2D; color:#fff; padding:4px 10px; border-radius:5px; text-decoration:none; font-size:0.82rem;"><i class="fas fa-download"></i> Descargar</a>`
+          ? `<a href="/${e.rutaArchivo}" target="_blank" style="background:#5b21b6; color:#fff; padding:4px 10px; border-radius:5px; text-decoration:none; font-size:0.82rem;"><i class="fas fa-download"></i> Descargar</a>`
           : '—';
         const notaActual = e.nota != null ? e.nota : '—';
         const formCalif = e.idEntrega
           ? `<div style="display:flex; gap:5px; align-items:center; flex-wrap:wrap;">
                <input type="number" id="nota-${e.idEntrega}" min="0" max="5" step="0.1" value="${e.nota != null ? e.nota : ''}" placeholder="0-5" style="width:65px; padding:4px 7px; border:1px solid #ccc; border-radius:5px; font-size:0.85rem;">
                <input type="text" id="com-${e.idEntrega}" value="${escHtml(e.comentario || '')}" placeholder="Comentario" style="width:120px; padding:4px 7px; border:1px solid #ccc; border-radius:5px; font-size:0.85rem;">
-               <button onclick="guardarCalificacion(${idTarea}, ${e.idEntrega})" style="background:#006B2D; color:#fff; border:none; padding:4px 10px; border-radius:5px; cursor:pointer; font-size:0.82rem;"><i class="fas fa-save"></i></button>
+               <button onclick="guardarCalificacion(${idTarea}, ${e.idEntrega})" style="background:#5b21b6; color:#fff; border:none; padding:4px 10px; border-radius:5px; cursor:pointer; font-size:0.82rem;"><i class="fas fa-save"></i></button>
              </div>`
           : '—';
         html += `<tr style="border-bottom:1px solid #e0f0e0;">
@@ -2589,7 +2589,7 @@ function cargarEntregas(idTarea) {
           <td style="padding:10px 12px; text-align:center;"><span style="padding:3px 10px; border-radius:10px; font-size:0.78rem; font-weight:600; ${badgeStyle}">${e.estadoEntrega}</span></td>
           <td style="padding:10px 12px; text-align:center;">${fecha}</td>
           <td style="padding:10px 12px; text-align:center;">${descarga}</td>
-          <td style="padding:10px 12px; text-align:center; font-weight:600; color:#006B2D;">${notaActual}</td>
+          <td style="padding:10px 12px; text-align:center; font-weight:600; color:#5b21b6;">${notaActual}</td>
           <td style="padding:10px 12px;">${formCalif}</td>
         </tr>`;
       });
@@ -2697,7 +2697,7 @@ function cargarAsistencia() {
 function renderTablaAsistencia(data, fecha) {
   const cont = document.getElementById('asist-container');
   let html = `<table style="width:100%; border-collapse:collapse;">
-    <thead><tr style="background:#006B2D; color:#fff;">
+    <thead><tr style="background:#5b21b6; color:#fff;">
       <th style="padding:10px 14px; text-align:left;">Aprendiz</th>
       <th style="padding:10px 14px; text-align:center; width:110px;">✅ Presente</th>
       <th style="padding:10px 14px; text-align:center; width:110px;">⏰ Retraso</th>
@@ -2718,7 +2718,7 @@ function renderTablaAsistencia(data, fecha) {
       <td style="padding:10px 14px; text-align:center;">
         <input type="radio" name="asist-${a.idAprendiz}" value="PRESENTE" ${presente ? 'checked' : ''}
           onchange="marcarAsistencia(${a.idAprendiz}, 'PRESENTE', '${fecha}')"
-          style="width:18px; height:18px; accent-color:#006B2D; cursor:pointer;">
+          style="width:18px; height:18px; accent-color:#5b21b6; cursor:pointer;">
       </td>
       <td style="padding:10px 14px; text-align:center;">
         <input type="radio" name="asist-${a.idAprendiz}" value="RETRASO" ${retraso ? 'checked' : ''}
@@ -2860,7 +2860,7 @@ function cargarIncapacidadesInstructor(ficha) {
       };
       let html = `<div id="inc-inst-msg" style="display:none; padding:10px 14px; border-radius:7px; margin-bottom:12px;"></div>
         <table style="width:100%; border-collapse:collapse;">
-        <thead><tr style="background:#006B2D; color:#fff;">
+        <thead><tr style="background:#5b21b6; color:#fff;">
           <th style="padding:9px 12px; text-align:left;">Aprendiz</th>
           <th style="padding:9px 12px; text-align:left;">Período</th>
           <th style="padding:9px 12px; text-align:center;">Estado</th>
@@ -2871,11 +2871,11 @@ function cargarIncapacidadesInstructor(ficha) {
       data.forEach(i => {
         const bs = badgeMap[i.estado] || '';
         const doc = i.rutaArchivo
-          ? `<a href="/${i.rutaArchivo}" target="_blank" style="background:#006B2D; color:#fff; padding:4px 10px; border-radius:5px; text-decoration:none; font-size:0.82rem;"><i class="fas fa-eye"></i> Ver</a>`
+          ? `<a href="/${i.rutaArchivo}" target="_blank" style="background:#5b21b6; color:#fff; padding:4px 10px; border-radius:5px; text-decoration:none; font-size:0.82rem;"><i class="fas fa-eye"></i> Ver</a>`
           : '—';
         const acciones = i.estado === 'PENDIENTE'
           ? `<div style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap;">
-               <button onclick="revisarIncapacidad(${i.id}, 'APROBADA')" style="background:#006B2D; color:#fff; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; font-size:0.82rem;"><i class="fas fa-check"></i> Aprobar</button>
+               <button onclick="revisarIncapacidad(${i.id}, 'APROBADA')" style="background:#5b21b6; color:#fff; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; font-size:0.82rem;"><i class="fas fa-check"></i> Aprobar</button>
                <button onclick="revisarIncapacidad(${i.id}, 'RECHAZADA')" style="background:#dc3545; color:#fff; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; font-size:0.82rem;"><i class="fas fa-times"></i> Rechazar</button>
              </div>`
           : `<span style="color:#aaa; font-size:0.85rem;">${i.estado}</span>`;
@@ -2936,7 +2936,7 @@ function renderTablaIncapacidadesInst(data) {
   };
 
   let html = `<table style="width:100%; border-collapse:collapse;">
-    <thead><tr style="background:#006B2D; color:#fff;">
+    <thead><tr style="background:#5b21b6; color:#fff;">
       <th style="padding:10px 14px; text-align:left;">Aprendiz</th>
       <th style="padding:10px 14px; text-align:left;">Período</th>
       <th style="padding:10px 14px; text-align:center;">Estado</th>
@@ -2949,7 +2949,7 @@ function renderTablaIncapacidadesInst(data) {
     const bs = badgeMap[i.estado] || '';
     const doc = i.rutaArchivo
       ? `<a href="/${i.rutaArchivo}" target="_blank"
-           style="background:#006B2D; color:#fff; padding:5px 12px; border-radius:6px; text-decoration:none; font-size:0.82rem; display:inline-flex; align-items:center; gap:5px;">
+           style="background:#5b21b6; color:#fff; padding:5px 12px; border-radius:6px; text-decoration:none; font-size:0.82rem; display:inline-flex; align-items:center; gap:5px;">
            <i class="fas fa-eye"></i> Ver
          </a>`
       : '<span style="color:#aaa;">Sin archivo</span>';
@@ -2958,7 +2958,7 @@ function renderTablaIncapacidadesInst(data) {
     if (i.estado === 'PENDIENTE') {
       acciones = `<div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
         <button onclick="revisarIncapacidadDedicada(${i.id}, 'APROBADA')"
-          style="background:#006B2D; color:#fff; border:none; padding:7px 14px; border-radius:6px; cursor:pointer; font-weight:600; font-size:0.85rem; display:flex; align-items:center; gap:5px;">
+          style="background:#5b21b6; color:#fff; border:none; padding:7px 14px; border-radius:6px; cursor:pointer; font-weight:600; font-size:0.85rem; display:flex; align-items:center; gap:5px;">
           <i class="fas fa-check"></i> Aprobar
         </button>
         <button onclick="revisarIncapacidadDedicada(${i.id}, 'RECHAZADA')"
