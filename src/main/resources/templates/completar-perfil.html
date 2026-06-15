@@ -1,0 +1,114 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Completa tu perfil - SIA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#0f1f35 0%,#1e3a5f 50%,#2d6a9f 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+    .card{background:#fff;border-radius:20px;padding:40px 36px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(15,31,53,.4)}
+    .card-icon{width:64px;height:64px;background:linear-gradient(135deg,#1e3a5f,#2d6a9f);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+    .card-icon i{color:#fff;font-size:28px}
+    h2{text-align:center;font-size:22px;font-weight:700;color:#1a2332;margin-bottom:8px}
+    .subtitle{text-align:center;font-size:14px;color:#6b7280;margin-bottom:28px;line-height:1.6}
+    .bienvenida{background:#f0f7ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 16px;margin-bottom:24px;font-size:14px;color:#1e3a5f}
+    .bienvenida strong{display:block;font-size:15px;margin-bottom:2px}
+    .field{margin-bottom:20px}
+    .field label{display:block;font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+    .field input{width:100%;padding:11px 14px;border:1.5px solid #d1d5db;border-radius:10px;font-size:15px;font-family:'Poppins',sans-serif;transition:border-color .2s,box-shadow .2s;background:#f9fafb;color:#1a2332}
+    .field input:focus{outline:none;border-color:#2d6a9f;box-shadow:0 0 0 3px rgba(45,106,159,.15);background:#fff}
+    .hint{font-size:12px;color:#9ca3af;margin-top:5px}
+    .hint.error{color:#ef4444}
+    .hint.ok{color:#10b981}
+    .optional-toggle{display:flex;align-items:center;gap:10px;margin-bottom:20px;cursor:pointer;user-select:none}
+    .optional-toggle input[type="checkbox"]{accent-color:#2d6a9f;width:18px;height:18px}
+    .optional-toggle span{font-size:14px;color:#374151;font-weight:500}
+    .username-field{display:none}
+    .username-field.visible{display:block}
+    .btn{width:100%;padding:13px;background:linear-gradient(135deg,#1e3a5f,#2d6a9f);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(30,58,95,.3);margin-top:8px}
+    .btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(30,58,95,.4)}
+    .btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+    .alert{padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px}
+    .alert-error{background:#fef2f2;border:1px solid #fca5a5;color:#dc2626}
+    @media(max-width:480px){.card{padding:28px 20px}}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="card-icon"><i class="fas fa-user-shield"></i></div>
+    <h2>Completa tu perfil</h2>
+    <p class="subtitle">Tu cuenta fue creada automáticamente. Por favor completa los datos obligatorios antes de continuar.</p>
+    <div class="bienvenida">
+      <strong>👋 Bienvenido, <span th:text="${usuario.nombres} + ' ' + ${usuario.apellidos}">Instructor</span></strong>
+      <span>Usuario actual: <code th:text="${usuario.nombreUsuario}">usuario</code></span>
+    </div>
+    <div th:if="${error}" class="alert alert-error">
+      <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+    </div>
+    <form th:action="@{/completar-perfil}" method="post" id="form-perfil">
+      <div class="field">
+        <label><i class="fas fa-id-card"></i> Número de documento *</label>
+        <input type="text" name="noDocumento" id="noDocumento" placeholder="Ej: 1234567890" required oninput="validarDocumento(this)">
+        <div class="hint" id="hint-doc">Ingresa tu cédula o documento de identidad.</div>
+      </div>
+      <label class="optional-toggle">
+        <input type="checkbox" id="chk-username" onchange="toggleUsername(this)">
+        <span>¿Deseas cambiar tu nombre de usuario?</span>
+      </label>
+      <div class="field username-field" id="username-field">
+        <label><i class="fas fa-at"></i> Nuevo nombre de usuario</label>
+        <input type="text" name="nombreUsuario" id="nombreUsuario" placeholder="Ej: carlos.garcia" oninput="validarUsername(this)" th:value="${usuario.nombreUsuario}">
+        <div class="hint" id="hint-user">Solo letras, números y puntos. Mínimo 4 caracteres.</div>
+      </div>
+      <button type="submit" class="btn" id="btn-guardar">
+        <i class="fas fa-check"></i> Guardar y continuar al dashboard
+      </button>
+    </form>
+  </div>
+  <script>
+    function toggleUsername(chk) {
+      document.getElementById('username-field').classList.toggle('visible', chk.checked);
+      document.getElementById('nombreUsuario').required = chk.checked;
+    }
+    function validarDocumento(input) {
+      const hint = document.getElementById('hint-doc');
+      const val = input.value.trim();
+      if (!val || val.length < 5) { hint.textContent = 'Mínimo 5 caracteres.'; hint.className = 'hint error'; }
+      else if (!/^\d+$/.test(val)) { hint.textContent = 'Solo números.'; hint.className = 'hint error'; }
+      else { hint.textContent = '✓ Documento válido'; hint.className = 'hint ok'; }
+    }
+    function validarUsername(input) {
+      const hint = document.getElementById('hint-user');
+      const val = input.value.trim();
+      if (val.length < 4) { hint.textContent = 'Mínimo 4 caracteres.'; hint.className = 'hint error'; }
+      else if (!/^[a-zA-Z0-9.]+$/.test(val)) { hint.textContent = 'Solo letras, números y puntos.'; hint.className = 'hint error'; }
+      else { hint.textContent = '✓ Válido'; hint.className = 'hint ok'; }
+    }
+    document.getElementById('form-perfil').addEventListener('submit', function(e) {
+      const doc = document.getElementById('noDocumento').value.trim();
+      if (!doc || doc.length < 5 || !/^\d+$/.test(doc)) {
+        e.preventDefault();
+        document.getElementById('hint-doc').textContent = 'Ingresa un documento válido.';
+        document.getElementById('hint-doc').className = 'hint error';
+        return;
+      }
+      const chk = document.getElementById('chk-username');
+      if (chk.checked) {
+        const usr = document.getElementById('nombreUsuario').value.trim();
+        if (usr.length < 4 || !/^[a-zA-Z0-9.]+$/.test(usr)) {
+          e.preventDefault();
+          document.getElementById('hint-user').textContent = 'Nombre de usuario inválido.';
+          document.getElementById('hint-user').className = 'hint error';
+          return;
+        }
+      }
+      document.getElementById('btn-guardar').disabled = true;
+      document.getElementById('btn-guardar').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+    });
+  </script>
+</body>
+</html>

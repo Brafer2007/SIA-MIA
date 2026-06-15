@@ -3,12 +3,16 @@ package com.example.SIA.controller;
 import com.example.SIA.dto.FestivoDTO;
 import com.example.SIA.dto.ProgramacionDTO;
 import com.example.SIA.entity.Instructor;
+import com.example.SIA.entity.Perfil;
 import com.example.SIA.entity.Programacion;
 import com.example.SIA.entity.Usuario;
+import com.example.SIA.repository.InstructorRepository;
+import com.example.SIA.repository.PerfilRepository;
 import com.example.SIA.repository.ProgramacionRepository;
+import com.example.SIA.repository.UsuarioRepository;
 import com.example.SIA.service.InstructorService;
 import com.example.SIA.service.FestivoService;
-import com.example.SIA.pattern.strategy.AjusteCalendarioStrategy; // PATRON STRATEGY
+import com.example.SIA.pattern.strategy.AjusteCalendarioStrategy;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -37,10 +41,19 @@ public class ProgramacionController {
     private InstructorService instructorService;
 
     @Autowired
+    private InstructorRepository instructorRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PerfilRepository perfilRepository;
+
+    @Autowired
     private FestivoService festivoService;
 
     @Autowired
-    private AjusteCalendarioStrategy ajusteCalendarioStrategy; // Inyección de la Estrategia
+    private AjusteCalendarioStrategy ajusteCalendarioStrategy;
 
     @PostMapping("/upload")
     public ResponseEntity<Map<String, Object>> uploadProgramacion(@RequestParam("file") MultipartFile file,
@@ -191,6 +204,7 @@ public class ProgramacionController {
         List<Programacion> listaProgramacion = new ArrayList<>();
         List<String> errores = new ArrayList<>();
         List<String> muestrasIgnoradas = new ArrayList<>();
+        List<String> instructoresCreados = new ArrayList<>();
 
         if (file.isEmpty()) {
             response.put("error", "El archivo está vacío ❌");
@@ -240,14 +254,22 @@ public class ProgramacionController {
                     continue;
                 }
 
-                // Buscar instructor por nombre
+                // Buscar instructor por nombre — si no existe, crearlo automáticamente
                 Instructor instructor = null;
                 try {
                     instructor = instructorService.buscarPorNombreNormalizado(instructorNombreExcel);
                 } catch (Exception e) {
-                    filasIgnoradas++;
-                    if (muestrasIgnoradas.size() < 10) muestrasIgnoradas.add("Fila " + row.getRowNum() + ": instructor '" + instructorNombreExcel + "' no encontrado");
-                    continue;
+                    // No existe: crear usuario + instructor automáticamente
+                    try {
+                        instructor = crearInstructorDesdeExcel(instructorNombreExcel);
+                        instructoresCreados.add(instructorNombreExcel);
+                        logger.info("Instructor creado automáticamente: {}", instructorNombreExcel);
+                    } catch (Exception ex) {
+                        filasIgnoradas++;
+                        if (muestrasIgnoradas.size() < 10)
+                            muestrasIgnoradas.add("Fila " + row.getRowNum() + ": no se pudo crear instructor '" + instructorNombreExcel + "' - " + ex.getMessage());
+                        continue;
+                    }
                 }
 
                 String[] horas = hora.split("A");
@@ -304,10 +326,11 @@ public class ProgramacionController {
             programacionRepository.saveAll(listaProgramacion);
 
             response.put("mensaje", "Archivo cargado y procesado correctamente (Admin). "
-                    + (errores.isEmpty() ? "Se ajustaron fechas por festivos ✅" : "Sin ajuste de festivos."));
+                    + (errores.isEmpty() ? "✅" : "Sin ajuste de festivos."));
             response.put("totalFilas", totalFilas);
             response.put("filasProcesadas", filasProcesadas);
             response.put("filasIgnoradas", filasIgnoradas);
+            response.put("instructoresCreados", instructoresCreados);
             response.put("programacion",
                     listaProgramacion.stream().map(ProgramacionDTO::new).collect(Collectors.toList()));
             response.put("muestrasIgnoradas", muestrasIgnoradas);
@@ -391,6 +414,70 @@ public class ProgramacionController {
         }
 
         return ResponseEntity.ok(resultado);
+    }
+
+    /**
+     * Crea un usuario con rol Instructor y su entidad Instructor a partir del nombre
+     * que viene en el Excel. Contraseña base: "123456789".
+     */
+    private Instructor crearInstructorDesdeExcel(String nombreCompleto) {
+        // Separar nombres y apellidos (primeras 2 palabras = nombres, resto = apellidos)
+        String[] partes = nombreCompleto.trim().split("\\s+");
+        String nombres, apellidos;
+        if (partes.length >= 4) {
+            nombres = partes[0] + " " + partes[1];
+            apellidos = partes[2] + " " + partes[3];
+        } else if (partes.length == 3) {
+            nombres = partes[0];
+            apellidos = partes[1] + " " + partes[2];
+        } else if (partes.length == 2) {
+            nombres = partes[0];
+            apellidos = partes[1];
+        } else {
+            nombres = nombreCompleto;
+            apellidos = "";
+        }
+
+        // Generar nombre de usuario único basado en nombre+apellido
+        String baseUsuario = normalizar(nombres.split(" ")[0])
+                + "." + normalizar(apellidos.split(" ")[0]);
+        baseUsuario = baseUsuario.toLowerCase().replaceAll("[^a-z0-9.]", "");
+        String nombreUsuario = baseUsuario;
+        int sufijo = 1;
+        while (usuarioRepository.existsByNombreUsuario(nombreUsuario)) {
+            nombreUsuario = baseUsuario + sufijo++;
+        }
+
+        // Obtener perfil Instructor
+        Perfil perfil = perfilRepository.findByNombrePerfil("Instructor")
+                .orElseThrow(() -> new RuntimeException("Perfil 'Instructor' no encontrado en BD"));
+
+        // Crear usuario
+        Usuario usuario = new Usuario();
+        usuario.setNombres(capitalize(nombres));
+        usuario.setApellidos(capitalize(apellidos));
+        usuario.setNombreUsuario(nombreUsuario);
+        usuario.setCorreo(nombreUsuario + "@sia.edu.co");
+        usuario.setNoDocumento("PENDIENTE-" + System.currentTimeMillis());
+        usuario.setPassUsuario(new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder()
+                .encode("123456789"));
+        usuario.setEstado(1);
+        usuario.setPerfil(perfil);
+        usuarioRepository.save(usuario);
+
+        // Crear instructor
+        Instructor instructor = new Instructor();
+        instructor.setUsuario(usuario);
+        instructorRepository.save(instructor);
+
+        return instructor;
+    }
+
+    private String capitalize(String texto) {
+        if (texto == null || texto.isEmpty()) return texto;
+        return Arrays.stream(texto.split(" "))
+                .map(w -> w.isEmpty() ? w : Character.toUpperCase(w.charAt(0)) + w.substring(1).toLowerCase())
+                .collect(Collectors.joining(" "));
     }
 
     private String getCellValue(Cell cell) {

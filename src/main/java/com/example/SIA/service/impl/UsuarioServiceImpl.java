@@ -2,17 +2,24 @@ package com.example.SIA.service.impl;
 
 import com.example.SIA.dto.*;
 import com.example.SIA.entity.Perfil;
+import com.example.SIA.entity.TokenVerificacion;
 import com.example.SIA.entity.Usuario;
 import com.example.SIA.observer.EventoUsuarioRegistrado;
 import com.example.SIA.observer.SistemaEventos;
 import com.example.SIA.repository.PerfilRepository;
+import com.example.SIA.repository.TokenVerificacionRepository;
 import com.example.SIA.repository.UsuarioRepository;
+import com.example.SIA.service.EmailService;
 import com.example.SIA.service.UsuarioService;
 import com.example.SIA.util.ExcelExporter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 // 🔴 PATRÓN STRATEGY - IMPLEMENTACIÓN CONCRETA
@@ -22,6 +29,13 @@ public class UsuarioServiceImpl implements UsuarioService {
     private final UsuarioRepository usuarioRepo;
     private final PerfilRepository perfilRepo;
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+    @Autowired private TokenVerificacionRepository tokenVerifRepo;
+    @Autowired private EmailService emailService;
+
+    /** URL base de la app — configurable en application.properties */
+    @Value("${app.base-url:http://localhost:8081}")
+    private String baseUrl;
 
     public UsuarioServiceImpl(UsuarioRepository usuarioRepo, PerfilRepository perfilRepo) {
         this.usuarioRepo = usuarioRepo;
@@ -109,7 +123,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         u.setCorreo(req.getCorreo());
         u.setNoDocumento(req.getNoDocumento());
         u.setPassUsuario(encoder.encode(req.getPassUsuario()));
-        u.setEstado(1);
+        // Estado 0 (inactivo) hasta que verifique el correo
+        u.setEstado(0);
 
         // Perfil Invitado por defecto — el admin luego asigna el rol definitivo
         Perfil perfil = perfilRepo.findByNombrePerfil("Invitado").orElseGet(() -> {
@@ -120,6 +135,27 @@ public class UsuarioServiceImpl implements UsuarioService {
         u.setPerfil(perfil);
 
         Usuario guardado = usuarioRepo.save(u);
+
+        // 🔑 Enviar correo de verificación
+        try {
+            tokenVerifRepo.deleteByCorreo(guardado.getCorreo());
+            tokenVerifRepo.limpiarExpirados(LocalDateTime.now());
+            String token = UUID.randomUUID().toString().replace("-", "");
+            tokenVerifRepo.save(new TokenVerificacion(token, guardado.getCorreo(), LocalDateTime.now().plusHours(24)));
+            String enlace = baseUrl + "/verificar-correo?token=" + token;
+            String asunto = "Verifica tu correo — SIA";
+            String cuerpo = "Hola " + guardado.getNombres() + ",\n\n"
+                    + "Gracias por registrarte en SIA. Para activar tu cuenta haz clic en el siguiente enlace:\n\n"
+                    + enlace + "\n\n"
+                    + "Este enlace es válido por 24 horas.\n\n"
+                    + "Si no creaste esta cuenta, ignora este mensaje.\n\n— Sistema SIA";
+            emailService.enviarCorreoIndividual(guardado.getCorreo(), asunto, cuerpo,
+                    "SiaNotificacionesNoReply@gmail.com");
+        } catch (Exception e) {
+            // Si falla el correo, activar igual para no bloquear el registro
+            guardado.setEstado(1);
+            usuarioRepo.save(guardado);
+        }
 
         // 🔔 Notificar al administrador (Observer GOF)
         SistemaEventos.emitir(new EventoUsuarioRegistrado(guardado));

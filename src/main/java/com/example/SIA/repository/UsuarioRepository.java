@@ -13,11 +13,13 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     boolean existsByCorreo(String correo);
     boolean existsByNoDocumento(String noDocumento);
+    boolean existsByNombreUsuario(String nombreUsuario);
 
     Optional<Usuario> findByNombreUsuario(String nombreUsuario);
     Optional<Usuario> findByCorreo(String correo);
     Optional<Usuario> findByCorreoIgnoreCase(String correo);
     Optional<Usuario> findByNoDocumento(String noDocumento);
+    Optional<Usuario> findByGoogleId(String googleId);
 
     @Modifying
     @Transactional

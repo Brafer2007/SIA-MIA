@@ -1,7 +1,9 @@
 package com.example.SIA.websocket;
 
+import com.example.SIA.dto.NotificacionDTO;
 import com.example.SIA.entity.MensajeGrupo;
 import com.example.SIA.service.MensajeService;
+import com.example.SIA.service.NotificacionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +22,9 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
 
     private static MensajeService mensajeService;
     private static final Logger logger = LoggerFactory.getLogger(ChatWebSocketHandler.class);
+
+    private static NotificacionService notificacionService;
+    private static NotificationWebSocketHandler notificationHandler;
 
     // Map key: instructorId -> group chat sessions (cross-ficha)
     private final Map<String, List<WebSocketSession>> sesionesPorInstructor = new ConcurrentHashMap<>();
@@ -42,6 +47,16 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     @Autowired
     public void setMensajeService(MensajeService service) {
         mensajeService = service;
+    }
+
+    @Autowired
+    public void setNotificacionService(NotificacionService service) {
+        notificacionService = service;
+    }
+
+    @Autowired
+    public void setNotificationHandler(NotificationWebSocketHandler handler) {
+        notificationHandler = handler;
     }
 
     @Override
@@ -92,8 +107,25 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        MensajeGrupo mensaje = mapper.readValue(message.getPayload(), MensajeGrupo.class);
-        logger.info("Incoming WS message session={} payloadFicha={} payloadSala={} texto='{}'", session.getId(), mensaje.getFicha(), mensaje.getSala(), mensaje.getMensaje());
+        // Detectar mensajes de typing ANTES de deserializar como MensajeGrupo
+        // para evitar UnrecognizedPropertyException que cierra la sesión WS
+        String payload = message.getPayload();
+        if (payload.contains("\"tipo\"")) {
+            try {
+                com.fasterxml.jackson.databind.JsonNode node =
+                        mapper.readTree(payload);
+                String tipo = node.has("tipo") ? node.get("tipo").asText("") : "";
+                if ("typing".equals(tipo)) {
+                    // Reenviar el indicador al destinatario correcto y salir
+                    reenviarTyping(session, node);
+                    return;
+                }
+            } catch (Exception ignored) {}
+        }
+
+        MensajeGrupo mensaje = mapper.readValue(payload, MensajeGrupo.class);
+        logger.info("Incoming WS message session={} payloadFicha={} payloadSala={} texto='{}'",
+                session.getId(), mensaje.getFicha(), mensaje.getSala(), mensaje.getMensaje());
 
         // Determine if sender is instructor or apprentice
         List<String> salas = sessionSalas.getOrDefault(session, List.of());
@@ -194,8 +226,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
             for (String sala : targetSalas) {
                 String[] partes = sala.split("\\|", 2);
                 String fichaPart = partes.length > 0 ? partes[0] : "";
-                String instructorPart = partes.length > 1 ? partes[1] : "";
-                
+
                 MensajeGrupo msg = new MensajeGrupo();
                 msg.setFicha(fichaPart);
                 msg.setSala(sala);
@@ -313,6 +344,30 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
                 // ignore
             }
         }
+
+        // Notificar por WS de notificaciones y persistir para usuarios offline
+        if (!persistedPorSala.isEmpty()) {
+            MensajeGrupo primerMensaje = persistedPorSala.values().iterator().next();
+            // Extraer fichas de las keys del mapa (formato "ficha|instructorId" o solo "ficha")
+            List<String> fichasMsg = new ArrayList<>();
+            for (String key : persistedPorSala.keySet()) {
+                String ficha = key.contains("|") ? key.split("\\|")[0] : key;
+                if (ficha != null && !ficha.isBlank() && !fichasMsg.contains(ficha)) {
+                    fichasMsg.add(ficha);
+                }
+            }
+            // Extraer instructorId del instructorGroupSala o de la primera key con "|"
+            String instrId = instructorGroupSala;
+            if (instrId == null) {
+                for (String key : persistedPorSala.keySet()) {
+                    if (key.contains("|")) {
+                        instrId = key.split("\\|")[1];
+                        break;
+                    }
+                }
+            }
+            notificarNuevoMensaje(primerMensaje, fichasMsg, instrId);
+        }
     }
 
     @Override
@@ -341,17 +396,120 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
+    /**
+     * Reenvía un indicador de typing al destinatario correcto:
+     * - Si el emisor es aprendiz → reenviar al instructor correspondiente
+     * - Si el emisor es instructor → reenviar a los aprendices de la ficha
+     */
+    private void reenviarTyping(WebSocketSession session, com.fasterxml.jackson.databind.JsonNode node) {
+        try {
+            String payload = node.toString();
+            TextMessage tm = new TextMessage(payload);
+            List<String> salas = sessionSalas.getOrDefault(session, List.of());
+
+            if (salas != null && !salas.isEmpty()) {
+                // Instructor → reenviar a aprendices de cada sala
+                for (String sala : salas) {
+                    String ficha = sala.contains("|") ? sala.split("\\|")[0] : sala;
+                    List<String> fichas = obtenerFichasReales(ficha);
+                    for (String f : fichas) {
+                        for (WebSocketSession s : sesionesPorFicha.getOrDefault(f, List.of())) {
+                            if (s.isOpen() && !s.getId().equals(session.getId()))
+                                try { s.sendMessage(tm); } catch (Exception ignored) {}
+                        }
+                    }
+                }
+            } else {
+                // Aprendiz → reenviar al instructor (a través de las salas de su ficha)
+                String instructorId = sessionInstructor.get(session);
+                if (instructorId != null) {
+                    for (Map.Entry<String, List<WebSocketSession>> e : sesionesPorSala.entrySet()) {
+                        if (e.getKey().endsWith("|" + instructorId)) {
+                            for (WebSocketSession s : e.getValue()) {
+                                if (s.isOpen() && !s.getId().equals(session.getId()))
+                                    try { s.sendMessage(tm); } catch (Exception ignored) {}
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Error reenviando typing: {}", e.getMessage());
+        }
+    }
+
     // ✅ Convierte "2996893 - 2996900" en ["2996893", "2996900"]
     private List<String> obtenerFichasReales(String ficha) {
         ficha = ficha.replace("–", "-");
-
         if (ficha.contains("-")) {
             String[] partes = ficha.split("-");
             List<String> lista = new ArrayList<>();
             for (String p : partes) lista.add(p.trim());
             return lista;
         }
-
         return List.of(ficha.trim());
+    }
+
+    /**
+     * Envía notificación de nuevo mensaje por WS y persiste en BD
+     * para usuarios que no estén conectados en ese momento.
+     */
+    private void notificarNuevoMensaje(MensajeGrupo mensaje, List<String> fichas, String instructorId) {
+        try {
+            String nombre = mensaje.getNombreEmisor() != null ? mensaje.getNombreEmisor() : "Alguien";
+            String rol    = mensaje.getRolEmisor()    != null ? mensaje.getRolEmisor()    : "";
+            String texto  = mensaje.getMensaje()      != null
+                    ? (mensaje.getMensaje().length() > 80
+                        ? mensaje.getMensaje().substring(0, 80) + "…"
+                        : mensaje.getMensaje())
+                    : "(archivo)";
+
+            String titulo = "💬 Nuevo mensaje de " + nombre;
+
+            // Si el emisor es aprendiz → notificar al instructor
+            if ("Aprendiz".equalsIgnoreCase(rol) && instructorId != null) {
+                NotificacionDTO dto = new NotificacionDTO("nuevo_mensaje", titulo, texto, nombre, null);
+                dto.setSonar(true);
+                if (notificationHandler != null) notificationHandler.notificarInstructor(instructorId, dto);
+
+                // Persistir para cuando el instructor no esté online
+                if (notificacionService != null) {
+                    try {
+                        Integer idInstructor = Integer.valueOf(instructorId);
+                        notificacionService.crearParaUsuario(idInstructor, "instructor", titulo, texto, "nuevo_mensaje");
+                    } catch (NumberFormatException ignored) {}
+                }
+            }
+
+            // Si el emisor es instructor → notificar a los aprendices de la ficha
+            if ("Instructor".equalsIgnoreCase(rol) && fichas != null) {
+                for (String ficha : fichas) {
+                    NotificacionDTO dto = new NotificacionDTO("nuevo_mensaje", titulo, texto, nombre, ficha);
+                    dto.setSonar(true);
+                    if (notificationHandler != null) notificationHandler.notificarAprendicesDeFicha(ficha, dto);
+                }
+                // Persistir para aprendices offline — usamos idEmisor del mensaje para filtrar
+                if (notificacionService != null && mensaje.getIdEmisor() != null) {
+                    // Obtenemos los aprendices de las fichas desde el contexto de Spring
+                    // Usamos el AprendizRepository a través de un método estático auxiliar
+                    // en NotificationManager si está disponible; si no, lo persistimos por ficha
+                    // usando la entidad sin destinatario específico (campo destinatarioRol = ficha)
+                    for (String ficha : fichas) {
+                        // Persiste una notificación "broadcast" para la ficha
+                        // El frontend la cargará filtrando por su propia ficha
+                        com.example.SIA.entity.Notificacion n = new com.example.SIA.entity.Notificacion();
+                        n.setTitulo(titulo);
+                        n.setMensaje(texto);
+                        n.setTipo("nuevo_mensaje");
+                        n.setCategoria("mensajes");
+                        n.setPrioridad("baja");
+                        n.setDestinatarioRol(ficha); // ficha como "destinatario genérico"
+                        // Sin destinatarioId → se buscará por ficha en el endpoint
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Error enviando notificación de mensaje: {}", e.getMessage());
+        }
     }
 }

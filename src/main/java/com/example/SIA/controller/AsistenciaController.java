@@ -8,6 +8,7 @@ import com.example.SIA.entity.Usuario;
 import com.example.SIA.repository.AprendizRepository;
 import com.example.SIA.repository.AsistenciaRepository;
 import com.example.SIA.repository.InstructorRepository;
+import com.example.SIA.service.EmailService;
 import com.example.SIA.websocket.NotificationWebSocketHandler;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfPCell;
@@ -38,6 +39,12 @@ public class AsistenciaController {
 
     @Autowired
     private NotificationWebSocketHandler notificationWebSocketHandler;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private com.example.SIA.service.NotificacionService notificacionService;
 
     public AsistenciaController(AsistenciaRepository asistenciaRepository,
                                 AprendizRepository aprendizRepository,
@@ -137,6 +144,42 @@ public class AsistenciaController {
         registro.setEstado(estado);
         registro.setObservacion(observacion);
         asistenciaRepository.save(registro);
+
+        // Enviar correo automático si es AUSENTE o INCAPACIDAD
+        if (("AUSENTE".equals(estado) || "INCAPACIDAD".equals(estado))
+                && aprendiz.getUsuario() != null
+                && aprendiz.getUsuario().getCorreo() != null
+                && !aprendiz.getUsuario().getCorreo().isBlank()) {
+
+            String nombreAprendiz = (aprendiz.getUsuario().getNombres()
+                    + " " + aprendiz.getUsuario().getApellidos()).trim();
+            String nombreInstructor = instructor.getNombreCompleto();
+            String diaStr = dia.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            String estadoTexto = "AUSENTE".equals(estado) ? "Inasistencia" : "Incapacidad";
+
+            String asunto = "⚠️ " + estadoTexto + " registrada — " + diaStr;
+            String cuerpo = "Hola " + nombreAprendiz + ",\n\n"
+                    + "Tu instructor " + nombreInstructor + " registró una " + estadoTexto.toLowerCase()
+                    + " para el día " + diaStr + ".\n\n"
+                    + (observacion != null && !observacion.isBlank()
+                        ? "Observación: " + observacion + "\n\n" : "")
+                    + "Si crees que esto es un error, comunícate con tu instructor.\n\n"
+                    + "— Sistema SIA";
+
+            String correoInstructor = instructor.getUsuario() != null
+                    ? instructor.getUsuario().getCorreo() : null;
+            emailService.enviarCorreoIndividual(
+                    aprendiz.getUsuario().getCorreo(), asunto, cuerpo, correoInstructor);
+
+            // Persistir para campanita offline
+            if (aprendiz.getUsuario().getIdUsuario() != null) {
+                notificacionService.crearParaUsuario(
+                        aprendiz.getUsuario().getIdUsuario(), "aprendiz",
+                        asunto,
+                        (observacion != null && !observacion.isBlank() ? observacion : estadoTexto + " el " + diaStr),
+                        "inasistencia");
+            }
+        }
 
         resp.put("ok", true);
         resp.put("estado", estado);

@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+
+  # ── Base de datos MySQL ──────────────────────────────────────
+  db:
+    image: mysql:8.0
+    container_name: sia_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: sistema_usuarios
+    ports:
+      - "3306:3306"
+    volumes:
+      - sia_db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ── Aplicación Spring Boot ───────────────────────────────────
+  app:
+    build: .
+    container_name: sia_app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8081:8080"
+    environment:
+      # Base de datos
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/sistema_usuarios?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      # Email (opcional, sobreescribir si hace falta)
+      SPRING_MAIL_USERNAME: ${SPRING_MAIL_USERNAME:-SiaNotificacionesNoReply@gmail.com}
+      SPRING_MAIL_PASSWORD: ${SPRING_MAIL_PASSWORD:-yqup oxbw ilkq fywq}
+      # Google OAuth2
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-116565959601-llnasril99hdambhr6121j4ad7bjn6ec.apps.googleusercontent.com}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-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1}
+
+volumes:
+  sia_db_data:

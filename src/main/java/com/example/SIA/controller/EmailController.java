@@ -1,17 +1,18 @@
 package com.example.SIA.controller;
 
 import com.example.SIA.dto.EnviarCorreoDTO;
-import com.example.SIA.entity.Usuario;
 import com.example.SIA.entity.Aprendiz;
+import com.example.SIA.entity.Usuario;
+import com.example.SIA.repository.AprendizRepository;
+import com.example.SIA.repository.ProgramacionRepository;
 import com.example.SIA.service.EmailService;
 import com.example.SIA.service.UsuarioService;
-import com.example.SIA.service.AprendizService;
+import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import jakarta.servlet.http.HttpSession;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,144 +22,128 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/email")
 public class EmailController {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(EmailController.class);
-    
-    @Autowired
-    private EmailService emailService;
-    
-    @Autowired
-    private UsuarioService usuarioService;
-    
-    @Autowired
-    private AprendizService aprendizService;
-    
-    /**
-     * Endpoint para enviar correos masivos desde el perfil del instructor
-     * 
-     * POST http://localhost:8080/api/email/enviar-correos
-     * Body JSON:
-     * {
-     *   "destinatarios": ["email1@example.com", "email2@example.com"],
-     *   "asunto": "Tema del correo",
-     *   "mensaje": "Contenido del correo"
-     * }
-     */
+
+    @Autowired private EmailService emailService;
+    @Autowired private UsuarioService usuarioService;
+    @Autowired private AprendizRepository aprendizRepository;
+    @Autowired private ProgramacionRepository programacionRepository;
+
+    // ─── Envío masivo ────────────────────────────────────────────────────────────
+
     @PostMapping("/enviar-correos")
     public ResponseEntity<Map<String, Object>> enviarCorreos(
-            @RequestBody EnviarCorreoDTO request,
-            HttpSession session) {
-        
-        Map<String, Object> respuesta = new HashMap<>();
-        
+            @RequestBody EnviarCorreoDTO request, HttpSession session) {
+
+        Map<String, Object> resp = new HashMap<>();
         try {
-            // Verificar que el usuario sea instructor
             Integer idUsuario = (Integer) session.getAttribute("idUsuario");
-            Integer perfil = (Integer) session.getAttribute("id_perfil");
-            
+            Integer perfil    = (Integer) session.getAttribute("id_perfil");
             if (idUsuario == null || perfil == null || perfil != 3) {
-                respuesta.put("exito", false);
-                respuesta.put("mensaje", "Acceso denegado. Solo instructores pueden enviar correos masivos.");
-                return ResponseEntity.status(403).body(respuesta);
+                resp.put("exito", false);
+                resp.put("mensaje", "Acceso denegado.");
+                return ResponseEntity.status(403).body(resp);
             }
-            
-            // Obtener el email del instructor
-            Usuario usuario = usuarioService.findById(idUsuario);
-            String emailInstructor = usuario.getCorreo();
-            
-            // Validar datos
+
+            String emailInstructor = usuarioService.findById(idUsuario).getCorreo();
+
             if (request.getDestinatarios() == null || request.getDestinatarios().isEmpty()) {
-                respuesta.put("exito", false);
-                respuesta.put("mensaje", "Debe seleccionar al menos un destinatario.");
-                return ResponseEntity.badRequest().body(respuesta);
+                resp.put("exito", false); resp.put("mensaje", "Selecciona al menos un destinatario.");
+                return ResponseEntity.badRequest().body(resp);
             }
-            
-            if (request.getAsunto() == null || request.getAsunto().trim().isEmpty()) {
-                respuesta.put("exito", false);
-                respuesta.put("mensaje", "El asunto no puede estar vacío.");
-                return ResponseEntity.badRequest().body(respuesta);
+            if (request.getAsunto() == null || request.getAsunto().isBlank()) {
+                resp.put("exito", false); resp.put("mensaje", "El asunto no puede estar vacío.");
+                return ResponseEntity.badRequest().body(resp);
             }
-            
-            if (request.getMensaje() == null || request.getMensaje().trim().isEmpty()) {
-                respuesta.put("exito", false);
-                respuesta.put("mensaje", "El mensaje no puede estar vacío.");
-                return ResponseEntity.badRequest().body(respuesta);
+            if (request.getMensaje() == null || request.getMensaje().isBlank()) {
+                resp.put("exito", false); resp.put("mensaje", "El mensaje no puede estar vacío.");
+                return ResponseEntity.badRequest().body(resp);
             }
-            
-            // Enviar correo masivo
+
             boolean enviado = emailService.enviarCorreoMasivo(
-                    request.getDestinatarios(),
-                    request.getAsunto(),
-                    request.getMensaje(),
-                    emailInstructor
-            );
-            
+                    request.getDestinatarios(), request.getAsunto(),
+                    request.getMensaje(), emailInstructor);
+
             if (enviado) {
-                respuesta.put("exito", true);
-                respuesta.put("mensaje", "Correos enviados exitosamente a " + request.getDestinatarios().size() + " destinatarios.");
-                respuesta.put("cantidad", request.getDestinatarios().size());
-                logger.info("Instructor {} envió correos masivos a {} destinatarios", idUsuario, request.getDestinatarios().size());
-                return ResponseEntity.ok(respuesta);
-            } else {
-                respuesta.put("exito", false);
-                respuesta.put("mensaje", "Error al enviar los correos. Intenta de nuevo.");
-                return ResponseEntity.status(500).body(respuesta);
+                resp.put("exito", true);
+                resp.put("mensaje", "Correos enviados a " + request.getDestinatarios().size() + " destinatario(s).");
+                resp.put("cantidad", request.getDestinatarios().size());
+                logger.info("Instructor {} envió correo masivo a {} destinatarios", idUsuario, request.getDestinatarios().size());
+                return ResponseEntity.ok(resp);
             }
-            
+            resp.put("exito", false); resp.put("mensaje", "Error al enviar. Intenta de nuevo.");
+            return ResponseEntity.status(500).body(resp);
+
         } catch (Exception e) {
-            logger.error("Error en envío de correos: {}", e.getMessage(), e);
-            respuesta.put("exito", false);
-            respuesta.put("mensaje", "Error inesperado: " + e.getMessage());
-            return ResponseEntity.status(500).body(respuesta);
+            logger.error("Error envío correos: {}", e.getMessage(), e);
+            resp.put("exito", false); resp.put("mensaje", "Error: " + e.getMessage());
+            return ResponseEntity.status(500).body(resp);
         }
     }
-    
+
+    // ─── Aprendices de una ficha (con correo) ────────────────────────────────────
+
     /**
-     * Endpoint para obtener lista de aprendices y sus emails
-     * Usado para llenar el formulario en el dashboard
-     * 
-     * GET /api/email/aprendices
+     * Devuelve los aprendices que pertenecen a la ficha indicada, con su nombre y correo.
+     * El instructor selecciona la ficha y el frontend pre-llena los destinatarios.
      */
-    @GetMapping("/aprendices")
-    public ResponseEntity<Map<String, Object>> obtenerAprendices(HttpSession session) {
-        
-        Map<String, Object> respuesta = new HashMap<>();
-        
+    @GetMapping("/aprendices-por-ficha")
+    public ResponseEntity<Map<String, Object>> aprendicesPorFicha(
+            @RequestParam String ficha, HttpSession session) {
+
+        Map<String, Object> resp = new HashMap<>();
         try {
-            // Verificar que sea instructor
             Integer perfil = (Integer) session.getAttribute("id_perfil");
-            
             if (perfil == null || perfil != 3) {
-                respuesta.put("exito", false);
-                respuesta.put("mensaje", "Acceso denegado.");
-                return ResponseEntity.status(403).body(respuesta);
+                resp.put("exito", false); resp.put("mensaje", "Acceso denegado.");
+                return ResponseEntity.status(403).body(resp);
             }
-            
-            // Obtener todos los aprendices y sus emails
-            // Nota: AprendizService solo tiene findByUsuarioId, así que buscamos de manera diferente
-            // Alternativa: obtener todos los usuarios con perfil de aprendiz
-            List<Usuario> usuarios = usuarioService.findAll();
-            
-            List<Map<String, String>> aprendicesDTO = usuarios.stream()
-                    .filter(u -> u.getPerfil() != null && u.getPerfil().getIdPerfil() == 1) // perfil 1 = aprendiz
-                    .filter(u -> u.getCorreo() != null && !u.getCorreo().isEmpty())
-                    .map(u -> {
-                        Map<String, String> map = new HashMap<>();
-                        map.put("email", u.getCorreo());
-                        map.put("nombre", u.getNombres() + " " + u.getApellidos());
-                        return map;
+
+            List<Aprendiz> aprendices = aprendizRepository.findByFichaContainedIn(ficha);
+            List<Map<String, String>> lista = aprendices.stream()
+                    .filter(a -> a.getUsuario() != null
+                              && a.getUsuario().getCorreo() != null
+                              && !a.getUsuario().getCorreo().isBlank())
+                    .map(a -> {
+                        Map<String, String> m = new HashMap<>();
+                        m.put("email", a.getUsuario().getCorreo());
+                        m.put("nombre", (a.getUsuario().getNombres() + " " + a.getUsuario().getApellidos()).trim());
+                        return m;
                     })
                     .collect(Collectors.toList());
-            
-            respuesta.put("exito", true);
-            respuesta.put("aprendices", aprendicesDTO);
-            return ResponseEntity.ok(respuesta);
-            
+
+            resp.put("exito", true);
+            resp.put("aprendices", lista);
+            return ResponseEntity.ok(resp);
+
         } catch (Exception e) {
-            logger.error("Error al obtener aprendices: {}", e.getMessage(), e);
-            respuesta.put("exito", false);
-            respuesta.put("mensaje", "Error al obtener lista de aprendices.");
-            return ResponseEntity.status(500).body(respuesta);
+            logger.error("Error obteniendo aprendices por ficha: {}", e.getMessage(), e);
+            resp.put("exito", false); resp.put("mensaje", "Error: " + e.getMessage());
+            return ResponseEntity.status(500).body(resp);
+        }
+    }
+
+    // ─── Fichas del instructor ────────────────────────────────────────────────────
+
+    @GetMapping("/fichas-instructor")
+    public ResponseEntity<Map<String, Object>> fichasInstructor(HttpSession session) {
+        Map<String, Object> resp = new HashMap<>();
+        try {
+            Integer perfil  = (Integer) session.getAttribute("id_perfil");
+            Usuario usuario = (Usuario) session.getAttribute("usuario");
+            if (perfil == null || perfil != 3 || usuario == null || usuario.getInstructor() == null) {
+                resp.put("exito", false); resp.put("mensaje", "Acceso denegado.");
+                return ResponseEntity.status(403).body(resp);
+            }
+            List<String> fichas = programacionRepository
+                    .findFichasByInstructorId(usuario.getInstructor().getId());
+            resp.put("exito", true);
+            resp.put("fichas", fichas);
+            return ResponseEntity.ok(resp);
+        } catch (Exception e) {
+            resp.put("exito", false); resp.put("mensaje", "Error: " + e.getMessage());
+            return ResponseEntity.status(500).body(resp);
         }
     }
 }

@@ -1,0 +1,431 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Encuesta - SIA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Poppins',sans-serif;background:#f5f3ff;color:#1a1a1a}
+    nav{background:linear-gradient(135deg,#2e1065,#5b21b6);padding:14px 48px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(91,33,182,.3)}
+    .nav-brand{color:#fff;font-weight:700;font-size:20px;text-decoration:none}
+    .nav-back{color:rgba(255,255,255,.85);text-decoration:none;font-size:14px;display:flex;align-items:center;gap:6px}
+    .nav-back:hover{color:#fff}
+    .hero-enc{background:linear-gradient(135deg,#2e1065 0%,#5b21b6 60%,#7c3aed 100%);padding:70px 24px 50px;text-align:center;color:#fff}
+    .hero-enc .badge{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);padding:5px 16px;border-radius:20px;font-size:13px;margin-bottom:18px}
+    .hero-enc h1{font-size:clamp(26px,4vw,44px);font-weight:700;margin-bottom:14px}
+    .hero-enc p{font-size:16px;opacity:.88;max-width:580px;margin:0 auto;line-height:1.7}
+    .progress-bar-wrap{background:#ede9fe;height:6px;position:sticky;top:64px;z-index:99}
+    .progress-bar{height:100%;background:linear-gradient(90deg,#7c3aed,#a78bfa);width:0%;transition:width .4s}
+    .encuesta-container{max-width:760px;margin:0 auto;padding:48px 24px 80px}
+    .step{display:none;animation:fadeIn .35s ease}
+    .step.active{display:block}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .step-label{font-size:12px;font-weight:600;color:#7c3aed;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+    .step h2{font-size:22px;font-weight:700;color:#2e1065;margin-bottom:6px}
+    .step .desc{font-size:14px;color:#666;margin-bottom:28px;line-height:1.6}
+    .question-card{background:#fff;border-radius:14px;padding:24px 28px;box-shadow:0 2px 16px rgba(91,33,182,.08);border:1px solid #ede9fe;margin-bottom:20px}
+    .question-card p{font-size:15px;font-weight:600;color:#1a1a1a;margin-bottom:16px}
+    .options{display:flex;flex-direction:column;gap:10px}
+    .option-label{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;border:2px solid #ede9fe;cursor:pointer;transition:all .2s;font-size:14px;color:#333}
+    .option-label:hover{border-color:#a78bfa;background:#faf5ff}
+    .option-label input[type="radio"]{accent-color:#7c3aed;width:18px;height:18px;flex-shrink:0}
+    .option-label.selected{border-color:#7c3aed;background:#f3f0ff;color:#4c1d95;font-weight:600}
+    .scale-options{display:flex;gap:8px;flex-wrap:wrap}
+    .scale-btn{width:44px;height:44px;border-radius:10px;border:2px solid #ede9fe;background:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;color:#555}
+    .scale-btn:hover{border-color:#a78bfa;background:#faf5ff}
+    .scale-btn.selected{border-color:#7c3aed;background:#7c3aed;color:#fff}
+    .scale-labels{display:flex;justify-content:space-between;font-size:11px;color:#999;margin-top:6px}
+    .text-input{width:100%;padding:12px 16px;border-radius:10px;border:2px solid #ede9fe;font-family:'Poppins',sans-serif;font-size:14px;color:#333;resize:vertical;min-height:90px;transition:border .2s}
+    .text-input:focus{outline:none;border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.1)}
+    .nav-buttons{display:flex;justify-content:space-between;align-items:center;margin-top:32px}
+    .btn-nav{padding:12px 28px;border-radius:30px;font-size:15px;font-weight:600;cursor:pointer;transition:all .25s;display:flex;align-items:center;gap:8px;border:none}
+    .btn-prev{background:#ede9fe;color:#5b21b6}
+    .btn-prev:hover{background:#ddd6fe}
+    .btn-next{background:linear-gradient(135deg,#5b21b6,#7c3aed);color:#fff;box-shadow:0 4px 16px rgba(91,33,182,.3)}
+    .btn-next:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(91,33,182,.4)}
+    .step-counter{font-size:13px;color:#999}
+    .resultado{display:none;text-align:center;padding:60px 24px;animation:fadeIn .5s ease}
+    .resultado.active{display:block}
+    .resultado-icon{font-size:72px;margin-bottom:20px}
+    .resultado h2{font-size:28px;font-weight:700;color:#2e1065;margin-bottom:12px}
+    .resultado p{font-size:16px;color:#555;max-width:500px;margin:0 auto 32px;line-height:1.7}
+    .resultado-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;max-width:700px;margin:0 auto 36px}
+    .resultado-card{background:#fff;border-radius:14px;padding:20px;border:1px solid #ede9fe;box-shadow:0 2px 12px rgba(91,33,182,.08)}
+    .resultado-card i{font-size:28px;color:#7c3aed;margin-bottom:10px}
+    .resultado-card h4{font-size:14px;font-weight:600;color:#2e1065;margin-bottom:4px}
+    .resultado-card p{font-size:12px;color:#888}
+    @media(max-width:600px){nav{padding:12px 20px}.encuesta-container{padding:32px 16px 60px}.question-card{padding:18px 16px}}
+    @media(max-width:480px){
+      .hero-enc{padding:50px 16px 36px}
+      .hero-enc h1{font-size:22px}
+      .hero-enc p{font-size:14px}
+      .scale-options{gap:6px}
+      .scale-btn{width:38px;height:38px;font-size:14px}
+      .btn-nav{padding:10px 20px;font-size:14px}
+      .resultado-cards{grid-template-columns:1fr 1fr}
+    }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-brand"><i class="fas fa-graduation-cap"></i> SIA</a>
+  <a href="/" class="nav-back"><i class="fas fa-arrow-left"></i> Volver al inicio</a>
+</nav>
+<div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+<div class="hero-enc">
+  <div class="badge">Encuesta de Diagnostico Institucional</div>
+  <h1>Como gestiona tu universidad<br>la vida academica?</h1>
+  <p>Ayudanos a entender las necesidades reales de los estudiantes. Esta encuesta es anonima y toma menos de 5 minutos.</p>
+</div>
+<div class="encuesta-container">
+  <div class="step active" id="step-1">
+    <div class="step-label">Paso 1 de 5 - Datos generales</div>
+    <h2>Cuentanos sobre ti</h2>
+    <p class="desc">Informacion basica para contextualizar tus respuestas.</p>
+    <div class="question-card">
+      <p>¿Cuál es el nombre de tu institución?</p>
+      <div style="position:relative;">
+        <input type="text" id="nombre-institucion" class="text-input" style="min-height:unset;resize:none;padding:12px 16px;" placeholder="Ej: Universidad Nacional de Colombia" autocomplete="off" oninput="buscarInstituciones(this.value)">
+        <div id="inst-suggestions" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:2px solid #a78bfa;border-top:none;border-radius:0 0 10px 10px;z-index:50;max-height:200px;overflow-y:auto;box-shadow:0 8px 20px rgba(91,33,182,.15);"></div>
+      </div>
+    </div>
+    <div class="question-card">
+      <p>En que tipo de institucion estudias?</p>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="tipo_inst" value="universidad_publica"> Universidad publica</label>
+        <label class="option-label"><input type="radio" name="tipo_inst" value="universidad_privada"> Universidad privada</label>
+        <label class="option-label"><input type="radio" name="tipo_inst" value="tecnica"> Institucion tecnica o tecnologica</label>
+        <label class="option-label"><input type="radio" name="tipo_inst" value="otro"> Otro tipo de institucion</label>
+      </div>
+    </div>
+    <div class="question-card">
+      <p>En que semestre o año de carrera te encuentras?</p>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="semestre" value="1-2"> Primero o segundo semestre</label>
+        <label class="option-label"><input type="radio" name="semestre" value="3-4"> Tercero o cuarto semestre</label>
+        <label class="option-label"><input type="radio" name="semestre" value="5-6"> Quinto o sexto semestre</label>
+        <label class="option-label"><input type="radio" name="semestre" value="7+"> Septimo semestre en adelante</label>
+      </div>
+    </div>
+    <div class="nav-buttons">
+      <span></span>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <span class="step-counter">1 / 5</span>
+        <button class="btn-nav btn-next" onclick="nextStep(1)"><i class="fas fa-arrow-right"></i> Siguiente</button>
+      </div>
+    </div>
+  </div>
+  <div class="step" id="step-2">
+    <div class="step-label">Paso 2 de 5 - Acceso y asistencia</div>
+    <h2>Control de acceso y asistencia</h2>
+    <p class="desc">Como se gestiona el ingreso a instalaciones y el registro de asistencia.</p>
+    <div class="question-card">
+      <p>Tu institucion tiene un sistema digital para registrar la asistencia a clases?</p>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="asistencia_digital" value="si"> Si, completamente digital</label>
+        <label class="option-label"><input type="radio" name="asistencia_digital" value="parcial"> Parcialmente</label>
+        <label class="option-label"><input type="radio" name="asistencia_digital" value="no"> No, se hace en papel</label>
+        <label class="option-label"><input type="radio" name="asistencia_digital" value="no_sabe"> No se como funciona</label>
+      </div>
+    </div>
+    <div class="question-card">
+      <p>Existe algun control de acceso a las instalaciones?</p>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="control_acceso" value="si_qr"> Si, con carne o QR</label>
+        <label class="option-label"><input type="radio" name="control_acceso" value="si_manual"> Si, pero manual</label>
+        <label class="option-label"><input type="radio" name="control_acceso" value="no"> No hay control de acceso</label>
+      </div>
+    </div>
+    <div class="question-card">
+      <p>Con que frecuencia hay problemas con el registro de asistencia?</p>
+      <div class="scale-options" id="scale-asistencia">
+        <button class="scale-btn" onclick="selectScale('scale-asistencia',this,1)">1</button>
+        <button class="scale-btn" onclick="selectScale('scale-asistencia',this,2)">2</button>
+        <button class="scale-btn" onclick="selectScale('scale-asistencia',this,3)">3</button>
+        <button class="scale-btn" onclick="selectScale('scale-asistencia',this,4)">4</button>
+        <button class="scale-btn" onclick="selectScale('scale-asistencia',this,5)">5</button>
+      </div>
+      <div class="scale-labels"><span>Nunca</span><span>Muy frecuente</span></div>
+    </div>
+    <div class="nav-buttons">
+      <button class="btn-nav btn-prev" onclick="prevStep(2)"><i class="fas fa-arrow-left"></i> Anterior</button>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <span class="step-counter">2 / 5</span>
+        <button class="btn-nav btn-next" onclick="nextStep(2)">Siguiente <i class="fas fa-arrow-right"></i></button>
+      </div>
+    </div>
+  </div>
+  <div class="step" id="step-3">
+    <div class="step-label">Paso 3 de 5 - Comunicacion y tareas</div>
+    <h2>Comunicacion academica y gestion de tareas</h2>
+    <p class="desc">Como fluye la informacion entre docentes y estudiantes.</p>
+    <div class="question-card">
+      <p>Como te comunicas principalmente con tus docentes fuera del aula?</p>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="comunicacion" value="plataforma"> Plataforma institucional</label>
+        <label class="option-label"><input type="radio" name="comunicacion" value="whatsapp"> WhatsApp o grupos informales</label>
+        <label class="option-label"><input type="radio" name="comunicacion" value="correo"> Solo por correo electronico</label>
+        <label class="option-label"><input type="radio" name="comunicacion" value="no_hay"> No hay canal establecido</label>
+      </div>
+    </div>
+    <div class="question-card">
+      <p>Las tareas se publican y entregan de forma digital y organizada?</p>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="tareas_digital" value="si"> Si, hay una plataforma centralizada</label>
+        <label class="option-label"><input type="radio" name="tareas_digital" value="parcial"> Depende del docente</label>
+        <label class="option-label"><input type="radio" name="tareas_digital" value="no"> No, se maneja por correo o papel</label>
+      </div>
+    </div>
+    <div class="question-card">
+      <p>Que tan facil es saber cuando tienes una tarea pendiente?</p>
+      <div class="scale-options" id="scale-tareas">
+        <button class="scale-btn" onclick="selectScale('scale-tareas',this,1)">1</button>
+        <button class="scale-btn" onclick="selectScale('scale-tareas',this,2)">2</button>
+        <button class="scale-btn" onclick="selectScale('scale-tareas',this,3)">3</button>
+        <button class="scale-btn" onclick="selectScale('scale-tareas',this,4)">4</button>
+        <button class="scale-btn" onclick="selectScale('scale-tareas',this,5)">5</button>
+      </div>
+      <div class="scale-labels"><span>Muy dificil</span><span>Muy facil</span></div>
+    </div>
+    <div class="nav-buttons">
+      <button class="btn-nav btn-prev" onclick="prevStep(3)"><i class="fas fa-arrow-left"></i> Anterior</button>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <span class="step-counter">3 / 5</span>
+        <button class="btn-nav btn-next" onclick="nextStep(3)">Siguiente <i class="fas fa-arrow-right"></i></button>
+      </div>
+    </div>
+  </div>
+  <div class="step" id="step-4">
+    <div class="step-label">Paso 4 de 5 - Gestion administrativa</div>
+    <h2>Tramites y gestion administrativa</h2>
+    <p class="desc">Que tan agil es la parte administrativa de tu institucion.</p>
+    <div class="question-card">
+      <p>Puedes obtener certificados o constancias de estudio de forma digital?</p>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="certificados" value="si_inmediato"> Si, de forma inmediata en linea</label>
+        <label class="option-label"><input type="radio" name="certificados" value="si_demora"> Si, pero tarda varios dias</label>
+        <label class="option-label"><input type="radio" name="certificados" value="presencial"> Solo presencialmente</label>
+        <label class="option-label"><input type="radio" name="certificados" value="no"> No existe ese servicio</label>
+      </div>
+    </div>
+    <div class="question-card">
+      <p>Tu institucion tiene sistema para reportar incapacidades de forma digital?</p>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="incapacidades" value="si"> Si, completamente en linea</label>
+        <label class="option-label"><input type="radio" name="incapacidades" value="parcial"> Parcialmente digital</label>
+        <label class="option-label"><input type="radio" name="incapacidades" value="no"> No, todo es presencial</label>
+      </div>
+    </div>
+    <div class="question-card">
+      <p>Que tan satisfecho estas con la gestion administrativa digital de tu institucion?</p>
+      <div class="scale-options" id="scale-admin">
+        <button class="scale-btn" onclick="selectScale('scale-admin',this,1)">1</button>
+        <button class="scale-btn" onclick="selectScale('scale-admin',this,2)">2</button>
+        <button class="scale-btn" onclick="selectScale('scale-admin',this,3)">3</button>
+        <button class="scale-btn" onclick="selectScale('scale-admin',this,4)">4</button>
+        <button class="scale-btn" onclick="selectScale('scale-admin',this,5)">5</button>
+      </div>
+      <div class="scale-labels"><span>Muy insatisfecho</span><span>Muy satisfecho</span></div>
+    </div>
+    <div class="nav-buttons">
+      <button class="btn-nav btn-prev" onclick="prevStep(4)"><i class="fas fa-arrow-left"></i> Anterior</button>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <span class="step-counter">4 / 5</span>
+        <button class="btn-nav btn-next" onclick="nextStep(4)">Siguiente <i class="fas fa-arrow-right"></i></button>
+      </div>
+    </div>
+  </div>
+  <div class="step" id="step-5">
+    <div class="step-label">Paso 5 de 5 - Opinion final</div>
+    <h2>Tu opinion importa</h2>
+    <p class="desc">Cuentanos que mejorarias y que tan util crees que seria SIA en tu institucion.</p>
+    <div class="question-card">
+      <p>Cual es la mayor falencia digital que tiene tu institucion?</p>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="mayor_falencia" value="asistencia"> Registro de asistencia poco confiable</label>
+        <label class="option-label"><input type="radio" name="mayor_falencia" value="comunicacion"> Falta de comunicacion organizada</label>
+        <label class="option-label"><input type="radio" name="mayor_falencia" value="tareas"> Gestion desorganizada de tareas</label>
+        <label class="option-label"><input type="radio" name="mayor_falencia" value="acceso"> Sin control de acceso</label>
+        <label class="option-label"><input type="radio" name="mayor_falencia" value="tramites"> Tramites lentos o presenciales</label>
+      </div>
+    </div>
+    <div class="question-card">
+      <p>Usarias un sistema como SIA si estuviera disponible en tu institucion?</p>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="usaria_sia" value="definitivamente"> Definitivamente si</label>
+        <label class="option-label"><input type="radio" name="usaria_sia" value="probablemente"> Probablemente si</label>
+        <label class="option-label"><input type="radio" name="usaria_sia" value="tal_vez"> Tal vez</label>
+        <label class="option-label"><input type="radio" name="usaria_sia" value="no"> Probablemente no</label>
+      </div>
+    </div>
+    <div class="question-card">
+      <p>Hay algo mas que quieras contarnos? (opcional)</p>
+      <textarea class="text-input" id="comentario" placeholder="Escribe aqui tu comentario..."></textarea>
+    </div>
+    <div class="nav-buttons">
+      <button class="btn-nav btn-prev" onclick="prevStep(5)"><i class="fas fa-arrow-left"></i> Anterior</button>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <span class="step-counter">5 / 5</span>
+        <button class="btn-nav btn-next" onclick="enviarEncuesta()" style="background:linear-gradient(135deg,#059669,#10b981);">
+          <i class="fas fa-paper-plane"></i> Enviar encuesta
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="resultado" id="resultado">
+    <div class="resultado-icon">🎉</div>
+    <h2>Gracias por tu participacion!</h2>
+    <p>Tus respuestas nos ayudan a entender mejor las necesidades de los estudiantes y a mejorar SIA.</p>
+    <div class="resultado-cards">
+      <div class="resultado-card"><i class="fas fa-qrcode"></i><h4>Control de acceso QR</h4><p>Ingreso seguro con codigo QR personal</p></div>
+      <div class="resultado-card"><i class="fas fa-calendar-check"></i><h4>Asistencia digital</h4><p>Registro automatico en tiempo real</p></div>
+      <div class="resultado-card"><i class="fas fa-tasks"></i><h4>Gestion de tareas</h4><p>Entrega y calificacion centralizada</p></div>
+      <div class="resultado-card"><i class="fas fa-file-alt"></i><h4>Certificados digitales</h4><p>Descarga tus constancias al instante</p></div>
+    </div>
+    <a href="/" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#5b21b6,#7c3aed);color:#fff;padding:14px 32px;border-radius:30px;text-decoration:none;font-weight:600;font-size:15px;box-shadow:0 4px 16px rgba(91,33,182,.3);">
+      <i class="fas fa-home"></i> Volver al inicio
+    </a>
+  </div>
+</div>
+<script>
+  const TOTAL_STEPS = 5;
+  let currentStep = 1;
+  const respuestas = {};
+
+  function updateProgress() {
+    document.getElementById('progressBar').style.width = (((currentStep-1)/TOTAL_STEPS)*100) + '%';
+  }
+
+  function nextStep(from) {
+    recolectarPaso(from);
+    document.getElementById('step-'+from).classList.remove('active');
+    currentStep = from + 1;
+    if (currentStep <= TOTAL_STEPS) document.getElementById('step-'+currentStep).classList.add('active');
+    updateProgress();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function prevStep(from) {
+    document.getElementById('step-'+from).classList.remove('active');
+    currentStep = from - 1;
+    document.getElementById('step-'+currentStep).classList.add('active');
+    updateProgress();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function recolectarPaso(paso) {
+    if (paso === 1) {
+      const inst = document.getElementById('nombre-institucion').value.trim();
+      const ti = document.querySelector('input[name="tipo_inst"]:checked');
+      const sem = document.querySelector('input[name="semestre"]:checked');
+      if (inst) respuestas.nombreInstitucion = inst;
+      if (ti) respuestas.tipoInstitucion = ti.value;
+      if (sem) respuestas.semestre = sem.value;
+    } else if (paso === 2) {
+      const ad = document.querySelector('input[name="asistencia_digital"]:checked');
+      const ca = document.querySelector('input[name="control_acceso"]:checked');
+      const sc = document.querySelector('#scale-asistencia .scale-btn.selected');
+      if (ad) respuestas.asistenciaDigital = ad.value;
+      if (ca) respuestas.controlAcceso = ca.value;
+      if (sc) respuestas.problemasAsistencia = parseInt(sc.dataset.value || sc.textContent);
+    } else if (paso === 3) {
+      const com = document.querySelector('input[name="comunicacion"]:checked');
+      const td = document.querySelector('input[name="tareas_digital"]:checked');
+      const sc = document.querySelector('#scale-tareas .scale-btn.selected');
+      if (com) respuestas.comunicacion = com.value;
+      if (td) respuestas.tareasDigital = td.value;
+      if (sc) respuestas.facilidadTareas = parseInt(sc.dataset.value || sc.textContent);
+    } else if (paso === 4) {
+      const cert = document.querySelector('input[name="certificados"]:checked');
+      const inc = document.querySelector('input[name="incapacidades"]:checked');
+      const sc = document.querySelector('#scale-admin .scale-btn.selected');
+      if (cert) respuestas.certificados = cert.value;
+      if (inc) respuestas.incapacidades = inc.value;
+      if (sc) respuestas.satisfaccionAdmin = parseInt(sc.dataset.value || sc.textContent);
+    }
+  }
+
+  // ── Autocompletado de instituciones ──
+  let debounceTimer = null;
+
+  function buscarInstituciones(query) {
+    const suggestions = document.getElementById('inst-suggestions');
+    clearTimeout(debounceTimer);
+    if (!query || query.length < 2) { suggestions.style.display = 'none'; return; }
+    debounceTimer = setTimeout(() => {
+      fetch('/encuesta/instituciones?q=' + encodeURIComponent(query))
+        .then(r => r.json())
+        .then(lista => {
+          if (!lista.length) { suggestions.style.display = 'none'; return; }
+          suggestions.innerHTML = lista.map(inst =>
+            `<div onclick="seleccionarInstitucion('${inst.replace(/'/g,"\\'")}')"`+
+            ` style="padding:10px 16px;cursor:pointer;font-size:14px;color:#333;border-bottom:1px solid #f3f0ff;transition:background .15s"`+
+            ` onmouseover="this.style.background='#f3f0ff'" onmouseout="this.style.background=''">${inst}</div>`
+          ).join('');
+          suggestions.style.display = 'block';
+        })
+        .catch(() => { suggestions.style.display = 'none'; });
+    }, 250);
+  }
+
+  function seleccionarInstitucion(nombre) {
+    document.getElementById('nombre-institucion').value = nombre;
+    document.getElementById('inst-suggestions').style.display = 'none';
+  }
+
+  // Cerrar sugerencias al hacer clic fuera
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('#nombre-institucion') && !e.target.closest('#inst-suggestions')) {
+      document.getElementById('inst-suggestions').style.display = 'none';
+    }
+  });
+
+  function selectScale(groupId, btn, val) {
+    document.querySelectorAll('#'+groupId+' .scale-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    btn.dataset.value = val;
+  }
+
+  document.addEventListener('change', function(e) {
+    if (e.target.type === 'radio') {
+      const name = e.target.name;
+      document.querySelectorAll('input[name="'+name+'"]').forEach(r => r.closest('.option-label').classList.remove('selected'));
+      e.target.closest('.option-label').classList.add('selected');
+    }
+  });
+
+  function enviarEncuesta() {
+    recolectarPaso(5);
+    const mf = document.querySelector('input[name="mayor_falencia"]:checked');
+    const us = document.querySelector('input[name="usaria_sia"]:checked');
+    if (mf) respuestas.mayorFalencia = mf.value;
+    if (us) respuestas.usariaSia = us.value;
+    respuestas.comentario = document.getElementById('comentario').value;
+
+    fetch('/encuesta/guardar', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(respuestas)
+    })
+    .then(r => r.json())
+    .then(() => {
+      document.getElementById('step-5').classList.remove('active');
+      document.getElementById('resultado').classList.add('active');
+      document.getElementById('progressBar').style.width = '100%';
+      window.scrollTo({top:0,behavior:'smooth'});
+    })
+    .catch(() => {
+      document.getElementById('step-5').classList.remove('active');
+      document.getElementById('resultado').classList.add('active');
+      document.getElementById('progressBar').style.width = '100%';
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  }
+
+  updateProgress();
+</script>
+</body>
+</html>

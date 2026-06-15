@@ -30,6 +30,12 @@ public class EntregaService {
     @Autowired
     private NotificationWebSocketHandler notificationWebSocketHandler;
 
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private NotificacionService notificacionService;
+
     public EntregaService(TareaRepository tareaRepository,
                           EntregaTareaRepository entregaTareaRepository,
                           AprendizRepository aprendizRepository,
@@ -165,15 +171,43 @@ public class EntregaService {
     private void notificarInstructorEntrega(Tarea tarea, Aprendiz aprendiz, boolean esTardia) {
         try {
             if (tarea.getInstructor() == null || aprendiz == null) return;
-            String idInstructor = String.valueOf(tarea.getInstructor().getId());
+
+            String idInstructor  = String.valueOf(tarea.getInstructor().getId());
             String nombreAprendiz = aprendiz.getUsuario() != null
                     ? (aprendiz.getUsuario().getNombres() + " " + aprendiz.getUsuario().getApellidos()).trim()
                     : "Un aprendiz";
             String titulo = esTardia ? "⏰ Entrega tardía" : "📋 Nueva entrega de tarea";
             String msg = nombreAprendiz + (esTardia ? " entregó TARDE: " : " entregó: ") + tarea.getTitulo();
+
+            // WebSocket al instructor
             NotificacionDTO dto = new NotificacionDTO("tarea_entregada", titulo, msg, nombreAprendiz, tarea.getNombreFicha());
             dto.setSonar(true);
             notificationWebSocketHandler.notificarInstructor(idInstructor, dto);
-        } catch (Exception e) { /* no interrumpir */ }
+
+            // Correo al instructor
+            if (tarea.getInstructor().getUsuario() != null
+                    && tarea.getInstructor().getUsuario().getCorreo() != null) {
+                String correoInstructor = tarea.getInstructor().getUsuario().getCorreo();
+                String asunto = titulo + " — " + tarea.getTitulo();
+                String cuerpo = "Hola " + tarea.getInstructor().getNombreCompleto() + ",\n\n"
+                        + nombreAprendiz + (esTardia ? " ha realizado una entrega TARDÍA" : " ha entregado")
+                        + " la tarea \"" + tarea.getTitulo() + "\".\n\n"
+                        + "Ficha: " + tarea.getNombreFicha() + "\n"
+                        + "Ingresa al sistema SIA para revisar y calificar la entrega.\n\n"
+                        + "— Sistema SIA";
+                emailService.enviarCorreoIndividual(correoInstructor, asunto, cuerpo,
+                        aprendiz.getUsuario() != null ? aprendiz.getUsuario().getCorreo() : null);
+            }
+
+            // Persistir notificación para campanita offline del instructor
+            if (tarea.getInstructor().getUsuario() != null
+                    && tarea.getInstructor().getUsuario().getIdUsuario() != null) {
+                notificacionService.crearParaUsuario(
+                        tarea.getInstructor().getUsuario().getIdUsuario(), "instructor",
+                        titulo,
+                        msg,
+                        "tarea_entregada");
+            }
+        } catch (Exception e) { /* no interrumpir el flujo principal */ }
     }
 }

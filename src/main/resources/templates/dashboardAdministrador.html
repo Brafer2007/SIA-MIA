@@ -197,6 +197,9 @@
     <a href="#" onclick="showSection('cronogramas')"><i class="fas fa-calendar-alt"></i> Cronogramas</a>
     <a href="#" onclick="showSection('reportes')"><i class="fas fa-chart-line"></i> Reportes</a>
     <a href="#" onclick="showSection('accesos')"><i class="fas fa-clipboard-list"></i> Registro de Accesos</a>
+    <a href="#" onclick="showSection('encuesta'); cargarStatsEncuesta()"><i class="fas fa-poll"></i> Encuesta</a>
+    <a href="#" onclick="showSection('mi-perfil-adm')"><i class="fas fa-user-cog"></i> Mi Perfil</a>
+    <a href="#" onclick="showSection('google-cuenta')"><i class="fab fa-google"></i> Cuenta Google</a>
     <button class="theme-toggle-btn" onclick="toggleTheme()">
       <i class="theme-icon fas fa-moon"></i>
       <span class="theme-label">Tema Oscuro</span>
@@ -245,6 +248,36 @@
         </div>
       </h2>
 
+      <!-- Filtros rápidos -->
+      <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:14px; align-items:center;">
+        <select id="filtro-perfil" onchange="filtrarTablaUsuarios()"
+                style="padding:8px 12px; border:1.5px solid #d1fae5; border-radius:8px; font-size:13px; background:#fff; cursor:pointer;">
+          <option value="">Todos los perfiles</option>
+          <option value="Aprendiz">Aprendiz</option>
+          <option value="Instructor">Instructor</option>
+          <option value="Administrador">Administrador</option>
+          <option value="Administrativo">Administrativo</option>
+          <option value="Seguridad">Seguridad</option>
+          <option value="Invitado">Invitado</option>
+        </select>
+        <select id="filtro-estado" onchange="filtrarTablaUsuarios()"
+                style="padding:8px 12px; border:1.5px solid #d1fae5; border-radius:8px; font-size:13px; background:#fff; cursor:pointer;">
+          <option value="">Todos los estados</option>
+          <option value="Activo">Activos</option>
+          <option value="Inactivo">Inactivos</option>
+        </select>
+        <input type="text" id="filtro-texto" oninput="filtrarTablaUsuarios()"
+               placeholder="🔍 Buscar por nombre, correo o documento..."
+               style="flex:1; min-width:220px; padding:8px 12px; border:1.5px solid #d1fae5;
+                      border-radius:8px; font-size:13px; outline:none;">
+        <button onclick="limpiarFiltrosUsuarios()"
+                style="padding:8px 14px; border:1.5px solid #d1fae5; border-radius:8px;
+                       background:#fff; color:#555; font-size:13px; cursor:pointer;">
+          <i class="fas fa-times"></i> Limpiar
+        </button>
+        <span id="filtro-count" style="font-size:12px; color:#888;"></span>
+      </div>
+
       <table id="tablaUsuarios">
         <thead>
           <tr>
@@ -288,37 +321,84 @@
 
     <!-- ---------------- CRONOGRAMAS ---------------- -->
     <section id="cronogramas" class="section" style="display:none;">
-      <h2><i class="fas fa-calendar-alt"></i> Gestión de Cronogramas</h2>
-      
-      <div style="background: #f9f9f9; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-        <h3>Subir Cronograma</h3>
-        <p style="color: #666; margin-bottom: 15px;">Carga el archivo Excel con la programación de los instructores.</p>
-        
+
+      <!-- Header -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:12px;">
+        <div>
+          <h2 style="margin:0;font-size:1.4rem;font-weight:700;color:#1e293b;display:flex;align-items:center;gap:10px;">
+            <span style="width:38px;height:38px;background:linear-gradient(135deg,#5b21b6,#7c3aed);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+              <i class="fas fa-calendar-alt" style="color:#fff;font-size:16px;"></i>
+            </span>
+            Gestión de Cronogramas
+          </h2>
+          <p style="margin:6px 0 0 48px;font-size:13px;color:#64748b;">Carga y visualiza la programación de todos los instructores.</p>
+        </div>
+        <button onclick="eliminarTodosCronogramas()" style="background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;padding:9px 18px;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px;display:flex;align-items:center;gap:6px;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='#fef2f2'">
+          <i class="fas fa-trash-alt"></i> Eliminar todos
+        </button>
+      </div>
+
+      <!-- Upload card -->
+      <div style="background:#fff;border:1.5px solid #ede9fe;border-radius:16px;padding:24px;margin-bottom:24px;box-shadow:0 2px 12px rgba(91,33,182,.06);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+          <div style="width:32px;height:32px;background:#f3f0ff;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+            <i class="fas fa-upload" style="color:#7c3aed;font-size:14px;"></i>
+          </div>
+          <div>
+            <div style="font-weight:700;font-size:14px;color:#1e293b;">Subir Cronograma</div>
+            <div style="font-size:12px;color:#94a3b8;">Archivo Excel (.xlsx) con la programación de instructores</div>
+          </div>
+        </div>
         <form id="upload-form-admin" enctype="multipart/form-data">
-          <div style="display: flex; gap: 10px; align-items: flex-end;">
-            <div style="flex: 1;">
-              <label for="file-input-admin" style="display: block; margin-bottom: 8px; font-weight: bold;">Selecciona archivo:</label>
-              <input type="file" id="file-input-admin" name="file" accept=".xlsx,.xls" required style="padding: 10px; border: 1px solid #5b21b6; border-radius: 5px; width: 100%;">
+          <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;">
+            <div style="flex:1;min-width:200px;">
+              <label style="display:block;font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Archivo Excel</label>
+              <input type="file" id="file-input-admin" name="file" accept=".xlsx,.xls" required
+                     style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;background:#f8fafc;cursor:pointer;">
             </div>
-            <button type="submit" style="background: #5b21b6; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">
-              📤 Subir
+            <button type="submit" style="background:linear-gradient(135deg,#5b21b6,#7c3aed);color:#fff;border:none;padding:10px 24px;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px;display:flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(91,33,182,.3);white-space:nowrap;">
+              <i class="fas fa-cloud-upload-alt"></i> Subir cronograma
             </button>
           </div>
         </form>
-        
-        <div id="estado-upload-admin" style="margin-top: 15px; padding: 10px; border-radius: 5px; display: none;"></div>
+        <div id="estado-upload-admin" style="margin-top:14px;display:none;"></div>
       </div>
 
-      <h3>Cronogramas Registrados</h3>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-        <div></div>
-        <button onclick="eliminarTodosCronogramas()" style="background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">
-          🗑️ Eliminar Todos
-        </button>
+      <!-- Stats bar -->
+      <div id="cronograma-stats" style="display:none;margin-bottom:24px;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;">
+          <div style="background:#f3f0ff;border:1px solid #ddd6fe;border-radius:12px;padding:16px;text-align:center;">
+            <div style="font-size:28px;font-weight:700;color:#5b21b6;" id="stat-instructores">0</div>
+            <div style="font-size:12px;color:#64748b;margin-top:4px;">Instructores</div>
+          </div>
+          <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:12px;padding:16px;text-align:center;">
+            <div style="font-size:28px;font-weight:700;color:#16a34a;" id="stat-sesiones">0</div>
+            <div style="font-size:12px;color:#64748b;margin-top:4px;">Fichas únicas</div>
+          </div>
+          <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:16px;text-align:center;">
+            <div style="font-size:28px;font-weight:700;color:#ea580c;" id="stat-fichas">0</div>
+            <div style="font-size:12px;color:#64748b;margin-top:4px;">Programas únicos</div>
+          </div>
+        </div>
       </div>
-      <div id="tabla-cronogramas-admin" style="margin-top: 20px;">
-        <p style="color: #666;">Cargando cronogramas...</p>
+
+      <!-- Buscador -->
+      <div style="margin-bottom:16px;position:relative;">
+        <i class="fas fa-search" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:14px;"></i>
+        <input type="text" id="cronograma-buscar" placeholder="Buscar instructor..." oninput="filtrarCronogramas(this.value)"
+               style="width:100%;padding:10px 14px 10px 40px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;background:#f8fafc;outline:none;box-sizing:border-box;"
+               onfocus="this.style.borderColor='#7c3aed'" onblur="this.style.borderColor='#e2e8f0'">
       </div>
+
+      <!-- Lista de instructores colapsable -->
+      <div id="tabla-cronogramas-admin">
+        <div style="text-align:center;padding:48px;color:#94a3b8;">
+          <i class="fas fa-calendar-alt" style="font-size:40px;margin-bottom:14px;display:block;opacity:.25;"></i>
+          <div style="font-size:15px;font-weight:500;">Aún no hay cronogramas cargados.</div>
+          <div style="font-size:13px;margin-top:4px;">Sube un archivo Excel para comenzar.</div>
+        </div>
+      </div>
+
     </section>
 
     <!-- ---------------- REPORTES ---------------- -->
@@ -567,6 +647,100 @@
       </div>
     </section>
 
+    <!-- ===== SECCIÓN ENCUESTA ===== -->
+    <section id="encuesta" class="section" style="display:none;">
+      <h2 style="margin-top:0; margin-bottom:6px;"><i class="fas fa-poll"></i> Resultados de la Encuesta</h2>
+      <p style="color:#666; margin-bottom:24px; font-size:14px;">Respuestas de estudiantes sobre falencias en sus instituciones.</p>
+
+      <!-- KPIs -->
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:16px; margin-bottom:28px;">
+        <div style="background:linear-gradient(135deg,#4c1d95,#7c3aed); border-radius:14px; padding:20px; color:#fff; text-align:center;">
+          <div style="font-size:36px; font-weight:700;" id="enc-total">-</div>
+          <div style="font-size:13px; opacity:.85; margin-top:4px;">Total respuestas</div>
+        </div>
+        <div style="background:#fff; border:1px solid #ede9fe; border-radius:14px; padding:20px; text-align:center;">
+          <div style="font-size:28px; font-weight:700; color:#7c3aed;" id="enc-avg-asistencia">-</div>
+          <div style="font-size:12px; color:#888; margin-top:4px;">Problemas asistencia (1-5)</div>
+        </div>
+        <div style="background:#fff; border:1px solid #ede9fe; border-radius:14px; padding:20px; text-align:center;">
+          <div style="font-size:28px; font-weight:700; color:#7c3aed;" id="enc-avg-tareas">-</div>
+          <div style="font-size:12px; color:#888; margin-top:4px;">Facilidad tareas (1-5)</div>
+        </div>
+        <div style="background:#fff; border:1px solid #ede9fe; border-radius:14px; padding:20px; text-align:center;">
+          <div style="font-size:28px; font-weight:700; color:#7c3aed;" id="enc-avg-admin">-</div>
+          <div style="font-size:12px; color:#888; margin-top:4px;">Satisfacción admin (1-5)</div>
+        </div>
+      </div>
+
+      <!-- Gráficas fila 1 -->
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px; margin-bottom:20px;">
+        <div style="background:#fff; border:1px solid #ede9fe; border-radius:14px; padding:20px;">
+          <h4 style="margin:0 0 16px; color:#2e1065; font-size:14px;">¿Usarían SIA?</h4>
+          <canvas id="chart-usaria" height="220"></canvas>
+        </div>
+        <div style="background:#fff; border:1px solid #ede9fe; border-radius:14px; padding:20px;">
+          <h4 style="margin:0 0 16px; color:#2e1065; font-size:14px;">Mayor falencia institucional</h4>
+          <canvas id="chart-falencia" height="220"></canvas>
+        </div>
+        <div style="background:#fff; border:1px solid #ede9fe; border-radius:14px; padding:20px;">
+          <h4 style="margin:0 0 16px; color:#2e1065; font-size:14px;">Tipo de institución</h4>
+          <canvas id="chart-tipo" height="220"></canvas>
+        </div>
+      </div>
+
+      <!-- Gráficas fila 2 -->
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px; margin-bottom:28px;">
+        <div style="background:#fff; border:1px solid #ede9fe; border-radius:14px; padding:20px;">
+          <h4 style="margin:0 0 16px; color:#2e1065; font-size:14px;">Asistencia digital</h4>
+          <canvas id="chart-asistencia" height="200"></canvas>
+        </div>
+        <div style="background:#fff; border:1px solid #ede9fe; border-radius:14px; padding:20px;">
+          <h4 style="margin:0 0 16px; color:#2e1065; font-size:14px;">Canal de comunicación</h4>
+          <canvas id="chart-comunicacion" height="200"></canvas>
+        </div>
+        <div style="background:#fff; border:1px solid #ede9fe; border-radius:14px; padding:20px;">
+          <h4 style="margin:0 0 16px; color:#2e1065; font-size:14px;">Certificados digitales</h4>
+          <canvas id="chart-certificados" height="200"></canvas>
+        </div>
+      </div>
+
+      <!-- Comentarios -->
+      <div style="background:#fff; border:1px solid #ede9fe; border-radius:14px; padding:24px;">
+        <h4 style="margin:0 0 16px; color:#2e1065; font-size:15px;"><i class="fas fa-comments"></i> Comentarios recientes</h4>
+        <div id="enc-comentarios">
+          <p style="color:#aaa; font-size:14px;">Cargando...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- === MI PERFIL (Admin) === -->
+    <section id="mi-perfil-adm" class="section" style="display:none;">
+      <h2><i class="fas fa-user-cog"></i> Mi Perfil</h2>
+      <div style="max-width:600px; background:#F0FFF0; border:1px solid #98FB98; border-radius:10px; padding:24px;">
+        <div id="perfil-widget-anchor"></div>
+      </div>
+    </section>
+
+    <!-- === CUENTA GOOGLE === -->
+    <section id="google-cuenta" class="section" style="display:none;">
+      <h2><i class="fab fa-google" style="color:#ea4335;"></i> Cuenta Google</h2>
+      <div id="google-estado-cargando-adm" style="padding:20px; color:#666;"><i class="fas fa-spinner fa-spin"></i> Cargando estado...</div>
+      <div id="google-no-vinculado-adm" style="display:none;">
+        <div style="background:#fff3cd; border:1px solid #ffc107; border-radius:10px; padding:16px 20px; margin-bottom:16px;">
+          <p style="font-size:14px; color:#856404; margin-bottom:12px;"><i class="fas fa-info-circle"></i> <strong>No tienes ninguna cuenta de Google vinculada.</strong><br>Al vincularla podrás iniciar sesión con un clic usando Google.</p>
+          <a href="/vincular-google/iniciar"><button style="background:#fff; color:#444; border:1.5px solid #ddd; padding:10px 20px; border-radius:8px; font-weight:600; font-size:13px; display:flex; align-items:center; gap:10px; cursor:pointer;"><img src="https://www.svgrepo.com/show/475656/google-color.svg" style="width:18px;height:18px;" alt="Google"> Vincular cuenta de Google</button></a>
+        </div>
+      </div>
+      <div id="google-si-vinculado-adm" style="display:none;">
+        <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:16px 20px; margin-bottom:16px;">
+          <p style="font-size:14px; color:#166534; margin-bottom:4px;"><i class="fas fa-check-circle"></i> <strong>Cuenta de Google vinculada.</strong></p>
+          <p id="google-correo-vinculado-adm" style="font-size:13px; color:#4b7c5f; margin-bottom:12px;"></p>
+          <button id="btn-desvincular-adm" onclick="desvincularGoogleAdm()" style="background:#fff; color:#dc2626; border:1.5px solid #fca5a5; padding:8px 18px; border-radius:8px; font-weight:600; font-size:13px; cursor:pointer;"><i class="fas fa-unlink"></i> Desvincular Google</button>
+          <p id="msg-no-pass-adm" style="display:none; font-size:11px; color:#dc2626; margin-top:8px;"><i class="fas fa-exclamation-triangle"></i> No puedes desvincular porque tu cuenta no tiene contraseña configurada.</p>
+        </div>
+      </div>
+    </section>
+
   </div>
 
   <!-- Sonido -->
@@ -584,6 +758,7 @@
       document.querySelectorAll('.section').forEach(section => section.style.display = 'none');
       const el = document.getElementById(sectionId);
       if (el) el.style.display = 'block';
+      if (sectionId === 'google-cuenta') cargarEstadoGoogleAdm();
     }
 
     // ---------- Toggle usuario (AJAX + actualización DOM) ----------
@@ -661,6 +836,25 @@ function registrarHuella(idUsuario) {
     window.onload = function () {
       showSection('usuarios');
       try {
+        // Registrar filtro personalizado antes de inicializar DataTables
+        if ($.fn.dataTable) {
+          $.fn.dataTable.ext.search.push(function(settings, data) {
+            if (settings.nTable.id !== 'tablaUsuarios') return true;
+            const txt    = (document.getElementById('filtro-texto')?.value  || '').toLowerCase().trim();
+            const perfil = (document.getElementById('filtro-perfil')?.value || '').toLowerCase().trim();
+            const estado = (document.getElementById('filtro-estado')?.value || '').toLowerCase().trim();
+            const nombre = (data[0] || '').toLowerCase();
+            const correo = (data[1] || '').toLowerCase();
+            const doc    = (data[2] || '').toLowerCase();
+            const perf   = (data[3] || '').toLowerCase();
+            const est    = (data[4] || '').toLowerCase();
+            if (txt    && !nombre.includes(txt) && !correo.includes(txt) && !doc.includes(txt)) return false;
+            if (perfil && !perf.includes(perfil))  return false;
+            if (estado && !est.includes(estado))   return false;
+            return true;
+          });
+        }
+
         $('#tablaUsuarios').DataTable({
           language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' }
         });
@@ -790,188 +984,167 @@ function registrarHuella(idUsuario) {
        SISTEMA DE NOTIFICACIONES — usa siaNotif (notificaciones.js)
        ============================ */
 
-    // Polling cada 6s al endpoint del admin, alimenta el sistema unificado
-    let _adminNotiPrevias = 0;
-    function _pollAdminNotificaciones() {
-      fetch('/dashboard/admin/notificaciones')
-        .then(r => r.ok ? r.json() : [])
-        .then(data => {
-          if (!Array.isArray(data)) return;
-          const nuevas = data.slice(0, data.length - _adminNotiPrevias);
-          nuevas.forEach(n => {
-            if (window.siaNotif) {
-              siaNotif.agregar({
-                tipo: n.tipo || 'general',
-                titulo: (n.categoria || 'Sistema').toUpperCase(),
-                mensaje: n.mensaje || '',
-                fecha: n.fecha
-              });
-            }
-          });
-          _adminNotiPrevias = data.length;
-        })
-        .catch(() => {});
-    }
-    setInterval(_pollAdminNotificaciones, 6000);
+    // ==========================================
+    // CRONOGRAMAS ADMIN
+    // ==========================================
+    let cronogramaData = []; // cache global
 
-    // FUNCIONES PARA GESTIÓN DE CRONOGRAMAS (ADMIN)
-    // ================================================
-
-    // Subir archivo de programación
-    function subirArchivoProgramacionAdmin(event) {
-      event.preventDefault();
+    document.getElementById('upload-form-admin').addEventListener('submit', function(e) {
+      e.preventDefault();
       const fileInput = document.getElementById('file-input-admin');
-      const file = fileInput.files[0];
-      if (!file) return;
-
+      const estadoDiv = document.getElementById('estado-upload-admin');
+      if (!fileInput.files.length) {
+        estadoDiv.style.display = 'block';
+        estadoDiv.innerHTML = '<div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:12px;color:#dc2626;font-size:13px;"><i class="fas fa-exclamation-circle"></i> Selecciona un archivo Excel primero.</div>';
+        return;
+      }
       const formData = new FormData();
-      formData.append('file', file);
-
-      const estado = document.getElementById('estado-upload-admin');
-      estado.style.display = 'block';
-      estado.style.background = '#f0f0f0';
-      estado.textContent = 'Subiendo archivo...';
+      formData.append('file', fileInput.files[0]);
+      estadoDiv.style.display = 'block';
+      estadoDiv.innerHTML = '<div style="background:#f3f0ff;border:1px solid #ddd6fe;border-radius:8px;padding:12px;color:#5b21b6;font-size:13px;"><i class="fas fa-spinner fa-spin"></i> Procesando archivo...</div>';
 
       fetch('/programacion/upload-admin', { method: 'POST', body: formData })
-        .then(res => res.json())
-        .then(json => {
-          fileInput.value = '';
-          estado.style.background = '#d4edda';
-          estado.style.color = '#155724';
-          estado.textContent = json.mensaje || 'Archivo subido correctamente';
-          cargarCronogramasAdmin();
+        .then(r => r.json())
+        .then(data => {
+          if (data.error) {
+            estadoDiv.innerHTML = '<div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:12px;color:#dc2626;font-size:13px;"><i class="fas fa-times-circle"></i> ' + data.error + '</div>';
+          } else {
+            let msg = '<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:12px;color:#16a34a;font-size:13px;"><i class="fas fa-check-circle"></i> ' + data.mensaje;
+            if (data.instructoresCreados && data.instructoresCreados.length > 0) {
+              msg += '<br><span style="font-weight:600;">Instructores nuevos creados (' + data.instructoresCreados.length + '):</span> ' + data.instructoresCreados.join(', ');
+            }
+            msg += '<br><span style="color:#475569;">Filas procesadas: ' + data.filasProcesadas + ' | Ignoradas: ' + data.filasIgnoradas + '</span></div>';
+            estadoDiv.innerHTML = msg;
+            cargarCronogramasAdmin();
+          }
         })
         .catch(err => {
-          console.error('Error subiendo archivo:', err);
-          estado.style.background = '#f8d7da';
-          estado.style.color = '#721c24';
-          estado.textContent = 'Error subiendo archivo';
-        })
-        .finally(() => setTimeout(() => { estado.style.display = 'none'; }, 5000));
-    }
+          estadoDiv.innerHTML = '<div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:12px;color:#dc2626;font-size:13px;"><i class="fas fa-times-circle"></i> Error de conexión: ' + err.message + '</div>';
+        });
+    });
 
-    // Cargar todos los cronogramas para el admin
     function cargarCronogramasAdmin() {
       fetch('/programacion/todos-instructores')
-        .then(res => res.json())
-        .then(instructores => mostrarCronogramasAdmin(instructores))
-        .catch(err => {
-          console.error('Error cargando cronogramas:', err);
-          document.getElementById('tabla-cronogramas-admin').innerHTML = '<p style="color: #d32f2f;">Error cargando cronogramas</p>';
+        .then(r => r.json())
+        .then(data => {
+          cronogramaData = data;
+          renderizarCronogramas(data);
+        })
+        .catch(() => {
+          document.getElementById('tabla-cronogramas-admin').innerHTML =
+            '<div style="padding:20px;color:#ef4444;text-align:center;"><i class="fas fa-exclamation-triangle"></i> Error al cargar cronogramas.</div>';
         });
     }
 
-    // Mostrar cronogramas en tabla para admin
-    function mostrarCronogramasAdmin(instructores) {
-      const contenedor = document.getElementById('tabla-cronogramas-admin');
-      if (!contenedor) return;
+    function filtrarCronogramas(query) {
+      if (!cronogramaData.length) return;
+      const q = query.trim().toLowerCase();
+      const filtrado = q ? cronogramaData.filter(i => i.nombre.toLowerCase().includes(q)) : cronogramaData;
+      renderizarCronogramas(filtrado);
+    }
 
-      let html = '<div>';
-      
-      instructores.forEach(instructor => {
-        if (!instructor.programacion || instructor.programacion.length === 0) return;
+    function renderizarCronogramas(data) {
+      const container = document.getElementById('tabla-cronogramas-admin');
+      const statsDiv = document.getElementById('cronograma-stats');
 
-        const agrupado = {};
-        instructor.programacion.forEach(p => {
-          const clave = `${p.nombreFicha}|${p.curso}|${p.aula}|${p.horaInicio}|${p.horaFin}|${p.trimestre}`;
-          if (!agrupado[clave]) {
-            agrupado[clave] = { ...p, dias: [p.dia] };
-          } else {
-            agrupado[clave].dias.push(p.dia);
-          }
+      if (!data || data.length === 0) {
+        statsDiv.style.display = 'none';
+        container.innerHTML = '<div style="text-align:center;padding:48px;color:#94a3b8;"><i class="fas fa-calendar-alt" style="font-size:40px;margin-bottom:14px;display:block;opacity:.25;"></i><div style="font-size:15px;font-weight:500;">No se encontraron resultados.</div></div>';
+        return;
+      }
+
+      // Stats
+      const totalFichas = new Set();
+      const programasSet = new Set();
+      data.forEach(i => (i.programacion || []).forEach(p => {
+        if (p.nombreFicha) totalFichas.add(p.nombreFicha);
+        if (p.programa) programasSet.add(p.programa);
+      }));
+      document.getElementById('stat-instructores').textContent = data.length;
+      document.getElementById('stat-sesiones').textContent = totalFichas.size;
+      document.getElementById('stat-fichas').textContent = programasSet.size;
+      statsDiv.style.display = 'block';
+
+      // Cards por instructor
+      let html = '';
+      data.forEach((instructor, idx) => {
+        const prog = instructor.programacion || [];
+        // Agrupar por ficha: { ficha -> Set de programas }
+        const fichaMap = {};
+        prog.forEach(p => {
+          const ficha = p.nombreFicha || 'Sin ficha';
+          if (!fichaMap[ficha]) fichaMap[ficha] = new Set();
+          if (p.programa) fichaMap[ficha].add(p.programa);
         });
+        const fichas = Object.keys(fichaMap);
+        const colores = ['#5b21b6','#0891b2','#16a34a','#d97706','#dc2626','#7c3aed'];
+        const color = colores[idx % colores.length];
+
+        // Contenido del panel desplegable: chips de fichas con programa
+        let fichasHtml = fichas.length === 0
+          ? '<p style="padding:16px 20px;color:#94a3b8;font-size:13px;">Sin fichas asignadas.</p>'
+          : `<div style="padding:14px 20px;display:flex;flex-wrap:wrap;gap:10px;">` +
+            fichas.map(f => {
+              const programas = [...fichaMap[f]];
+              const esLabel = programas.some(p => /tecnol/i.test(p)) ? 'Tecnológica' : programas.some(p => /t[eé]cn/i.test(p)) ? 'Técnica' : '';
+              const badge = esLabel
+                ? `<span style="font-size:10px;font-weight:700;background:${color}22;color:${color};border-radius:4px;padding:1px 6px;margin-left:5px;">${esLabel}</span>`
+                : '';
+              return `<div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 14px;min-width:120px;">
+                <div style="font-weight:700;font-size:13px;color:#1e293b;">${f}${badge}</div>
+                ${programas.length ? `<div style="font-size:11px;color:#64748b;margin-top:3px;">${programas.join(', ')}</div>` : ''}
+              </div>`;
+            }).join('') +
+            `</div>`;
 
         html += `
-        <div style="margin-bottom: 30px; padding: 20px; background: #f5f5f5; border-radius: 10px; border-left: 4px solid #5b21b6;">
-          <h3 style="color: #5b21b6; margin-top: 0;">Instructor: ${instructor.nombre}</h3>
-          <table style="width:100%; border-collapse: collapse;">
-            <thead style="background: #5b21b6; color: white;">
-              <tr>
-                <th>Ficha</th><th>Curso</th><th>Ambiente</th><th>Hora</th><th>Trimestre</th><th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-        `;
-
-        Object.values(agrupado).forEach(p => {
-          html += `
-          <tr style="border-bottom: 1px solid #ddd;">
-            <td>${p.nombreFicha}</td>
-            <td>${p.curso}</td>
-            <td>${p.aula}</td>
-            <td>${p.horaInicio} - ${p.horaFin}</td>
-            <td>${p.trimestre}</td>
-            <td>
-              <button onclick="eliminarProgramacionAdmin(${p.id})" style="background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">🗑 Eliminar</button>
-            </td>
-          </tr>
-          `;
-        });
-
-        html += `</tbody></table></div>`;
+          <div class="cron-card" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;margin-bottom:12px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.05);">
+            <div onclick="toggleCronCard(${idx})" style="display:flex;align-items:center;gap:14px;padding:16px 20px;cursor:pointer;user-select:none;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+              <div style="width:42px;height:42px;border-radius:12px;background:${color};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="fas fa-chalkboard-teacher" style="color:#fff;font-size:18px;"></i>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-weight:700;font-size:14px;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${instructor.nombre}</div>
+                <div style="font-size:12px;color:#64748b;margin-top:2px;">
+                  <span style="background:#f1f5f9;border-radius:4px;padding:2px 7px;">${fichas.length} ficha${fichas.length !== 1 ? 's' : ''} a cargo</span>
+                </div>
+              </div>
+              <i id="icon-cron-${idx}" class="fas fa-chevron-down" style="color:#94a3b8;font-size:13px;transition:transform .25s;"></i>
+            </div>
+            <div id="cron-body-${idx}" style="display:none;border-top:1px solid #f1f5f9;">
+              ${fichasHtml}
+            </div>
+          </div>`;
       });
-
-      html += '</div>';
-      contenedor.innerHTML = html || '<p style="color: #666;">No hay cronogramas registrados</p>';
+      container.innerHTML = html;
     }
 
-    // Eliminar programación como admin
-    function eliminarProgramacionAdmin(idProgramacion) {
-      if (!confirm('¿Estás seguro de que quieres eliminar esta programación?')) {
-        return;
-      }
-
-      fetch(`/programacion/${idProgramacion}`, { method: 'DELETE' })
-        .then(res => res.json())
-        .then(data => {
-          if (data.mensaje) {
-            alert('Programación eliminada correctamente');
-            cargarCronogramasAdmin();
-          } else if (data.error) {
-            alert('Error: ' + data.error);
-          }
-        })
-        .catch(err => {
-          console.error('Error eliminando programación:', err);
-          alert('Error al eliminar la programación');
-        });
+    function toggleCronCard(idx) {
+      const body = document.getElementById('cron-body-' + idx);
+      const icon = document.getElementById('icon-cron-' + idx);
+      const open = body.style.display === 'none';
+      body.style.display = open ? 'block' : 'none';
+      icon.style.transform = open ? 'rotate(180deg)' : 'rotate(0)';
     }
 
-    // Eliminar TODOS los cronogramas
     function eliminarTodosCronogramas() {
-      if (!confirm('⚠️ ¿Estás COMPLETAMENTE SEGURO de que quieres eliminar TODOS los cronogramas? Esta acción no se puede deshacer.')) {
-        return;
-      }
-
-      if (!confirm('⚠️ CONFIRMACIÓN FINAL: Se eliminarán TODOS los cronogramas. ¿Continuar?')) {
-        return;
-      }
-
+      if (!confirm('¿Estás seguro de que deseas eliminar TODOS los cronogramas? Esta acción no se puede deshacer.')) return;
       fetch('/programacion/admin/todos', { method: 'DELETE' })
-        .then(res => res.json())
+        .then(r => r.json())
         .then(data => {
-          if (data.mensaje) {
-            alert(`✅ ${data.mensaje}`);
-            cargarCronogramasAdmin();
-          } else if (data.error) {
-            alert('❌ Error: ' + data.error);
-          }
+          cronogramaData = [];
+          renderizarCronogramas([]);
+          document.getElementById('cronograma-stats').style.display = 'none';
+          alert(data.mensaje || 'Cronogramas eliminados.');
         })
-        .catch(err => {
-          console.error('Error eliminando todos los cronogramas:', err);
-          alert('❌ Error al eliminar los cronogramas');
-        });
+        .catch(() => alert('Error al eliminar cronogramas.'));
     }
 
     // Inicializar al cargar
     document.addEventListener('DOMContentLoaded', function() {
-      const uploadFormAdmin = document.getElementById('upload-form-admin');
-      if (uploadFormAdmin) {
-        uploadFormAdmin.addEventListener('submit', subirArchivoProgramacionAdmin);
-      }
       cargarCronogramasAdmin();
       cargarVehiculos();
-      
+
       // Evento para formulario de vehículos
       const formVehiculo = document.getElementById('formVehiculo');
       if (formVehiculo) {
@@ -1241,10 +1414,192 @@ function registrarHuella(idUsuario) {
   <a th:href="@{/probar502}" style="position:fixed;bottom:2px;right:2px;font-size:8px;color:transparent;z-index:9999;">.</a>
   <script th:src="@{/js/theme.js}"></script>
   <script th:src="@{/js/notificaciones.js}"></script>
+  <script th:src="@{/js/perfil-widget.js}"></script>
+
+  <script>
+  // ===== ENCUESTA STATS =====
+  let chartsEncuesta = {};
+
+  function cargarStatsEncuesta() {
+    fetch('/encuesta/stats')
+      .then(r => r.json())
+      .then(data => {
+        document.getElementById('enc-total').textContent = data.total;
+        document.getElementById('enc-avg-asistencia').textContent = data.avgProblemasAsistencia + '/5';
+        document.getElementById('enc-avg-tareas').textContent = data.avgFacilidadTareas + '/5';
+        document.getElementById('enc-avg-admin').textContent = data.avgSatisfaccionAdmin + '/5';
+
+        const PURPLE = ['#7c3aed','#a78bfa','#4c1d95','#c4b5fd','#6d28d9','#ddd6fe'];
+
+        renderChart('chart-usaria', 'doughnut', data.usariaSia, {
+          'definitivamente': '✅ Definitivamente sí',
+          'probablemente': '👍 Probablemente sí',
+          'tal_vez': '🤔 Tal vez',
+          'no': '❌ Probablemente no'
+        }, PURPLE);
+
+        renderChart('chart-falencia', 'bar', data.mayorFalencia, {
+          'asistencia': 'Asistencia',
+          'comunicacion': 'Comunicación',
+          'tareas': 'Tareas',
+          'acceso': 'Control acceso',
+          'tramites': 'Trámites'
+        }, PURPLE);
+
+        renderChart('chart-tipo', 'pie', data.tipoInstitucion, {
+          'universidad_publica': 'U. Pública',
+          'universidad_privada': 'U. Privada',
+          'tecnica': 'Técnica/Tecnológica',
+          'otro': 'Otro'
+        }, PURPLE);
+
+        renderChart('chart-asistencia', 'bar', data.asistenciaDigital, {
+          'si': 'Completamente digital',
+          'parcial': 'Parcialmente',
+          'no': 'No existe',
+          'no_sabe': 'No sabe'
+        }, PURPLE);
+
+        renderChart('chart-comunicacion', 'doughnut', data.comunicacion, {
+          'plataforma': 'Plataforma inst.',
+          'whatsapp': 'WhatsApp',
+          'correo': 'Solo correo',
+          'no_hay': 'Sin canal'
+        }, PURPLE);
+
+        renderChart('chart-certificados', 'pie', data.certificados, {
+          'si_inmediato': 'Inmediato online',
+          'si_demora': 'Online con demora',
+          'presencial': 'Solo presencial',
+          'no': 'No existe'
+        }, PURPLE);
+
+        // Comentarios
+        const cont = document.getElementById('enc-comentarios');
+        if (!data.comentarios || data.comentarios.length === 0) {
+          cont.innerHTML = '<p style="color:#aaa; font-size:14px;">No hay comentarios aún.</p>';
+        } else {
+          cont.innerHTML = data.comentarios.map(c => `
+            <div style="border-left:3px solid #a78bfa; padding:10px 16px; margin-bottom:12px; background:#faf5ff; border-radius:0 8px 8px 0;">
+              <div style="font-size:11px; color:#999; margin-bottom:4px;">${c.fecha} · ${c.institucion}</div>
+              <div style="font-size:14px; color:#333;">${c.comentario}</div>
+            </div>
+          `).join('');
+        }
+      })
+      .catch(err => console.error('Error cargando stats encuesta:', err));
+  }
+
+  function renderChart(canvasId, type, dataObj, labelMap, colors) {
+    if (chartsEncuesta[canvasId]) {
+      chartsEncuesta[canvasId].destroy();
+    }
+    const labels = Object.keys(dataObj).map(k => labelMap[k] || k);
+    const values = Object.values(dataObj);
+    const ctx = document.getElementById(canvasId);
+    if (!ctx) return;
+    chartsEncuesta[canvasId] = new Chart(ctx, {
+      type: type,
+      data: {
+        labels: labels,
+        datasets: [{
+          data: values,
+          backgroundColor: colors,
+          borderColor: type === 'bar' ? colors : '#fff',
+          borderWidth: type === 'bar' ? 0 : 2,
+          borderRadius: type === 'bar' ? 6 : 0
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: type === 'bar' ? 'none' : 'bottom', labels: { font: { size: 11 } } }
+        },
+        scales: type === 'bar' ? {
+          y: { beginAtZero: true, ticks: { stepSize: 1 } },
+          x: { ticks: { font: { size: 11 } } }
+        } : {}
+      }
+    });
+  }
+  </script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      if (window.siaNotif) siaNotif.init({});
+      if (window.siaNotif) {
+        // Admin usa WebSocket tipo 'admin' con id fijo
+        siaNotif.init({ tipo: 'admin', id: 'admin' });
+      }
+      if (window.perfilWidget) perfilWidget.init();
     });
+  </script>
+
+  <script>
+  // ── Filtros tabla de usuarios (integrado con DataTables) ─────────────────
+
+  function filtrarTablaUsuarios() {
+    try {
+      const dt = $('#tablaUsuarios').DataTable();
+      dt.draw();
+      const info = dt.page.info();
+      const count = document.getElementById('filtro-count');
+      if (count) count.textContent = info.recordsDisplay + ' usuario(s)';
+    } catch(e) {}
+  }
+
+  function limpiarFiltrosUsuarios() {
+    const t = document.getElementById('filtro-texto');
+    const p = document.getElementById('filtro-perfil');
+    const e = document.getElementById('filtro-estado');
+    if (t) t.value = '';
+    if (p) p.value = '';
+    if (e) e.value = '';
+    filtrarTablaUsuarios();
+  }
+  </script>
+
+  <script>
+  // ── Google Account Widget (Administrador) ─────────────────
+  function cargarEstadoGoogleAdm() {
+    document.getElementById('google-estado-cargando-adm').style.display = 'block';
+    document.getElementById('google-no-vinculado-adm').style.display = 'none';
+    document.getElementById('google-si-vinculado-adm').style.display = 'none';
+    fetch('/vincular-google/estado').then(r => r.json()).then(data => {
+      document.getElementById('google-estado-cargando-adm').style.display = 'none';
+      if (data.vinculado) {
+        document.getElementById('google-si-vinculado-adm').style.display = 'block';
+        document.getElementById('google-correo-vinculado-adm').textContent = 'Correo: ' + (data.correo || '');
+        if (!data.tienePassword) {
+          document.getElementById('btn-desvincular-adm').disabled = true;
+          document.getElementById('btn-desvincular-adm').style.opacity = '0.5';
+          document.getElementById('msg-no-pass-adm').style.display = 'block';
+        }
+      } else {
+        document.getElementById('google-no-vinculado-adm').style.display = 'block';
+      }
+    }).catch(() => {
+      document.getElementById('google-estado-cargando-adm').innerHTML = '<span style="color:#dc2626;">Error al cargar. Recarga.</span>';
+    });
+  }
+  function desvincularGoogleAdm() {
+    Swal.fire({ title:'¿Desvincular Google?', text:'Ya no podrás iniciar sesión con Google.', icon:'warning', showCancelButton:true, confirmButtonColor:'#dc2626', cancelButtonColor:'#6b7280', confirmButtonText:'Sí, desvincular', cancelButtonText:'Cancelar' })
+    .then(r => {
+      if (!r.isConfirmed) return;
+      fetch('/vincular-google/desvincular', { method:'POST' }).then(res => res.json()).then(data => {
+        if (data.mensaje) Swal.fire('¡Desvinculado!', data.mensaje, 'success').then(() => location.reload());
+        else Swal.fire('Error', data.error || 'No se pudo desvincular.', 'error');
+      });
+    });
+  }
+  (function checkVincularParams() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('vincularOk')) {
+      Swal.fire({ icon:'success', title:'¡Google vinculado!', text:'Tu cuenta de Google se vinculó correctamente.', confirmButtonColor:'#5b21b6', timer:3000, timerProgressBar:true });
+      showSection('google-cuenta');
+    } else if (params.get('vincularError')) {
+      Swal.fire({ icon:'error', title:'Error al vincular', text:decodeURIComponent(params.get('vincularError')), confirmButtonColor:'#5b21b6' });
+      showSection('google-cuenta');
+    }
+  })();
   </script>
 </body>
 </html>

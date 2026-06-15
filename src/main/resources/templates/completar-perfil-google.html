@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Completa tu perfil - SIA</title>
+  <link rel="icon" type="image/png" th:href="@{/img/logo_sia_fondo.png}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #2e1065 0%, #5b21b6 40%, #6d28d9 70%, #005a25 100%);
+      background-size: 300% 300%;
+      animation: bgMove 10s ease infinite;
+      display: flex; align-items: center; justify-content: center; padding: 24px;
+    }
+
+    @keyframes bgMove {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .card {
+      background: #fff; border-radius: 24px; padding: 40px 36px;
+      width: 100%; max-width: 500px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.25);
+      animation: slideUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
+      position: relative;
+    }
+    .card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 5px;
+      background: linear-gradient(90deg, #5b21b6, #7c3aed, #5b21b6);
+      border-radius: 24px 24px 0 0;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Ícono Google ── */
+    .google-badge {
+      display: flex; align-items: center; justify-content: center;
+      gap: 10px; margin-bottom: 20px;
+    }
+    .google-badge img { width: 40px; height: 40px; }
+    .google-badge span {
+      font-size: 13px; font-weight: 600; color: #5b21b6;
+      background: #f3e8ff; padding: 4px 12px; border-radius: 20px;
+    }
+
+    h2 {
+      text-align: center; font-size: 22px; font-weight: 800;
+      color: #004d1f; margin-bottom: 6px;
+    }
+    .subtitle {
+      text-align: center; font-size: 13px; color: #6b7280;
+      margin-bottom: 24px; line-height: 1.6;
+    }
+
+    /* ── Info correo Google ── */
+    .google-info {
+      background: #f0fdf4; border: 1px solid #bbf7d0;
+      border-radius: 12px; padding: 12px 16px; margin-bottom: 24px;
+      display: flex; align-items: center; gap: 10px; font-size: 13px; color: #166534;
+    }
+    .google-info i { font-size: 18px; color: #16a34a; flex-shrink: 0; }
+
+    /* ── Campos ── */
+    .field { margin-bottom: 16px; }
+    .field label {
+      display: block; font-size: 11px; font-weight: 600;
+      color: #555; margin-bottom: 6px;
+      text-transform: uppercase; letter-spacing: 0.7px;
+    }
+    .input-wrap { position: relative; display: flex; align-items: center; }
+    .input-wrap .icon {
+      position: absolute; left: 13px; color: #aaa;
+      font-size: 13px; pointer-events: none;
+    }
+    .input-wrap input {
+      width: 100%; padding: 11px 13px 11px 38px;
+      background: #f8fffe; border: 1.5px solid #d1fae5;
+      border-radius: 10px; color: #111; font-size: 13px;
+      font-family: 'Poppins', sans-serif; transition: all 0.3s; outline: none;
+    }
+    .input-wrap input:focus {
+      border-color: #5b21b6; background: #f0fff4;
+      box-shadow: 0 0 0 3px rgba(91,33,182,0.1);
+    }
+    .input-wrap input.error {
+      border-color: #fca5a5 !important; background: #fff5f5 !important;
+    }
+    .hint { font-size: 11px; color: #9ca3af; margin-top: 4px; padding-left: 2px; }
+    .hint.ok { color: #10b981; }
+    .hint.err { color: #dc2626; }
+
+    /* ── Fila dos columnas ── */
+    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* ── Toggle username ── */
+    .toggle-wrap {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 14px; cursor: pointer; user-select: none;
+    }
+    .toggle-wrap input[type="checkbox"] { accent-color: #5b21b6; width: 16px; height: 16px; }
+    .toggle-wrap span { font-size: 13px; color: #374151; font-weight: 500; }
+
+    /* ── Error ── */
+    .alert-error {
+      background: #fef2f2; border: 1px solid #fca5a5;
+      border-radius: 10px; padding: 10px 14px;
+      margin-bottom: 16px; font-size: 13px; color: #dc2626;
+      display: flex; align-items: flex-start; gap: 8px;
+    }
+
+    /* ── Botón ── */
+    .btn-primary {
+      width: 100%; padding: 13px; border: none; border-radius: 12px;
+      background: linear-gradient(135deg, #5b21b6, #7c3aed);
+      color: #fff; font-weight: 700; font-size: 14px;
+      cursor: pointer; transition: all 0.3s;
+      box-shadow: 0 4px 20px rgba(91,33,182,0.3);
+      font-family: 'Poppins', sans-serif; margin-top: 8px;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(91,33,182,0.45); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* ── Nota invitado ── */
+    .nota-invitado {
+      margin-top: 16px; padding: 10px 14px;
+      background: #fef9c3; border: 1px solid #fde047;
+      border-radius: 10px; font-size: 12px; color: #854d0e;
+      display: flex; align-items: flex-start; gap: 8px;
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 28px 18px; }
+      .row-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+
+    <div class="google-badge">
+      <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google">
+      <span>Registro con Google</span>
+    </div>
+
+    <h2>Completa tu perfil</h2>
+    <p class="subtitle">
+      Tu cuenta fue creada con Google. Completa los datos obligatorios para continuar.
+      Tu perfil quedará como <strong>Invitado</strong> hasta que el administrador lo actualice.
+    </p>
+
+    <!-- Correo pre-llenado desde Google (solo lectura) -->
+    <div class="google-info">
+      <i class="fab fa-google"></i>
+      <div>
+        <strong>Correo verificado por Google:</strong><br>
+        <span th:text="${usuario.correo}">correo@gmail.com</span>
+      </div>
+    </div>
+
+    <!-- Error del servidor -->
+    <div th:if="${error}" class="alert-error">
+      <i class="fas fa-exclamation-circle"></i>
+      <span th:text="${error}"></span>
+    </div>
+
+    <form th:action="@{/completar-perfil-google}" method="post" id="form-google">
+
+      <!-- Nombres y Apellidos -->
+      <div class="row-2">
+        <div class="field">
+          <label><i class="fas fa-user"></i> Nombres *</label>
+          <div class="input-wrap">
+            <i class="fas fa-user icon"></i>
+            <input type="text" name="nombres" id="nombres"
+                   th:value="${usuario.nombres}"
+                   placeholder="Juan" required
+                   oninput="validarTexto(this,'hint-nombres','Nombres')">
+          </div>
+          <div class="hint" id="hint-nombres">Mínimo 2 caracteres.</div>
+        </div>
+        <div class="field">
+          <label><i class="fas fa-user"></i> Apellidos *</label>
+          <div class="input-wrap">
+            <i class="fas fa-user icon"></i>
+            <input type="text" name="apellidos" id="apellidos"
+                   th:value="${usuario.apellidos}"
+                   placeholder="Pérez" required
+                   oninput="validarTexto(this,'hint-apellidos','Apellidos')">
+          </div>
+          <div class="hint" id="hint-apellidos">Mínimo 2 caracteres.</div>
+        </div>
+      </div>
+
+      <!-- Número de documento -->
+      <div class="field">
+        <label><i class="fas fa-id-card"></i> Número de documento *</label>
+        <div class="input-wrap">
+          <i class="fas fa-id-card icon"></i>
+          <input type="text" name="noDocumento" id="noDocumento"
+                 inputmode="numeric" pattern="[0-9]+"
+                 placeholder="1234567890" required
+                 oninput="validarDocumento(this)">
+        </div>
+        <div class="hint" id="hint-doc">Solo números. Mínimo 5 dígitos.</div>
+      </div>
+
+      <!-- Nombre de usuario (opcional) -->
+      <label class="toggle-wrap">
+        <input type="checkbox" id="chk-username" onchange="toggleUsername(this)">
+        <span>¿Quieres cambiar tu nombre de usuario?</span>
+      </label>
+
+      <div class="field" id="username-field" style="display:none;">
+        <label><i class="fas fa-at"></i> Nombre de usuario</label>
+        <div class="input-wrap">
+          <i class="fas fa-at icon"></i>
+          <input type="text" name="nombreUsuario" id="nombreUsuario"
+                 th:value="${usuario.nombreUsuario}"
+                 placeholder="usuario123"
+                 oninput="validarUsername(this)">
+        </div>
+        <div class="hint" id="hint-user">
+          Usuario actual: <strong th:text="${usuario.nombreUsuario}">usuario</strong>.
+          Solo letras, números y puntos. Mínimo 4 caracteres.
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary" id="btn-guardar">
+        <i class="fas fa-check-circle"></i> Guardar y continuar
+      </button>
+    </form>
+
+    <div class="nota-invitado">
+      <i class="fas fa-info-circle"></i>
+      <span>
+        Tu cuenta queda con rol <strong>Invitado</strong>.
+        El administrador del sistema te asignará el rol correspondiente una vez revise tu solicitud.
+      </span>
+    </div>
+
+  </div>
+
+  <script>
+    // Solo números en el documento
+    const docInput = document.getElementById('noDocumento');
+    docInput.addEventListener('keypress', e => { if (!/[0-9]/.test(e.key)) e.preventDefault(); });
+
+    function validarTexto(input, hintId, label) {
+      const hint = document.getElementById(hintId);
+      const val  = input.value.trim();
+      if (val.length < 2) {
+        hint.textContent = label + ' debe tener al menos 2 caracteres.';
+        hint.className = 'hint err';
+        input.classList.add('error');
+      } else {
+        hint.textContent = '✓ Válido';
+        hint.className = 'hint ok';
+        input.classList.remove('error');
+      }
+    }
+
+    function validarDocumento(input) {
+      const hint = document.getElementById('hint-doc');
+      const val  = input.value.trim();
+      input.value = val.replace(/[^0-9]/g, '');
+      if (val.length < 5 || !/^\d+$/.test(val)) {
+        hint.textContent = 'Mínimo 5 dígitos numéricos.';
+        hint.className = 'hint err';
+        input.classList.add('error');
+      } else {
+        hint.textContent = '✓ Documento válido';
+        hint.className = 'hint ok';
+        input.classList.remove('error');
+      }
+    }
+
+    function validarUsername(input) {
+      const hint = document.getElementById('hint-user');
+      const val  = input.value.trim();
+      if (val.length > 0 && (val.length < 4 || !/^[a-zA-Z0-9.]+$/.test(val))) {
+        hint.textContent = 'Solo letras, números y puntos. Mínimo 4 caracteres.';
+        hint.className = 'hint err';
+        input.classList.add('error');
+      } else if (val.length >= 4) {
+        hint.textContent = '✓ Válido';
+        hint.className = 'hint ok';
+        input.classList.remove('error');
+      }
+    }
+
+    function toggleUsername(chk) {
+      const field = document.getElementById('username-field');
+      field.style.display = chk.checked ? 'block' : 'none';
+    }
+
+    document.getElementById('form-google').addEventListener('submit', function(e) {
+      const nombres   = document.getElementById('nombres').value.trim();
+      const apellidos = document.getElementById('apellidos').value.trim();
+      const doc       = document.getElementById('noDocumento').value.trim();
+
+      let errorMsg = null;
+      if (nombres.length < 2)   errorMsg = 'El campo Nombres es obligatorio (mínimo 2 caracteres).';
+      else if (apellidos.length < 2) errorMsg = 'El campo Apellidos es obligatorio (mínimo 2 caracteres).';
+      else if (doc.length < 5 || !/^\d+$/.test(doc)) errorMsg = 'Ingresa un número de documento válido (mínimo 5 dígitos).';
+      else {
+        const chk = document.getElementById('chk-username');
+        if (chk.checked) {
+          const usr = document.getElementById('nombreUsuario').value.trim();
+          if (usr.length < 4 || !/^[a-zA-Z0-9.]+$/.test(usr)) {
+            errorMsg = 'El nombre de usuario no es válido. Solo letras, números y puntos. Mínimo 4 caracteres.';
+          }
+        }
+      }
+
+      if (errorMsg) {
+        e.preventDefault();
+        Swal.fire({ icon: 'error', title: 'Verifica los campos', text: errorMsg, confirmButtonColor: '#5b21b6' });
+        return;
+      }
+
+      const btn = document.getElementById('btn-guardar');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+    });
+  </script>
+</body>
+</html>

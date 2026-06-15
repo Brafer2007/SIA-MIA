@@ -57,6 +57,26 @@
       background: #014F27;
       box-shadow: inset 2px 0 0 #a3d9a5;
     }
+
+    /* Grupo colapsable del sidebar */
+    .sidebar-group { width: 100%; }
+    .sidebar-group-btn {
+      width: 100%; background: transparent; border: none;
+      color: #fff; font-weight: 600; font-size: 14px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; padding: 10px; border-radius: 8px;
+      cursor: pointer; transition: background 0.3s; font-family: inherit;
+    }
+    .sidebar-group-btn:hover { background: #008D4D; }
+    .sidebar-group-btn span { display: flex; align-items: center; gap: 10px; }
+    .sidebar-chevron { font-size: 11px; transition: transform 0.25s; }
+    .sidebar-chevron.open { transform: rotate(180deg); }
+    .sidebar-group-items {
+      display: none; flex-direction: column;
+      padding-left: 14px; gap: 2px;
+    }
+    .sidebar-group-items.open { display: flex; }
+    .sidebar-group-items a { font-size: 13px; padding: 8px 10px; }
     .content {
       margin-left: 270px;
       padding: 30px;
@@ -236,57 +256,6 @@
       color: white;
     }
 
-    /* --- Campanita de notificaciones --- */
-    .campana-flotante {
-      position: fixed;
-      top: 20px;
-      right: 30px;
-      z-index: 1200;
-      font-size: 24px;
-      cursor: pointer;
-      color: #5b21b6;
-    }
-    .noti-count {
-      position: absolute;
-      top: -6px;
-      right: -10px;
-      background: red;
-      color: white;
-      padding: 2px 6px;
-      border-radius: 50%;
-      font-size: 12px;
-      min-width: 18px;
-      text-align: center;
-    }
-    .modal-noti {
-      display: none;
-      position: fixed;
-      z-index: 1300;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
-      background-color: rgba(0,0,0,0.5);
-    }
-    .modal-contenido {
-      background-color: #fff;
-      margin: 8% auto;
-      padding: 20px;
-      border-radius: 8px;
-      width: 520px;
-      max-height: 75vh;
-      overflow-y: auto;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
-      animation: fadeInNoti 0.18s ease-out;
-    }
-    @keyframes fadeInNoti { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
-    .btn-cerrar-noti { margin-top:10px; background:#5b21b6; color:white; border:none; padding:8px 16px; border-radius:4px; cursor:pointer; }
-    .noti-item { padding:10px 12px; margin-bottom:10px; border-left:4px solid #ccc; background:#fafafa; border-radius:4px; font-size:14px; }
-    .noti-item.mensaje { border-left-color: #007bff; }
-    .noti-item.tarea_creada { border-left-color: #7c3aed; }
-    .noti-item.tarea_entregada { border-left-color: #ff8c00; }
-    .noti-item.estado_solicitud { border-left-color: #5b21b6; }
-    .noti-item .noti-titulo { font-weight: 600; margin-bottom: 4px; }
-    .noti-item .noti-hora { font-size: 11px; color: #888; margin-top: 4px; }
-
     /* Specific styles for inner elements to ensure consistency */
     #cronograma>div>div {
       background: #F0FFF0 !important;
@@ -424,12 +393,24 @@
     <a href="#" onclick="showSection(event,'cronograma')"><i class="fas fa-calendar-alt"></i> Mi Cronograma</a>
     <a href="#" onclick="showSection(event,'certificados')"><i class="fas fa-file-alt"></i> Certificados</a>
     <a href="#" onclick="showSection(event,'equipos')"><i class="fas fa-laptop"></i> Mis Equipos</a>
-    <a href="#" onclick="showSection(event,'aulas')"><i class="fas fa-door-open"></i> Gestión de Ambientes</a>
-    <a href="#" onclick="showSection(event,'tareas')"><i class="fas fa-clipboard-list"></i> Gestión de Tareas</a>
-    <a href="#" onclick="showSection(event,'asistencia')"><i class="fas fa-user-check"></i> Asistencia</a>
-    <a href="#" onclick="showSection(event,'incapacidades-inst')"><i class="fas fa-file-medical"></i> Incapacidades</a>
+
+    <!-- Grupo colapsable: Gestión -->
+    <div class="sidebar-group">
+      <button class="sidebar-group-btn" onclick="toggleSidebarGroup('group-gestion-inst')">
+        <span><i class="fas fa-layer-group"></i> Gestión</span>
+        <i class="fas fa-chevron-down sidebar-chevron" id="chev-gestion-inst"></i>
+      </button>
+      <div class="sidebar-group-items" id="group-gestion-inst">
+        <a href="#" onclick="showSection(event,'aulas')"><i class="fas fa-door-open"></i> Gestión de Ambientes</a>
+        <a href="#" onclick="showSection(event,'tareas')"><i class="fas fa-clipboard-list"></i> Gestión de Tareas</a>
+        <a href="#" onclick="showSection(event,'asistencia')"><i class="fas fa-user-check"></i> Asistencia</a>
+        <a href="#" onclick="showSection(event,'incapacidades-inst')"><i class="fas fa-file-medical"></i> Incapacidades</a>
+      </div>
+    </div>
+
     <a href="#" onclick="showSection(event,'mensajes')"><i class="fas fa-comments"></i> Mensajes</a>
     <a href="#" onclick="showSection(event,'correos-masivos')"><i class="fas fa-envelope"></i> Enviar Correos</a>
+    <a href="#" onclick="showSection(event,'google-cuenta')"><i class="fab fa-google"></i> Cuenta Google</a>
     <button class="theme-toggle-btn" onclick="toggleTheme()">
       <i class="theme-icon fas fa-moon"></i>
       <span class="theme-label">Tema Oscuro</span>
@@ -514,6 +495,9 @@
         </div>
 
       </div>
+
+      <!-- Widget foto + cambio de contraseña -->
+      <div id="perfil-widget-anchor" style="margin-top:20px; border-top:1px solid #d1fae5; padding-top:16px; max-width:600px;"></div>
     </section>
 
     <section id="cronograma" class="section">
@@ -900,7 +884,9 @@
         <span id="chat-estado" style="font-size:11px; color:#a7f3c0;"></span>
       </div>
       <div id="mensajes-grupo" style="flex:1; overflow-y:auto; padding:12px; display:flex; flex-direction:column; gap:6px;"></div>
-
+      <div id="typing-indicator-inst" style="display:none; padding:4px 14px; font-size:12px; color:#a7f3c0; font-style:italic;">
+        <i class="fas fa-ellipsis-h"></i> escribiendo...
+      </div>
       <form id="form-chat" style="display:flex; gap:8px; padding:10px 14px; background:#5b21b6; align-items:center; flex-shrink:0;" onsubmit="return false;">
         <label style="cursor:pointer; font-size:20px; flex:0 0 auto; display:flex; align-items:center; color:white;">
           📎
@@ -908,7 +894,8 @@
         </label>
         <input id="mensaje" placeholder="Escribe un mensaje..."
                style="flex:1; border-radius:20px; border:none; padding:9px 16px; background:#f0fff0; color:#111; font-size:14px; outline:none;"
-               onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();enviarMensajeChat(event);}">
+               onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();enviarMensajeChat(event);}"
+               oninput="enviarTypingInst()">
         <button type="button" onclick="enviarMensajeChat(event)"
                 style="flex:0 0 auto; padding:9px 20px; background:#7c3aed; color:white; border:none; border-radius:20px; font-weight:600; cursor:pointer; font-size:14px;">Enviar</button>
       </form>
@@ -921,77 +908,82 @@
 
 
     <section id="correos-masivos" class="section">
-      <h2><i class="fas fa-envelope"></i> Enviar Correos Masivos a Aprendices</h2>
+      <h2><i class="fas fa-envelope"></i> Enviar Correos a Aprendices por Ficha</h2>
 
       <form id="formulario-correos"
-        style="background: #F0FFF0; padding: 20px; border-radius: 10px; border: 1px solid #ddd;">
+        style="background:#F0FFF0; padding:20px; border-radius:10px; border:1px solid #ddd;">
 
-        <div style="margin-bottom: 20px;">
-          <label for="seleccionar-aprendices" style="display: block; font-weight: bold; margin-bottom: 10px;">
-            <i class="fas fa-users"></i> Seleccionar Aprendices:
+        <!-- Selector de ficha -->
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-weight:bold; margin-bottom:8px;">
+            <i class="fas fa-layer-group"></i> Ficha de Formación:
           </label>
-          <div id="lista-aprendices" style="
-                        border: 1px solid #ccc;
-                        border-radius: 5px;
-                        padding: 15px;
-                        background: white;
-                        max-height: 250px;
-                        overflow-y: auto;
-                        margin-bottom: 10px;
-                    ">
-            <p style="color: #999; text-align: center;">Cargando aprendices...</p>
-          </div>
+          <select id="ficha-correo"
+            style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; font-size:1em;"
+            onchange="cargarAprendicesPorFicha()">
+            <option value="">— Selecciona una ficha —</option>
+          </select>
+        </div>
 
-          <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-            <button type="button" onclick="seleccionarTodosAprendices()" class="btn-verde" style="flex: 1;">
-              ✓ Seleccionar Todos
+        <!-- Lista de aprendices con check -->
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-weight:bold; margin-bottom:8px;">
+            <i class="fas fa-users"></i> Destinatarios:
+          </label>
+          <div id="lista-aprendices"
+            style="border:1px solid #ccc; border-radius:6px; padding:12px; background:white;
+                   max-height:240px; overflow-y:auto; margin-bottom:8px;">
+            <p style="color:#999; text-align:center; margin:0;">Selecciona una ficha para ver los aprendices.</p>
+          </div>
+          <div style="display:flex; gap:10px; margin-bottom:8px;">
+            <button type="button" onclick="seleccionarTodosAprendices()" class="btn-verde" style="flex:1;">
+              <i class="fas fa-check-double"></i> Seleccionar todos
             </button>
-            <button type="button" onclick="deseleccionarTodosAprendices()" style="flex: 1;">
-              ✗ Deseleccionar Todos
+            <button type="button" onclick="deseleccionarTodosAprendices()" style="flex:1;">
+              <i class="fas fa-times"></i> Deseleccionar todos
             </button>
           </div>
-
-          <p style="color: #666; font-size: 0.9em;">
-            <strong id="contador-seleccionados">0</strong> aprendiz(es) seleccionado(s)
+          <p style="color:#666; font-size:0.9em; margin:0;">
+            <strong id="contador-seleccionados">0</strong> destinatario(s) seleccionado(s)
           </p>
         </div>
 
-        <div style="margin-bottom: 20px;">
-          <label for="asunto-correo" style="display: block; font-weight: bold; margin-bottom: 8px;">
-            <i class="fas fa-heading"></i> Asunto del Correo:
+        <!-- Asunto -->
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-weight:bold; margin-bottom:8px;">
+            <i class="fas fa-heading"></i> Asunto:
           </label>
-          <input type="text" id="asunto-correo" placeholder="Ej: Información importante sobre la formación" required
-            style="font-size: 1em; padding: 12px;">
+          <input type="text" id="asunto-correo"
+            placeholder="Ej: Recordatorio de entrega de tarea" required
+            style="font-size:1em; padding:10px; width:100%; border:1px solid #ccc; border-radius:6px;">
         </div>
 
-        <div style="margin-bottom: 20px;">
-          <label for="mensaje-correo" style="display: block; font-weight: bold; margin-bottom: 8px;">
-            <i class="fas fa-message"></i> Contenido del Mensaje:
+        <!-- Mensaje -->
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-weight:bold; margin-bottom:8px;">
+            <i class="fas fa-comment-alt"></i> Mensaje:
           </label>
-          <textarea id="mensaje-correo" placeholder="Escribe el mensaje que deseas enviar a los aprendices..." required
-            rows="8" style="font-size: 0.95em; padding: 12px; font-family: Arial, sans-serif;"></textarea>
+          <textarea id="mensaje-correo"
+            placeholder="Escribe el mensaje..." required rows="7"
+            style="font-size:0.95em; padding:10px; width:100%; border:1px solid #ccc;
+                   border-radius:6px; font-family:Arial,sans-serif; resize:vertical;"></textarea>
         </div>
 
-        <div style="display: flex; gap: 10px;">
+        <div style="display:flex; gap:10px;">
           <button type="submit" class="btn-verde" id="btn-enviar-correos"
-            style="flex: 1; padding: 12px; font-size: 1.05em; font-weight: bold;">
+            style="flex:1; padding:12px; font-size:1.05em; font-weight:bold;">
             <i class="fas fa-paper-plane"></i> Enviar Correos
           </button>
-          <button type="reset" style="flex: 1; padding: 12px; font-size: 1.05em; font-weight: bold;">
+          <button type="reset" onclick="resetFormCorreos()"
+            style="flex:1; padding:12px; font-size:1.05em; font-weight:bold;">
             <i class="fas fa-redo"></i> Limpiar
           </button>
         </div>
       </form>
 
-      <div id="estado-envio" style="
-                margin-top: 20px;
-                padding: 15px;
-                border-radius: 8px;
-                display: none;
-                text-align: center;
-                font-weight: bold;
-                font-size: 1.05em;
-            "></div>
+      <div id="estado-envio-correo"
+        style="margin-top:16px; padding:14px; border-radius:8px; display:none;
+               text-align:center; font-weight:bold;"></div>
     </section>
 
     <section id="subir-programacion" class="section">
@@ -1149,6 +1141,26 @@
       </div>
     </section>
 
+    <!-- === CUENTA GOOGLE === -->
+    <section id="google-cuenta" class="section" style="display:none;">
+      <h2><i class="fab fa-google" style="color:#ea4335;"></i> Cuenta Google</h2>
+      <div id="google-estado-cargando-inst" style="padding:20px; color:#666;"><i class="fas fa-spinner fa-spin"></i> Cargando estado...</div>
+      <div id="google-no-vinculado-inst" style="display:none;">
+        <div style="background:#fff3cd; border:1px solid #ffc107; border-radius:10px; padding:16px 20px; margin-bottom:16px;">
+          <p style="font-size:14px; color:#856404; margin-bottom:12px;"><i class="fas fa-info-circle"></i> <strong>No tienes ninguna cuenta de Google vinculada.</strong><br>Al vincularla podrás iniciar sesión con un clic usando Google.</p>
+          <a href="/vincular-google/iniciar"><button style="background:#fff; color:#444; border:1.5px solid #ddd; padding:10px 20px; border-radius:8px; font-weight:600; font-size:13px; display:flex; align-items:center; gap:10px; cursor:pointer;"><img src="https://www.svgrepo.com/show/475656/google-color.svg" style="width:18px;height:18px;" alt="Google"> Vincular cuenta de Google</button></a>
+        </div>
+      </div>
+      <div id="google-si-vinculado-inst" style="display:none;">
+        <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:16px 20px; margin-bottom:16px;">
+          <p style="font-size:14px; color:#166534; margin-bottom:4px;"><i class="fas fa-check-circle"></i> <strong>Cuenta de Google vinculada.</strong></p>
+          <p id="google-correo-vinculado-inst" style="font-size:13px; color:#4b7c5f; margin-bottom:12px;"></p>
+          <button id="btn-desvincular-inst" onclick="desvincularGoogleInst()" style="background:#fff; color:#dc2626; border:1.5px solid #fca5a5; padding:8px 18px; border-radius:8px; font-weight:600; font-size:13px; cursor:pointer;"><i class="fas fa-unlink"></i> Desvincular Google</button>
+          <p id="msg-no-pass-inst" style="display:none; font-size:11px; color:#dc2626; margin-top:8px;"><i class="fas fa-exclamation-triangle"></i> No puedes desvincular porque tu cuenta no tiene contraseña configurada.</p>
+        </div>
+      </div>
+    </section>
+
   </div>
 
   <div id="tooltip-dia" style="
@@ -1291,11 +1303,8 @@ function conectarWebSocketNotificaciones() {
       try {
         const notificacion = JSON.parse(evento.data);
 
-        if (notificacion.sonar !== false) {
-          reproducirSonidoNotificacion();
-        }
-
-        mostrarNotificacionVisual(notificacion);
+        // Siempre enviar a la campanita unificada
+        if (window.siaNotif) siaNotif.agregar(notificacion);
 
         if (notificacion.tipo === 'estado_solicitud') {
           const idSolicitud = notificacion.idMensaje;
@@ -1402,6 +1411,7 @@ function showSection(eOrId, maybeId) {
   if (sectionId === 'asistencia') iniciarAsistencia();
   if (sectionId === 'incapacidades-inst') cargarTodasIncapacidades();
   if (sectionId === 'aulas') cargarSolicitudesInstructor();
+  if (sectionId === 'google-cuenta') cargarEstadoGoogleInst();
 
   // ==============================
   // ⭐ ACTIVO EN SIDEBAR
@@ -1939,6 +1949,12 @@ function abrirChatFicha(fichaBase, fichaOriginal) {
 
   ws.onmessage = e => {
     const msg = JSON.parse(e.data);
+    // Indicador escribiendo
+    if (msg.tipo === 'typing') {
+      const el = document.getElementById('typing-indicator-inst');
+      if (el) { el.style.display = 'block'; clearTimeout(window._typingTimerInst); window._typingTimerInst = setTimeout(() => { el.style.display = 'none'; }, 2500); }
+      return;
+    }
     // Ignorar el echo del propio mensaje (ya lo mostramos localmente al enviar)
     if (msg.idEmisor == idUsuario && msg.mensaje && msg.mensaje === ultimoMensajeEnviado) {
       ultimoMensajeEnviado = null;
@@ -2226,32 +2242,132 @@ function actualizarEstadoChat(texto) {
 // -----------------------------
 // ENVÍO DE CORREOS MASIVOS
 // -----------------------------
+let aprendicesDisponibles = [];
+
 function cargarAprendices() {
-  fetch('/api/email/aprendices')
-    .then(res => res.json())
+  // Carga las fichas del instructor al abrir la sección
+  fetch('/api/email/fichas-instructor')
+    .then(r => r.json())
     .then(data => {
-      if (data.exito) {
-        aprendicesDisponibles = data.aprendices || [];
-        mostrarAprendices();
-      } else {
-        document.getElementById('lista-aprendices').innerHTML =
-          '<p style="color: #d63912;">Error al cargar aprendices: ' + data.mensaje + '</p>';
-      }
+      const sel = document.getElementById('ficha-correo');
+      if (!sel) return;
+      sel.innerHTML = '<option value="">— Selecciona una ficha —</option>';
+      (data.fichas || []).forEach(f => {
+        const opt = document.createElement('option');
+        opt.value = f; opt.textContent = f;
+        sel.appendChild(opt);
+      });
     })
-    .catch(err => {
-      console.error('Error:', err);
-      document.getElementById('lista-aprendices').innerHTML =
-        '<p style="color: #d63912;">Error de conexión al cargar aprendices</p>';
-    });
+    .catch(() => {});
+}
+
+function cargarAprendicesPorFicha() {
+  const ficha = document.getElementById('ficha-correo').value;
+  const lista = document.getElementById('lista-aprendices');
+  if (!ficha) {
+    lista.innerHTML = '<p style="color:#999;text-align:center;margin:0;">Selecciona una ficha para ver los aprendices.</p>';
+    aprendicesDisponibles = [];
+    actualizarContadorCorreos();
+    return;
+  }
+  lista.innerHTML = '<p style="color:#888;text-align:center;margin:0;"><i class="fas fa-spinner fa-spin"></i> Cargando...</p>';
+  fetch('/api/email/aprendices-por-ficha?ficha=' + encodeURIComponent(ficha))
+    .then(r => r.json())
+    .then(data => {
+      if (!data.exito) {
+        lista.innerHTML = '<p style="color:#d63912;">Error: ' + data.mensaje + '</p>';
+        return;
+      }
+      aprendicesDisponibles = data.aprendices || [];
+      mostrarAprendices();
+    })
+    .catch(() => { lista.innerHTML = '<p style="color:#d63912;">Error de conexión.</p>'; });
 }
 
 function mostrarAprendices() {
-  // ... (sin cambios)
+  const lista = document.getElementById('lista-aprendices');
+  if (!aprendicesDisponibles.length) {
+    lista.innerHTML = '<p style="color:#999;text-align:center;margin:0;">No hay aprendices con correo en esta ficha.</p>';
+    actualizarContadorCorreos();
+    return;
+  }
+  lista.innerHTML = aprendicesDisponibles.map((a, i) => `
+    <label style="display:flex;align-items:center;gap:10px;padding:7px 4px;border-bottom:1px solid #f0f0f0;cursor:pointer;">
+      <input type="checkbox" class="chk-aprendiz" value="${a.email}" checked
+        onchange="actualizarContadorCorreos()" style="accent-color:#5b21b6;width:16px;height:16px;">
+      <span style="flex:1;font-size:14px;">${escHtml(a.nombre)}</span>
+      <span style="font-size:12px;color:#888;">${escHtml(a.email)}</span>
+    </label>`).join('');
+  actualizarContadorCorreos();
+}
+
+function actualizarContadorCorreos() {
+  const checked = document.querySelectorAll('.chk-aprendiz:checked').length;
+  const el = document.getElementById('contador-seleccionados');
+  if (el) el.textContent = checked;
+}
+
+function seleccionarTodosAprendices() {
+  document.querySelectorAll('.chk-aprendiz').forEach(c => c.checked = true);
+  actualizarContadorCorreos();
+}
+function deseleccionarTodosAprendices() {
+  document.querySelectorAll('.chk-aprendiz').forEach(c => c.checked = false);
+  actualizarContadorCorreos();
+}
+function resetFormCorreos() {
+  aprendicesDisponibles = [];
+  document.getElementById('lista-aprendices').innerHTML =
+    '<p style="color:#999;text-align:center;margin:0;">Selecciona una ficha para ver los aprendices.</p>';
+  document.getElementById('ficha-correo').value = '';
+  actualizarContadorCorreos();
 }
 
 function enviarCorreosMasivos(e) {
   e.preventDefault();
-  // ... (sin cambios)
+  const destinatarios = Array.from(document.querySelectorAll('.chk-aprendiz:checked')).map(c => c.value);
+  if (!destinatarios.length) { alert('Selecciona al menos un destinatario.'); return; }
+  const asunto  = document.getElementById('asunto-correo').value.trim();
+  const mensaje = document.getElementById('mensaje-correo').value.trim();
+  if (!asunto)  { alert('Escribe el asunto.'); return; }
+  if (!mensaje) { alert('Escribe el mensaje.'); return; }
+
+  const btn    = document.getElementById('btn-enviar-correos');
+  const estado = document.getElementById('estado-envio-correo');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+  estado.style.display = 'none';
+
+  fetch('/api/email/enviar-correos', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ destinatarios, asunto, mensaje })
+  })
+  .then(r => r.json())
+  .then(data => {
+    estado.style.display = 'block';
+    if (data.exito) {
+      estado.style.background = '#d4edda'; estado.style.color = '#155724';
+      estado.innerHTML = '<i class="fas fa-check-circle"></i> ' + data.mensaje;
+      document.getElementById('formulario-correos').reset();
+      resetFormCorreos();
+    } else {
+      estado.style.background = '#f8d7da'; estado.style.color = '#721c24';
+      estado.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + data.mensaje;
+    }
+  })
+  .catch(() => {
+    estado.style.display = 'block';
+    estado.style.background = '#f8d7da'; estado.style.color = '#721c24';
+    estado.textContent = 'Error de conexión. Intenta de nuevo.';
+  })
+  .finally(() => {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Correos';
+  });
+}
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 // -----------------------------
@@ -3177,148 +3293,8 @@ function enviarSolicitudAula() {
 }
 </script>
 
-<!-- CAMPANITA DE NOTIFICACIONES -->
-<div id="campana-inst" class="campana-flotante" title="Notificaciones">
-  <i class="fas fa-bell"></i>
-  <span id="contadorNotiInst" class="noti-count" style="display:none;"></span>
-</div>
-
-<div id="modalNotiInst" class="modal-noti">
-  <div class="modal-contenido">
-    <h3>🔔 Notificaciones</h3>
-    <div id="listaNotiInst"><p style="color:#888; text-align:center;">Sin notificaciones nuevas</p></div>
-    <div style="display:flex; justify-content:space-between; margin-top:15px;">
-      <button onclick="limpiarNotificacionesInst()" class="btn-cerrar-noti">Limpiar todo</button>
-      <button onclick="document.getElementById('modalNotiInst').style.display='none'" class="btn-cerrar-noti">Cerrar</button>
-    </div>
-  </div>
-</div>
-
-<audio id="sonidoNotiInst" src="/sounds/notificacion.mp3" preload="auto"></audio>
-
-<script>
-  // ── Notificaciones del instructor ──
-  const _notiInst = [];
-
-  document.getElementById('campana-inst').addEventListener('click', () => {
-    renderNotiInst();
-    document.getElementById('modalNotiInst').style.display = 'block';
-    // Resetear contador al abrir
-    document.getElementById('contadorNotiInst').style.display = 'none';
-    document.getElementById('contadorNotiInst').textContent = '';
-    _notiInst.forEach(n => n.leida = true);
-  });
-
-  window.addEventListener('click', e => {
-    const modal = document.getElementById('modalNotiInst');
-    const contenido = modal.querySelector('.modal-contenido');
-    if (modal.style.display === 'block' && !contenido.contains(e.target) && !document.getElementById('campana-inst').contains(e.target)) {
-      modal.style.display = 'none';
-    }
-  });
-
-  function agregarNotiInst(tipo, titulo, mensaje) {
-    const ahora = new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
-    _notiInst.unshift({ tipo, titulo, mensaje, hora: ahora, leida: false });
-    if (_notiInst.length > 30) _notiInst.pop();
-
-    // Sonido
-    try { document.getElementById('sonidoNotiInst').play().catch(() => {}); } catch(e) {}
-
-    // Contador
-    const noLeidas = _notiInst.filter(n => !n.leida).length;
-    const badge = document.getElementById('contadorNotiInst');
-    badge.textContent = noLeidas;
-    badge.style.display = noLeidas > 0 ? 'inline-block' : 'none';
-
-    // Animación campana
-    const campana = document.getElementById('campana-inst');
-    campana.style.animation = 'none';
-    setTimeout(() => { campana.style.animation = 'swing 0.5s ease 3'; }, 10);
-
-    // Si el modal está abierto, actualizar
-    if (document.getElementById('modalNotiInst').style.display === 'block') {
-      renderNotiInst();
-    }
-  }
-
-  function renderNotiInst() {
-    const lista = document.getElementById('listaNotiInst');
-    if (_notiInst.length === 0) {
-      lista.innerHTML = '<p style="color:#888; text-align:center;">Sin notificaciones nuevas</p>';
-      return;
-    }
-    lista.innerHTML = _notiInst.map(n => `
-      <div class="noti-item ${n.tipo}">
-        <div class="noti-titulo">${n.titulo}</div>
-        <div>${n.mensaje}</div>
-        <div class="noti-hora">${n.hora}</div>
-      </div>`).join('');
-  }
-
-  function limpiarNotificacionesInst() {
-    _notiInst.length = 0;
-    renderNotiInst();
-    document.getElementById('contadorNotiInst').style.display = 'none';
-  }
-
-  // Escuchar el WebSocket de notificaciones ya conectado
-  // Interceptamos el handler existente para agregar a la campanita
-  const _origOnMessage = wsNotificaciones ? wsNotificaciones.onmessage : null;
-  const _notiProcesadas = new Set(); // evitar duplicados por reconexión
-
-  function hookNotiWS() {
-    if (!wsNotificaciones) { setTimeout(hookNotiWS, 500); return; }
-    const prev = wsNotificaciones.onmessage;
-    wsNotificaciones.onmessage = (evento) => {
-      if (prev) prev(evento);
-      try {
-        const n = JSON.parse(evento.data);
-
-        // Solo mostrar en campanita notificaciones de tipo nuevo_mensaje
-        // Las demás (estado_solicitud, tarea_creada, etc.) ya las maneja el handler original
-        if (n.tipo !== 'nuevo_mensaje') return;
-
-        // Deduplicar: usar idMensaje o combinación tipo+mensaje como clave
-        const clave = n.idMensaje ? String(n.idMensaje) : (n.tipo + '|' + n.mensaje);
-        if (_notiProcesadas.has(clave)) return;
-        _notiProcesadas.add(clave);
-        // Limpiar el set si crece mucho
-        if (_notiProcesadas.size > 100) _notiProcesadas.clear();
-
-        const iconos = { nuevo_mensaje: '💬' };
-        const icono = iconos[n.tipo] || '🔔';
-        agregarNotiInst(n.tipo || 'general', `${icono} ${n.titulo || 'Nuevo mensaje'}`, n.mensaje || '');
-      } catch(e) {}
-    };
-  }
-
-  // También interceptar mensajes del chat para notificar mensajes nuevos
-  // cuando el usuario NO está en la sección mensajes
-  const _origMostrarMensaje = window.mostrarMensaje;
-  const _mensajesNotificados = new Set(); // evitar duplicar con el WS de notificaciones
-
-  window.mostrarMensaje = function(m) {
-    if (_origMostrarMensaje) _origMostrarMensaje(m);
-    // Solo notificar si el mensaje es de otro usuario y la sección mensajes no está visible
-    const secMensajes = document.getElementById('mensajes');
-    const visible = secMensajes && secMensajes.style.display !== 'none';
-    if (!visible && m && String(m.idEmisor) !== String(idUsuario)) {
-      // Deduplicar por contenido del mensaje
-      const clave = (m.idEmisor || '') + '|' + (m.mensaje || '').substring(0, 40);
-      if (_mensajesNotificados.has(clave)) return;
-      _mensajesNotificados.add(clave);
-      setTimeout(() => _mensajesNotificados.delete(clave), 5000); // limpiar tras 5s
-
-      const nombre = (m.nombreEmisor || 'Alguien').replace(/%22/g,'').replace(/"/g,'').trim();
-      agregarNotiInst('nuevo_mensaje', '💬 Nuevo mensaje', `${nombre}: ${(m.mensaje || '').substring(0, 60)}`);
-    }
-  };
-
-  document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(hookNotiWS, 1000);
-  });
-</script>
+<!-- siaNotif (notificaciones.js) maneja la campanita unificada -->
+<audio id="sonidoNotificacion" src="/sounds/notificacion.mp3" preload="auto"></audio>
 
 <script>
 function toggleSidebar() {
@@ -3329,15 +3305,88 @@ function closeSidebar() {
   document.querySelector('.sidebar').classList.remove('open');
   document.getElementById('sidebarOverlay').classList.remove('active');
 }
+
+// Indicador "escribiendo..." — envía señal por WS al chat activo
+let _typingDebounceInst = null;
+function enviarTypingInst() {
+  if (!ws || ws.readyState !== WebSocket.OPEN) return;
+  clearTimeout(_typingDebounceInst);
+  _typingDebounceInst = setTimeout(() => {
+    try {
+      ws.send(JSON.stringify({
+        tipo: 'typing',
+        idEmisor: idUsuario,
+        nombreEmisor: nombreInstructor,
+        rolEmisor: 'Instructor',
+        sala: window.currentSala || '',
+        mensaje: ''
+      }));
+    } catch (_) {}
+  }, 300);
+}
+function toggleSidebarGroup(groupId) {
+  const items = document.getElementById(groupId);
+  const chevId = 'chev-' + groupId.replace('group-','');
+  const chev   = document.getElementById(chevId);
+  items.classList.toggle('open');
+  if (chev) chev.classList.toggle('open');
+}
+
+// ── Google Account Widget (Instructor) ──────────────────────
+function cargarEstadoGoogleInst() {
+  document.getElementById('google-estado-cargando-inst').style.display = 'block';
+  document.getElementById('google-no-vinculado-inst').style.display = 'none';
+  document.getElementById('google-si-vinculado-inst').style.display = 'none';
+  fetch('/vincular-google/estado').then(r => r.json()).then(data => {
+    document.getElementById('google-estado-cargando-inst').style.display = 'none';
+    if (data.vinculado) {
+      document.getElementById('google-si-vinculado-inst').style.display = 'block';
+      document.getElementById('google-correo-vinculado-inst').textContent = 'Correo: ' + (data.correo || '');
+      if (!data.tienePassword) {
+        document.getElementById('btn-desvincular-inst').disabled = true;
+        document.getElementById('btn-desvincular-inst').style.opacity = '0.5';
+        document.getElementById('msg-no-pass-inst').style.display = 'block';
+      }
+    } else {
+      document.getElementById('google-no-vinculado-inst').style.display = 'block';
+    }
+  }).catch(() => {
+    document.getElementById('google-estado-cargando-inst').innerHTML = '<span style="color:#dc2626;">Error al cargar. Recarga.</span>';
+  });
+}
+function desvincularGoogleInst() {
+  Swal.fire({ title:'¿Desvincular Google?', text:'Ya no podrás iniciar sesión con Google.', icon:'warning', showCancelButton:true, confirmButtonColor:'#dc2626', cancelButtonColor:'#6b7280', confirmButtonText:'Sí, desvincular', cancelButtonText:'Cancelar' })
+  .then(r => {
+    if (!r.isConfirmed) return;
+    fetch('/vincular-google/desvincular', { method:'POST' }).then(res => res.json()).then(data => {
+      if (data.mensaje) Swal.fire('¡Desvinculado!', data.mensaje, 'success').then(() => location.reload());
+      else Swal.fire('Error', data.error || 'No se pudo desvincular.', 'error');
+    });
+  });
+}
+
+// Manejar vincularOk/vincularError en URL
+(function checkVincularParams() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('vincularOk')) {
+    Swal.fire({ icon:'success', title:'¡Google vinculado!', text:'Tu cuenta de Google se vinculó correctamente.', confirmButtonColor:'#5b21b6', timer:3000, timerProgressBar:true });
+    showSection(null, 'google-cuenta');
+  } else if (params.get('vincularError')) {
+    Swal.fire({ icon:'error', title:'Error al vincular', text:decodeURIComponent(params.get('vincularError')), confirmButtonColor:'#5b21b6' });
+    showSection(null, 'google-cuenta');
+  }
+})();
 </script>
 <script th:src="@{/js/theme.js}"></script>
 <script th:src="@{/js/notificaciones.js}"></script>
+<script th:src="@{/js/perfil-widget.js}"></script>
 <script th:inline="javascript">
-  // El init del WS ya lo hace hookNotiWS — solo inicializamos la UI
+  // wsNotificaciones ya gestiona el WebSocket — solo inicializar la UI de siaNotif
   document.addEventListener('DOMContentLoaded', function() {
     if (window.siaNotif) {
-      siaNotif.init({ tipo: 'instructor', id: String([[${idInstructor}]]) });
+      siaNotif.init({}); // sin tipo/id: solo inyecta la campanita, sin abrir otro WS
     }
+    if (window.perfilWidget) perfilWidget.init();
   });
 </script>
 

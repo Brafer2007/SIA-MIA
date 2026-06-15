@@ -16,8 +16,29 @@ public class Usuario {
     private String apellidos;
     private String correo;
     private String noDocumento;
+
+    @Column(name = "pass_usuario", nullable = true)
     private String passUsuario;
+
     private Integer estado; // 1=activo, 0=inactivo
+
+    /** Ruta relativa a la foto de perfil, ej: uploads/fotos/123.jpg */
+    @Column(name = "foto_perfil")
+    private String fotoPerfil;
+
+    /** Intentos fallidos de login consecutivos (rate limiting) */
+    @Column(name = "intentos_fallidos", nullable = false)
+    private int intentosFallidos = 0;
+
+    /** Si no es null, el login queda bloqueado hasta esta fecha */
+    @Column(name = "bloqueado_hasta")
+    private java.time.LocalDateTime bloqueadoHasta;
+
+    // =============================
+    // 🔗 GOOGLE OAUTH2
+    // =============================
+    @Column(name = "google_id", unique = true)
+    private String googleId;
 
     // =============================
     // 🔥 HUELLA (BIOMETRÍA)
@@ -129,4 +150,21 @@ public class Usuario {
     public void setHuella(byte[] huella) {
         this.huella = huella;
     }
+
+    public String getGoogleId() {
+        return googleId;
+    }
+
+    public void setGoogleId(String googleId) {
+        this.googleId = googleId;
+    }
+
+    public String getFotoPerfil() { return fotoPerfil; }
+    public void setFotoPerfil(String fotoPerfil) { this.fotoPerfil = fotoPerfil; }
+
+    public int getIntentosFallidos() { return intentosFallidos; }
+    public void setIntentosFallidos(int intentosFallidos) { this.intentosFallidos = intentosFallidos; }
+
+    public java.time.LocalDateTime getBloqueadoHasta() { return bloqueadoHasta; }
+    public void setBloqueadoHasta(java.time.LocalDateTime bloqueadoHasta) { this.bloqueadoHasta = bloqueadoHasta; }
 }

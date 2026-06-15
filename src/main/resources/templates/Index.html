@@ -13,7 +13,7 @@
     :root {
       --verde: #5b21b6;
       --verde-claro: #7c3aed;
-      --verde-oscuro: #004d1f;
+      --verde-oscuro: #031c52;
       --blanco: #ffffff;
       --gris-claro: #f4f9f4;
       --texto: #1a1a1a;
@@ -35,7 +35,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 14px 48px;
-      background: rgba(0, 77, 31, 0.95);
+      background: rgba(46, 0, 77, 0.95);
       backdrop-filter: blur(8px);
       box-shadow: 0 2px 20px rgba(0,0,0,0.25);
     }
@@ -436,6 +436,89 @@
       .sobre-nosotros { padding: 60px 20px; }
       .team-grid { grid-template-columns: 1fr 1fr; }
     }
+
+    /* ── NAVBAR RESPONSIVE ── */
+    .nav-hamburger {
+      display: none;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 22px;
+      cursor: pointer;
+      padding: 6px 10px;
+    }
+
+    @media (max-width: 768px) {
+      nav { padding: 12px 20px; }
+      .nav-logo span { font-size: 20px; }
+      .nav-hamburger { display: block; }
+
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 60px; left: 0; right: 0;
+        background: rgba(46,16,101,0.97);
+        backdrop-filter: blur(10px);
+        padding: 16px 0;
+        gap: 0;
+        z-index: 99;
+      }
+      .nav-links.open { display: flex; }
+      .nav-links li { width: 100%; }
+      .nav-links a {
+        display: block;
+        padding: 12px 24px;
+        border-radius: 0;
+        font-size: 15px;
+      }
+      .nav-links a.btn-login {
+        margin: 8px 16px;
+        border-radius: 8px;
+        text-align: center;
+      }
+
+      /* Hero */
+      .hero { padding: 100px 20px 60px; }
+      .hero h1 { font-size: 28px; }
+      .hero p { font-size: 15px; }
+      .hero-buttons { flex-direction: column; align-items: center; gap: 12px; }
+      .btn-primary, .btn-secondary { width: 100%; max-width: 280px; justify-content: center; }
+
+      /* Stats */
+      .stats { padding: 28px 20px; gap: 24px; }
+      .stat-item .num { font-size: 28px; }
+
+      /* Features */
+      .features { padding: 60px 20px; }
+      .features-grid { grid-template-columns: 1fr; }
+
+      /* Roles */
+      .roles { padding: 60px 20px; }
+      .roles-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+      .role-card { padding: 24px 14px; }
+      .role-card i { font-size: 28px; }
+
+      /* Encuesta section */
+      .encuesta-section { padding: 60px 20px !important; }
+      .encuesta-cards-grid { grid-template-columns: 1fr 1fr !important; gap: 12px !important; }
+
+      /* CTA */
+      .cta { padding: 60px 20px; }
+
+      /* Footer */
+      footer { padding: 20px 16px; font-size: 12px; }
+
+      /* Team */
+      .sobre-nosotros { padding: 60px 20px; }
+      .team-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 400px) {
+      .roles-grid { grid-template-columns: 1fr; }
+      .encuesta-cards-grid { grid-template-columns: 1fr !important; }
+      .hero h1 { font-size: 24px; }
+    }
   </style>
 </head>
 <body>
@@ -443,13 +526,13 @@
   <!-- NAVBAR -->
   <nav>
     <a class="nav-logo" th:href="@{/}">
-      <img src="https://www.sena.edu.co/Style%20Library/alayout/images/logoSena.png" alt="SENA"
-           onerror="this.src='/img/logo_sia_fondo.png'">
       <span>SIA</span>
     </a>
-    <ul class="nav-links">
+    <button class="nav-hamburger" id="navHamburger" onclick="toggleNav()" aria-label="Menú">
+      <i class="fas fa-bars"></i>
+    </button>
+    <ul class="nav-links" id="navLinks">
       <li><a th:href="@{/}"><i class="fas fa-home"></i> Inicio</a></li>
-      <li><a th:href="@{/vistas}"><i class="fas fa-compass"></i> Explora</a></li>
       <li><a th:href="@{/sobre-nosotros}"><i class="fas fa-users"></i> Sobre Nosotros</a></li>
       <li><a th:href="@{/login}" class="btn-login"><i class="fas fa-sign-in-alt"></i> Ingresar</a></li>
     </ul>
@@ -460,14 +543,12 @@
     <div class="hero-content">
       <div class="hero-badge">🌿 Software de Ingreso y Automatizacion</div>
       <h1>Gestiona tu formación<br><span>de forma inteligente</span></h1>
-      <p>SIA centraliza el control de acceso, asistencia, tareas, mensajería y más para aprendices, instructores y personal .</p>
+      <p>SIA centraliza el control de acceso, asistencia, tareas, mensajería y más para estudiantes, profesores y personal .</p>
       <div class="hero-buttons">
         <a th:href="@{/login}" class="btn-primary">
           <i class="fas fa-rocket"></i> Comenzar ahora
         </a>
-        <a th:href="@{/vistas}" class="btn-secondary">
-          <i class="fas fa-compass"></i> Explorar el
-        </a>
+        
       </div>
     </div>
   </section>
@@ -507,12 +588,12 @@
       <div class="feature-card">
         <div class="feature-icon"><i class="fas fa-calendar-check"></i></div>
         <h3>Asistencia Digital</h3>
-        <p>Registro y seguimiento de asistencia de aprendices con reportes en tiempo real.</p>
+        <p>Registro y seguimiento de asistencia de estudiantes con reportes en tiempo real.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon"><i class="fas fa-comments"></i></div>
         <h3>Chat por Ficha</h3>
-        <p>Comunicación directa entre instructores y aprendices organizada por ficha de formación.</p>
+        <p>Comunicación directa entre profesores y estudiantes organizada por ficha de formación.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon"><i class="fas fa-tasks"></i></div>
@@ -541,13 +622,13 @@
     <div class="roles-grid">
       <div class="role-card">
         <i class="fas fa-user-graduate"></i>
-        <h3>Aprendiz</h3>
-        <p>Consulta horarios, entrega tareas, chatea con tu instructor y descarga tu QR.</p>
+        <h3>Estudiante</h3>
+        <p>Consulta horarios, entrega tareas, chatea con tu profesor y descarga tu QR.</p>
       </div>
       <div class="role-card">
         <i class="fas fa-chalkboard-teacher"></i>
-        <h3>Instructor</h3>
-        <p>Gestiona fichas, asistencia, tareas y comunicación con tus aprendices.</p>
+        <h3>Profesor</h3>
+        <p>Gestiona fichas, asistencia, tareas y comunicación con tus estudiantes.</p>
       </div>
       <div class="role-card">
         <i class="fas fa-shield-alt"></i>
@@ -562,9 +643,41 @@
     </div>
   </section>
 
+  <!-- ENCUESTA -->
+  <section class="encuesta-section" style="padding:90px 48px; background:linear-gradient(135deg,#f3f0ff 0%,#ede9fe 100%); text-align:center;">
+    <div style="display:inline-block;background:#ede9fe;color:#5b21b6;font-size:12px;font-weight:600;padding:5px 14px;border-radius:20px;margin-bottom:14px;text-transform:uppercase;letter-spacing:1px;">Participa</div>
+    <h2 style="font-size:clamp(24px,3vw,36px);font-weight:700;color:#2e1065;margin-bottom:12px;">¿Tu institución tiene estas falencias?</h2>
+    <p style="color:#555;font-size:16px;max-width:560px;margin:0 auto 40px;line-height:1.7;">Responde nuestra encuesta y ayúdanos a entender qué necesitan los estudiantes. Tus respuestas guían el desarrollo de SIA.</p>
+    <div class="encuesta-cards-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;max-width:900px;margin:0 auto 48px;">
+      <div style="background:#fff;border-radius:14px;padding:24px;border:1px solid #ddd6fe;box-shadow:0 2px 12px rgba(91,33,182,.08);">
+        <div style="font-size:32px;margin-bottom:10px;">📋</div>
+        <h4 style="color:#2e1065;font-size:14px;font-weight:600;margin-bottom:6px;">Asistencia poco confiable</h4>
+        <p style="color:#888;font-size:13px;">Registros en papel, errores frecuentes</p>
+      </div>
+      <div style="background:#fff;border-radius:14px;padding:24px;border:1px solid #ddd6fe;box-shadow:0 2px 12px rgba(91,33,182,.08);">
+        <div style="font-size:32px;margin-bottom:10px;">💬</div>
+        <h4 style="color:#2e1065;font-size:14px;font-weight:600;margin-bottom:6px;">Comunicación desorganizada</h4>
+        <p style="color:#888;font-size:13px;">WhatsApp, correos dispersos, sin canal oficial</p>
+      </div>
+      <div style="background:#fff;border-radius:14px;padding:24px;border:1px solid #ddd6fe;box-shadow:0 2px 12px rgba(91,33,182,.08);">
+        <div style="font-size:32px;margin-bottom:10px;">📁</div>
+        <h4 style="color:#2e1065;font-size:14px;font-weight:600;margin-bottom:6px;">Tareas sin centralizar</h4>
+        <p style="color:#888;font-size:13px;">Cada docente usa un sistema diferente</p>
+      </div>
+      <div style="background:#fff;border-radius:14px;padding:24px;border:1px solid #ddd6fe;box-shadow:0 2px 12px rgba(91,33,182,.08);">
+        <div style="font-size:32px;margin-bottom:10px;">🚪</div>
+        <h4 style="color:#2e1065;font-size:14px;font-weight:600;margin-bottom:6px;">Sin control de acceso</h4>
+        <p style="color:#888;font-size:13px;">Entrada libre sin registro ni seguridad</p>
+      </div>
+    </div>
+    <a href="/encuesta" style="display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#4c1d95,#7c3aed);color:#fff;padding:16px 40px;border-radius:30px;font-weight:700;font-size:16px;text-decoration:none;box-shadow:0 4px 20px rgba(91,33,182,.35);transition:all .3s;">
+      <i class="fas fa-poll"></i> Responder la encuesta
+    </a>
+    <p style="margin-top:16px;font-size:13px;color:#999;">Anónima · 5 minutos · Sin registro requerido</p>
+  </section>
+
   <!-- CTA -->
-  <section class="cta">
-    <h2>¿Listo para empezar?</h2>
+  <section class="cta">    <h2>¿Listo para empezar?</h2>
     <p>Accede a tu cuenta y aprovecha todas las herramientas que SIA tiene para ti.</p>
     <a th:href="@{/login}" class="btn-primary" style="font-size:16px; padding:16px 40px;">
       <i class="fas fa-sign-in-alt"></i> Ingresar al sistema
@@ -573,9 +686,18 @@
 
   <!-- FOOTER -->
   <footer>
-    <p>&copy; 2025 <strong>SENA</strong> · Software de Ingreso y Automatizacion · Todos los derechos reservados.</p>
+    <p>&copy; 2025 · Software de Ingreso y Automatizacion · Todos los derechos reservados.</p>
   </footer>
 
 
+  <script>
+    function toggleNav() {
+      document.getElementById('navLinks').classList.toggle('open');
+    }
+    // Cerrar menú al hacer clic en un link
+    document.querySelectorAll('.nav-links a').forEach(a => {
+      a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open'));
+    });
+  </script>
 </body>
 </html>

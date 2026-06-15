@@ -21,4 +21,10 @@ public interface TareaRepository extends JpaRepository<Tarea, Long> {
      */
     @Query("SELECT t FROM Tarea t WHERE t.nombreFicha = :ficha OR t.nombreFicha LIKE CONCAT('%', :ficha, '%')")
     List<Tarea> findByNombreFichaContaining(@Param("ficha") String ficha);
+
+    /** Tareas que vencen entre ahora+minMin y ahora+minMax, sin recordatorio enviado aún */
+    @Query("SELECT t FROM Tarea t WHERE t.fechaLimite BETWEEN :desde AND :hasta AND (t.recordatorioEnviado IS NULL OR t.recordatorioEnviado = false)")
+    List<Tarea> findTareasProximasAVencer(
+            @Param("desde") java.time.LocalDateTime desde,
+            @Param("hasta") java.time.LocalDateTime hasta);
 }

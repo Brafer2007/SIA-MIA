@@ -1,10 +1,12 @@
 package com.example.SIA.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "mensaje_grupo")
+@JsonIgnoreProperties(ignoreUnknown = true)  // ignora campos como "tipo" del indicador typing
 public class MensajeGrupo {
 
     @Id

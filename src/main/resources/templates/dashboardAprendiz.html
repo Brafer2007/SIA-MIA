@@ -57,6 +57,26 @@
       box-shadow: inset 2px 0 0 #a3d9a5;
     }
 
+    /* Grupo colapsable del sidebar */
+    .sidebar-group { width: 100%; }
+    .sidebar-group-btn {
+      width: 100%; background: transparent; border: none;
+      color: #fff; font-weight: 600; font-size: 14px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; padding: 10px; border-radius: 8px;
+      cursor: pointer; transition: background 0.3s; font-family: inherit;
+    }
+    .sidebar-group-btn:hover { background: #008D4D; }
+    .sidebar-group-btn span { display: flex; align-items: center; gap: 10px; }
+    .sidebar-chevron { font-size: 11px; transition: transform 0.25s; }
+    .sidebar-chevron.open { transform: rotate(180deg); }
+    .sidebar-group-items {
+      display: none; flex-direction: column;
+      padding-left: 14px; gap: 2px;
+    }
+    .sidebar-group-items.open { display: flex; }
+    .sidebar-group-items a { font-size: 13px; padding: 8px 10px; }
+
     .content {
       margin-left: 270px;
       padding: 30px;
@@ -278,16 +298,26 @@
 <body>
   <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleSidebar()" aria-label="Abrir menú">&#9776;</button>
   <div class="sidebar">
-    <!-- las llamadas inline usan showSection(event,'id') para evitar navegación -->
     <a href="#" onclick="showSection(event,'horario')"><i class="fas fa-calendar-alt"></i> Mi Horario</a>
     <a href="#" onclick="showSection(event,'perfil')"><i class="fas fa-user-edit"></i> Mi Perfil</a>
     <a href="#" onclick="showSection(event,'equipos')"><i class="fas fa-laptop"></i> Equipos</a>
     <a href="#" onclick="showSection(event,'certificado')"><i class="fas fa-file-alt"></i> Certificado</a>
-    <a href="#" onclick="showSection(event,'incapacidades')"><i class="fas fa-file-medical"></i> Incapacidades</a>
-    <a href="#" onclick="showSection(event,'tareas')"><i class="fas fa-clipboard-list"></i> Mis Tareas</a>
-    <a href="#" onclick="showSection(event,'mi-asistencia')"><i class="fas fa-calendar-check"></i> Mi Asistencia</a>
+
+    <!-- Grupo colapsable: Actividades -->
+    <div class="sidebar-group">
+      <button class="sidebar-group-btn" onclick="toggleSidebarGroup('group-actividades-ap')">
+        <span><i class="fas fa-layer-group"></i> Actividades</span>
+        <i class="fas fa-chevron-down sidebar-chevron" id="chev-actividades-ap"></i>
+      </button>
+      <div class="sidebar-group-items" id="group-actividades-ap">
+        <a href="#" onclick="showSection(event,'tareas')"><i class="fas fa-clipboard-list"></i> Mis Tareas</a>
+        <a href="#" onclick="showSection(event,'mi-asistencia')"><i class="fas fa-calendar-check"></i> Mi Asistencia</a>
+        <a href="#" onclick="showSection(event,'incapacidades')"><i class="fas fa-file-medical"></i> Incapacidades</a>
+      </div>
+    </div>
+
     <a href="#" onclick="showSection('mensajes')"><i class="fas fa-comments"></i> Mensajes</a>
-    <!-- logout mantén th:href si usas Spring Security -->
+    <a href="#" onclick="showSection('google-cuenta')"><i class="fab fa-google"></i> Cuenta Google</a>
     <button class="theme-toggle-btn" onclick="toggleTheme()">
       <i class="theme-icon fas fa-moon"></i>
       <span class="theme-label">Tema Oscuro</span>
@@ -438,6 +468,9 @@
               <i class="fas fa-edit"></i> Editar Datos Personales
             </button>
           </a>
+
+          <!-- Widget foto + cambio de contraseña -->
+          <div id="perfil-widget-anchor" style="margin-top:20px; border-top:1px solid #e9f5e9; padding-top:16px;"></div>
 
           <a th:href="@{/aprendiz/qr-img}" download
             style="margin-top:15px; background:#008D4D; color:white; border:none; border-radius:5px; padding:8px 18px; font-weight:bold; cursor:pointer; text-decoration:none; display:inline-block;">
@@ -763,7 +796,9 @@
         <span id="chat-estado-ap" style="font-size:11px; color:#a7f3c0;"></span>
       </div>
       <div id="mensajes-grupo" style="flex:1; overflow-y:auto; padding:12px; display:flex; flex-direction:column; gap:6px;"></div>
-
+      <div id="typing-indicator-ap" style="display:none; padding:4px 14px; font-size:12px; color:#a7f3c0; font-style:italic;">
+        <i class="fas fa-ellipsis-h"></i> tu instructor está escribiendo...
+      </div>
       <form id="form-chat" style="display:flex; gap:8px; padding:10px 14px; background:#5b21b6; align-items:center; flex-shrink:0;" onsubmit="return false;">
         <label style="cursor:pointer; font-size:20px; flex:0 0 auto; display:flex; align-items:center; color:white;">
           📎
@@ -771,7 +806,8 @@
         </label>
         <input id="mensaje" placeholder="Escribe un mensaje..."
                style="flex:1; border-radius:20px; border:none; padding:9px 16px; background:#f0fff0; color:#111; font-size:14px; outline:none;"
-               onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();enviarMensajeAprendiz(event);}">
+               onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();enviarMensajeAprendiz(event);}"
+               oninput="enviarTypingAp()">
         <button type="button" onclick="enviarMensajeAprendiz(event)"
                 style="flex:0 0 auto; padding:9px 20px; background:#7c3aed; color:white; border:none; border-radius:20px; font-weight:600; cursor:pointer; font-size:14px;">Enviar</button>
       </form>
@@ -779,6 +815,44 @@
 
   </div>
 </section>
+    <!-- === CUENTA GOOGLE === -->
+    <section id="google-cuenta" class="section" style="display:none;">
+      <h2><i class="fab fa-google" style="color:#ea4335;"></i> Cuenta Google</h2>
+      <div id="google-estado-cargando-ap" style="padding:20px; color:#666;">
+        <i class="fas fa-spinner fa-spin"></i> Cargando estado...
+      </div>
+      <div id="google-no-vinculado-ap" style="display:none;">
+        <div style="background:#fff3cd; border:1px solid #ffc107; border-radius:10px; padding:16px 20px; margin-bottom:16px;">
+          <p style="font-size:14px; color:#856404; margin-bottom:12px;">
+            <i class="fas fa-info-circle"></i>
+            <strong>No tienes ninguna cuenta de Google vinculada.</strong><br>
+            Al vincularla podrás iniciar sesión con un clic usando Google.
+          </p>
+          <a href="/vincular-google/iniciar">
+            <button style="background:#fff; color:#444; border:1.5px solid #ddd; padding:10px 20px; border-radius:8px; font-weight:600; font-size:13px; display:flex; align-items:center; gap:10px; cursor:pointer;">
+              <img src="https://www.svgrepo.com/show/475656/google-color.svg" style="width:18px;height:18px;" alt="Google">
+              Vincular cuenta de Google
+            </button>
+          </a>
+        </div>
+      </div>
+      <div id="google-si-vinculado-ap" style="display:none;">
+        <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:16px 20px; margin-bottom:16px;">
+          <p style="font-size:14px; color:#166534; margin-bottom:4px;">
+            <i class="fas fa-check-circle"></i> <strong>Cuenta de Google vinculada.</strong>
+          </p>
+          <p id="google-correo-vinculado-ap" style="font-size:13px; color:#4b7c5f; margin-bottom:12px;"></p>
+          <button id="btn-desvincular-ap" onclick="desvincularGoogleAp()"
+            style="background:#fff; color:#dc2626; border:1.5px solid #fca5a5; padding:8px 18px; border-radius:8px; font-weight:600; font-size:13px; cursor:pointer;">
+            <i class="fas fa-unlink"></i> Desvincular Google
+          </button>
+          <p id="msg-no-pass-ap" style="display:none; font-size:11px; color:#dc2626; margin-top:8px;">
+            <i class="fas fa-exclamation-triangle"></i> No puedes desvincular porque tu cuenta no tiene contraseña configurada.
+          </p>
+        </div>
+      </div>
+    </section>
+
   </div>
 
 <script th:inline="javascript">
@@ -795,161 +869,51 @@ let ws = null;
 let wsNotificaciones = null;
 let ultimoMensajeEnviado = null;
 
-// Función para reproducir sonido de notificación
-function reproducirSonidoNotificacion() {
-  try {
-    const audio = new Audio('/sounds/notificacion.mp3');
-    audio.volume = 0.7; // Volumen al 70%
-    audio.play().catch(err => console.log('No se pudo reproducir sonido:', err));
-  } catch (e) {
-    console.error('Error reproduciendo sonido:', e);
-  }
-}
-
-// Función para mostrar notificación visual
-function mostrarNotificacionVisual(notificacion) {
-  const titulo = notificacion.titulo || 'Nueva Notificación';
-  const mensaje = notificacion.mensaje || '';
-  
-  // Crear elemento de notificación
-  const notifDiv = document.createElement('div');
-  notifDiv.style.cssText = `
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: linear-gradient(135deg, #5b21b6 0%, #008D4D 100%);
-    color: white;
-    padding: 15px 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 9999;
-    max-width: 350px;
-    animation: slideIn 0.3s ease-out;
-    font-family: 'Poppins', sans-serif;
-    border-left: 4px solid #00FF99;
-  `;
-  
-  notifDiv.innerHTML = `
-    <strong>🔔 ${titulo}</strong><br>
-    <span style="font-size: 0.9em; margin-top: 5px; display: block;">${mensaje}</span>
-  `;
-  
-  document.body.appendChild(notifDiv);
-  
-  // Auto-remover después de 5 segundos
-  setTimeout(() => {
-    notifDiv.style.animation = 'slideOut 0.3s ease-in';
-    setTimeout(() => notifDiv.remove(), 300);
-  }, 5000);
-}
-
-// Agregar estilos de animación
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes slideIn {
-    from {
-      transform: translateX(400px);
-      opacity: 0;
-    }
-    to {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
-  
-  @keyframes slideOut {
-    from {
-      transform: translateX(0);
-      opacity: 1;
-    }
-    to {
-      transform: translateX(400px);
-      opacity: 0;
-    }
-  }
-`;
-document.head.appendChild(style);
-
 document.addEventListener('DOMContentLoaded', () => {
-
+  // Iniciar chat
   cargarChatsAprendiz();
-  cargarVehiculosAprendiz();
-  
-  // Conectar a WebSocket de notificaciones
-  conectarWebSocketNotificaciones();
-  
-  // Evento para formulario de vehículos
-  const formVehiculo = document.getElementById('formVehiculoAprendiz');
-  if (formVehiculo) {
-    formVehiculo.addEventListener('submit', guardarVehiculoAprendiz);
-  }
-});
 
-// Conectar a WebSocket de notificaciones
-function conectarWebSocketNotificaciones() {
-  try {
-    const wsProtocolo = window.location.protocol === 'https:' ? 'wss' : 'ws';
-    const wsUrl = `${wsProtocolo}://localhost:8080/notificaciones/aprendiz/${encodeURIComponent(fichaAprendiz)}`;
-    
-    wsNotificaciones = new WebSocket(wsUrl);
-    
-    wsNotificaciones.onopen = () => {
-      console.info('✅ WebSocket de notificaciones conectado para aprendiz');
-    };
-    
-    wsNotificaciones.onmessage = (evento) => {
-      try {
-        const notificacion = JSON.parse(evento.data);
-        
-        // Reproducir sonido si está habilitado
-        if (notificacion.sonar !== false) {
-          reproducirSonidoNotificacion();
-        }
-        
-        // Mostrar notificación visual
-        mostrarNotificacionVisual(notificacion);
-        
-        console.log('📬 Notificación recibida:', notificacion);
-      } catch (e) {
-        console.error('Error procesando notificación:', e);
-      }
-    };
-    
-    wsNotificaciones.onerror = (error) => {
-      console.error('❌ Error en WebSocket de notificaciones:', error);
-    };
-    
-    wsNotificaciones.onclose = () => {
-      console.info('❌ WebSocket de notificaciones cerrado');
-      // Intentar reconectar después de 5 segundos
-      setTimeout(conectarWebSocketNotificaciones, 5000);
-    };
-  } catch (e) {
-    console.error('Error al conectar WebSocket de notificaciones:', e);
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
+  // Abrir WS de chat con la ficha del aprendiz
   try {
     const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    if (!ws || ws.readyState === WebSocket.CLOSED) {
-      ws = new WebSocket(`${wsProtocol}//${window.location.host}/chat/${encodeURIComponent(fichaAprendiz)}`);
-      ws.onmessage = e => {
-        const msg = JSON.parse(e.data);
-        // Ignorar el echo del propio mensaje (ya lo mostramos localmente al enviar)
-        if (msg.idEmisor == idUsuario && msg.mensaje && msg.mensaje === ultimoMensajeEnviado) {
-          ultimoMensajeEnviado = null;
-          return;
+    ws = new WebSocket(`${wsProtocol}//${window.location.host}/chat/${encodeURIComponent(fichaAprendiz)}`);
+
+    ws.onmessage = e => {
+      let msg;
+      try { msg = JSON.parse(e.data); } catch(_) { return; }
+      if (msg.tipo === 'typing') {
+        const el = document.getElementById('typing-indicator-ap');
+        if (el) {
+          el.style.display = 'block';
+          clearTimeout(window._typingTimerAp);
+          window._typingTimerAp = setTimeout(() => { el.style.display = 'none'; }, 2500);
         }
-        mostrarMensaje(msg);
-      };
-      ws.onopen = () => console.info('WS apprentice connected for ficha', fichaAprendiz);
-      ws.onerror = err => console.error('WS apprentice error', err);
-      ws.onclose = () => console.info('WS apprentice closed for ficha', fichaAprendiz);
-    }
+        return;
+      }
+      if (msg.idEmisor == idUsuario && msg.mensaje && msg.mensaje === ultimoMensajeEnviado) {
+        ultimoMensajeEnviado = null;
+        return;
+      }
+      mostrarMensaje(msg);
+    };
+
+    ws.onopen  = () => console.info('✅ WS chat aprendiz conectado:', fichaAprendiz);
+    ws.onerror = err => console.error('❌ WS chat aprendiz error:', err);
+    ws.onclose = () => {
+      console.info('WS chat aprendiz cerrado, reconectando en 5s...');
+      setTimeout(() => {
+        const p = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        ws = new WebSocket(`${p}//${window.location.host}/chat/${encodeURIComponent(fichaAprendiz)}`);
+      }, 5000);
+    };
   } catch (e) {
-    console.error('Error opening apprentice WS', e);
+    console.error('Error abriendo WS de chat del aprendiz:', e);
   }
+
+  // Vehículos
+  cargarVehiculosAprendiz();
+  const formVehiculo = document.getElementById('formVehiculoAprendiz');
+  if (formVehiculo) formVehiculo.addEventListener('submit', guardarVehiculoAprendiz);
 });
 
 function abrirChatFicha(ficha, instructorId, nombreInstructor) {
@@ -993,6 +957,12 @@ function abrirChatFicha(ficha, instructorId, nombreInstructor) {
     ws = new WebSocket(`${wsProtocol}//${window.location.host}/chat/${encodeURIComponent(fichaAprendiz)}`);
     ws.onmessage = e => {
       const msg = JSON.parse(e.data);
+      // Indicador escribiendo
+      if (msg.tipo === 'typing') {
+        const el = document.getElementById('typing-indicator-ap');
+        if (el) { el.style.display = 'block'; clearTimeout(window._typingTimerAp); window._typingTimerAp = setTimeout(() => { el.style.display = 'none'; }, 2500); }
+        return;
+      }
       if (msg.idEmisor == idUsuario && msg.mensaje && msg.mensaje === ultimoMensajeEnviado) {
         ultimoMensajeEnviado = null;
         return;
@@ -1077,7 +1047,8 @@ function enviarMensajeAprendiz(e) {
   if (!texto) return;
 
   if (!ws || ws.readyState !== WebSocket.OPEN) {
-    console.warn('WebSocket no conectado, reintentando...');
+    console.warn('WS no conectado aún, reintentando en 500ms...');
+    setTimeout(() => enviarMensajeAprendiz(null), 500);
     return;
   }
 
@@ -1095,11 +1066,10 @@ function enviarMensajeAprendiz(e) {
 
   try {
     ws.send(JSON.stringify(payload));
-    // Mostrar inmediatamente sin esperar el broadcast del servidor
     ultimoMensajeEnviado = texto;
     mostrarMensaje(payload);
   } catch (err) {
-    console.error('Error sending WS message', err);
+    console.error('Error enviando mensaje WS:', err);
   }
 
   document.getElementById('mensaje').value = '';
@@ -1317,6 +1287,9 @@ function mostrarMensaje(m) {
       // si la sección es tareas, cargar lista
       if (id === 'tareas') mostrarListaTareasAp();
 
+      // si la sección es google-cuenta, cargar estado
+      if (id === 'google-cuenta') cargarEstadoGoogleAp();
+
       // si la sección es mi-asistencia, cargar historial
       if (id === 'mi-asistencia') cargarHistorialAsistenciaAp();
 
@@ -1437,8 +1410,47 @@ function mostrarMensaje(m) {
     // marcar por defecto la sección inicial
     (function init() {
       const params = new URLSearchParams(window.location.search);
-      showSection(params.get('section') || 'perfil');
+      const section = params.get('section') || 'perfil';
+      if (params.get('vincularOk')) {
+        Swal.fire({ icon:'success', title:'¡Google vinculado!', text:'Tu cuenta de Google se vinculó correctamente.', confirmButtonColor:'#5b21b6', timer:3000, timerProgressBar:true });
+        showSection('google-cuenta');
+        return;
+      }
+      if (params.get('vincularError')) {
+        Swal.fire({ icon:'error', title:'Error al vincular', text:decodeURIComponent(params.get('vincularError')), confirmButtonColor:'#5b21b6' });
+        showSection('google-cuenta');
+        return;
+      }
+      showSection(section);
+      if (section === 'google-cuenta') cargarEstadoGoogleAp();
     })();
+
+    function cargarEstadoGoogleAp() {
+      document.getElementById('google-estado-cargando-ap').style.display = 'block';
+      document.getElementById('google-no-vinculado-ap').style.display = 'none';
+      document.getElementById('google-si-vinculado-ap').style.display = 'none';
+      fetch('/vincular-google/estado').then(r => r.json()).then(data => {
+        document.getElementById('google-estado-cargando-ap').style.display = 'none';
+        if (data.vinculado) {
+          document.getElementById('google-si-vinculado-ap').style.display = 'block';
+          document.getElementById('google-correo-vinculado-ap').textContent = 'Correo: ' + (data.correo || '');
+          if (!data.tienePassword) {
+            document.getElementById('btn-desvincular-ap').disabled = true;
+            document.getElementById('btn-desvincular-ap').style.opacity = '0.5';
+            document.getElementById('msg-no-pass-ap').style.display = 'block';
+          }
+        } else { document.getElementById('google-no-vinculado-ap').style.display = 'block'; }
+      }).catch(() => { document.getElementById('google-estado-cargando-ap').innerHTML = '<span style="color:#dc2626;">Error al cargar. Recarga.</span>'; });
+    }
+    function desvincularGoogleAp() {
+      Swal.fire({ title:'¿Desvincular Google?', text:'Ya no podrás iniciar sesión con Google.', icon:'warning', showCancelButton:true, confirmButtonColor:'#dc2626', cancelButtonColor:'#6b7280', confirmButtonText:'Sí, desvincular', cancelButtonText:'Cancelar' })
+      .then(r => { if (!r.isConfirmed) return;
+        fetch('/vincular-google/desvincular', { method:'POST' }).then(res => res.json()).then(data => {
+          if (data.mensaje) Swal.fire('¡Desvinculado!', data.mensaje, 'success').then(() => location.reload());
+          else Swal.fire('Error', data.error || 'No se pudo desvincular.', 'error');
+        });
+      });
+    }
 
     // =========================================================
     // LÓGICA CALENDARIO APRENDIZ
@@ -2117,15 +2129,43 @@ function closeSidebar() {
   document.querySelector('.sidebar').classList.remove('open');
   document.getElementById('sidebarOverlay').classList.remove('active');
 }
+
+// Indicador "escribiendo..." del aprendiz
+let _typingDebounceAp = null;
+function enviarTypingAp() {
+  if (!ws || ws.readyState !== WebSocket.OPEN) return;
+  clearTimeout(_typingDebounceAp);
+  _typingDebounceAp = setTimeout(() => {
+    try {
+      ws.send(JSON.stringify({
+        tipo: 'typing',
+        idEmisor: idUsuario,
+        nombreEmisor: nombreAprendiz,
+        rolEmisor: 'Aprendiz',
+        ficha: fichaAprendiz,
+        mensaje: ''
+      }));
+    } catch (_) {}
+  }, 300);
+}
+function toggleSidebarGroup(groupId) {
+  const items = document.getElementById(groupId);
+  const chevId = 'chev-' + groupId.replace('group-','');
+  const chev   = document.getElementById(chevId);
+  items.classList.toggle('open');
+  if (chev) chev.classList.toggle('open');
+}
 </script>
 <script th:src="@{/js/theme.js}"></script>
 <script th:src="@{/js/notificaciones.js}"></script>
+<script th:src="@{/js/perfil-widget.js}"></script>
 <script th:inline="javascript">
   document.addEventListener('DOMContentLoaded', function() {
     const ficha = '[[${aprendiz.fichaFormacion}]]'.replace(/"/g,'').replace(/%22/g,'').trim();
-    if (ficha) {
+    if (ficha && window.siaNotif) {
       siaNotif.init({ tipo: 'aprendiz', id: ficha });
     }
+    if (window.perfilWidget) perfilWidget.init();
   });
 </script>
 </body>

@@ -1,5 +1,7 @@
 package com.example.SIA.config;
 
+import com.example.SIA.service.GoogleOAuth2UserService;
+import com.example.SIA.service.GoogleOidcUserService;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletRequest;
@@ -18,6 +20,21 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final GoogleOAuth2UserService googleOAuth2UserService;
+    private final GoogleOidcUserService googleOidcUserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final OAuth2FailureHandler oAuth2FailureHandler;
+
+    public SecurityConfig(GoogleOAuth2UserService googleOAuth2UserService,
+                          GoogleOidcUserService googleOidcUserService,
+                          OAuth2SuccessHandler oAuth2SuccessHandler,
+                          OAuth2FailureHandler oAuth2FailureHandler) {
+        this.googleOAuth2UserService = googleOAuth2UserService;
+        this.googleOidcUserService = googleOidcUserService;
+        this.oAuth2SuccessHandler = oAuth2SuccessHandler;
+        this.oAuth2FailureHandler = oAuth2FailureHandler;
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -28,6 +45,17 @@ public class SecurityConfig {
             .formLogin(form -> form.disable())
             .httpBasic(basic -> basic.disable())
             .csrf(csrf -> csrf.disable())
+            .oauth2Login(oauth2 -> oauth2
+                .loginPage("/login")
+                .userInfoEndpoint(userInfo -> userInfo
+                    // OAuth2 puro (sin openid) — fallback
+                    .userService(googleOAuth2UserService)
+                    // OIDC (con openid) — lo que Google usa siempre
+                    .oidcUserService(googleOidcUserService)
+                )
+                .successHandler(oAuth2SuccessHandler)
+                .failureHandler(oAuth2FailureHandler)
+            )
             .headers(headers -> headers
                 .frameOptions(frame -> frame.deny())
                 .httpStrictTransportSecurity(hsts -> hsts

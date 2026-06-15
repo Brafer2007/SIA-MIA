@@ -32,6 +32,10 @@ public class Tarea {
     @Column(nullable = false)
     private LocalDateTime fechaCreacion = LocalDateTime.now();
 
+    /** True si ya se envió recordatorio de vencimiento próximo */
+    @Column(name = "recordatorio_enviado", nullable = false)
+    private boolean recordatorioEnviado = false;
+
     public Tarea() {}
 
     public Long getId() { return id; }
@@ -57,4 +61,7 @@ public class Tarea {
 
     public LocalDateTime getFechaCreacion() { return fechaCreacion; }
     public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }
+
+    public boolean isRecordatorioEnviado() { return recordatorioEnviado; }
+    public void setRecordatorioEnviado(boolean recordatorioEnviado) { this.recordatorioEnviado = recordatorioEnviado; }
 }

@@ -215,6 +215,24 @@
       background: #faf5ff;
     }
 
+    .btn-google {
+      width: 100%; padding: 12px; border-radius: 12px;
+      border: 1.5px solid #e5e7eb;
+      background: #fff; color: #374151;
+      font-weight: 600; font-size: 14px; cursor: pointer;
+      transition: all 0.3s; font-family: 'Poppins', sans-serif;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      text-decoration: none;
+    }
+    .btn-google:hover {
+      background: #f9fafb;
+      border-color: #d1d5db;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .btn-google img {
+      width: 18px; height: 18px;
+    }
+
     @media (max-width: 480px) {
       .login-card { padding: 32px 22px; }
       header { padding: 12px 16px; }
@@ -289,11 +307,17 @@
 
       <div class="divider">o</div>
 
-      <form th:action="@{/registro}" method="get">
-        <button type="submit" class="btn-secondary">
-          <i class="fas fa-user-plus"></i> Crear cuenta nueva
-        </button>
-      </form>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:4px;">
+        <a th:href="@{/oauth2/authorization/google}" class="btn-google" style="width:100%; font-size:13px; padding:11px 8px;">
+          <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google"/>
+          Google
+        </a>
+        <form th:action="@{/registro}" method="get" style="margin:0;">
+          <button type="submit" class="btn-secondary" style="width:100%; font-size:13px; padding:11px 8px;">
+            <i class="fas fa-user-plus"></i> Registrarse
+          </button>
+        </form>
+      </div>
 
     </div>
   </main>

@@ -13,7 +13,7 @@
     :root {
       --verde: #5b21b6;
       --verde-claro: #7c3aed;
-      --verde-oscuro: #004d1f;
+      --verde-oscuro: #05004d;
       --gris: #f4f9f4;
     }
 
@@ -24,7 +24,7 @@
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       display: flex; align-items: center; justify-content: space-between;
       padding: 14px 48px;
-      background: rgba(0,77,31,0.95);
+      background: rgba(53, 0, 77, 0.95);
       backdrop-filter: blur(8px);
       box-shadow: 0 2px 20px rgba(0,0,0,0.25);
     }
@@ -218,7 +218,6 @@
     </a>
     <ul class="nav-links">
       <li><a th:href="@{/}"><i class="fas fa-home"></i> Inicio</a></li>
-      <li><a th:href="@{/vistas}"><i class="fas fa-compass"></i> Explora</a></li>
       <li><a th:href="@{/login}" class="btn-login"><i class="fas fa-sign-in-alt"></i> Ingresar</a></li>
     </ul>
   </nav>
@@ -338,7 +337,7 @@
 
   <!-- FOOTER -->
   <footer>
-    <p>&copy; 2025 <strong>SENA</strong> · Software de Ingreso y Automatización · Todos los derechos reservados.</p>
+    <p>&copy; 2025 · Software de Ingreso y Automatización · Todos los derechos reservados.</p>
   </footer>
 
 </body>

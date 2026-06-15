@@ -116,6 +116,7 @@
   <div class="sidebar">
     <a href="#" onclick="showSection(event,'perfil')"><i class="fas fa-user-edit"></i> Mi Perfil</a>
     <a href="#" onclick="showSection(event,'equipos')"><i class="fas fa-laptop"></i> Equipos</a>
+    <a href="#" onclick="showSection(event,'google-cuenta')"><i class="fab fa-google"></i> Cuenta Google</a>
     <button class="theme-toggle-btn" onclick="toggleTheme()">
       <i class="theme-icon fas fa-moon"></i>
       <span class="theme-label">Tema Oscuro</span>
@@ -143,55 +144,47 @@
         <h3>Equipos</h3>
         <p>Registra y gestiona tus equipos</p>
       </div>
+      <div class="card" onclick="showSection(event,'google-cuenta')">
+        <i class="fab fa-google" style="color:#ea4335;"></i>
+        <h3>Cuenta Google</h3>
+        <p>Vincula o administra tu cuenta de Google</p>
+      </div>
     </section>
 
     <!-- === PERFIL === -->
     <section id="perfil" class="section">
       <h2><i class="fas fa-user-edit"></i> Mi Perfil</h2>
 
-      <div th:if="${aprendiz_completo}">
-        <div class="card" style="text-align:left; max-width:600px; margin:0 auto;">
-          <div style="background:#d4edda; border:1px solid #c3e6cb; color:#155724; padding:10px; border-radius:5px; margin-bottom:15px; text-align:center;">
-            <i class="fas fa-check-circle"></i> <strong>Perfil Completado</strong>
-          </div>
-          <h3 style="color:#5b21b6"><i class="fas fa-id-badge"></i> Información Personal</h3>
-          <p><strong>Nombres:</strong> <span th:text="${usuario.nombres}"></span></p>
-          <p><strong>Apellidos:</strong> <span th:text="${usuario.apellidos}"></span></p>
-          <p><strong>Correo:</strong> <span th:text="${usuario.correo}"></span></p>
-          <p><strong>Número de Documento:</strong> <span th:text="${usuario.noDocumento}"></span></p>
-          <p><strong>Ficha de Formación:</strong> <span th:text="${aprendiz.fichaFormacion}"></span></p>
-          <p><strong>Programa de Formación:</strong> <span th:text="${aprendiz.programaFormacion}"></span></p>
+      <div class="card" style="text-align:left; max-width:600px; margin:0 auto;">
 
-          <a href="/aprendiz/formulario">
-            <button style="margin-top:15px; background:#5b21b6; color:white; border:none; border-radius:5px; padding:8px 18px; font-weight:bold; cursor:pointer;">
-              <i class="fas fa-edit"></i> Editar Datos Personales
-            </button>
-          </a>
-
-          <a th:href="@{/aprendiz/qr-img}" download
-            style="margin-top:15px; background:#008D4D; color:white; border:none; border-radius:5px; padding:8px 18px; font-weight:bold; cursor:pointer; text-decoration:none; display:inline-block;">
-            <i class="fas fa-qrcode"></i> Descargar QR
-          </a>
-
-          <button onclick="mostrarQR()"
-            style="margin-top:15px; background:#43d828; color:#000; border:none; border-radius:5px; padding:8px 18px; font-weight:bold; cursor:pointer;">
-            <i class="fas fa-eye"></i> Ver QR
-          </button>
-
-          <div id="qrVista" style="display:none; text-align:center; margin-top:15px;">
-            <h4 style="color:#5b21b6">Mi Código QR</h4>
-            <img id="qrImagen" src="" alt="QR" style="border:2px solid #5b21b6; border-radius:10px; padding:5px;">
-          </div>
+        <!-- Aviso de rol pendiente -->
+        <div style="background:#fef9c3; border:1px solid #fde047; border-radius:8px; padding:12px 16px; margin-bottom:20px; font-size:14px; color:#854d0e;">
+          <i class="fas fa-clock"></i>
+          <strong>Tu cuenta tiene rol Invitado.</strong>
+          El administrador del sistema te asignará el rol correspondiente pronto.
         </div>
-      </div>
 
-      <div th:if="${!aprendiz_completo}">
-        <p style="color:#856404; background:#fff3cd; border:1px solid #ffc107; padding:12px; border-radius:6px;">
-          <i class="fas fa-exclamation-triangle"></i> Aún no has completado tu perfil.
+        <h3 style="color:#5b21b6; margin-bottom:14px;"><i class="fas fa-id-badge"></i> Información Personal</h3>
+
+        <p style="margin-bottom:8px;"><strong>Nombres:</strong> <span th:text="${usuario.nombres}"></span></p>
+        <p style="margin-bottom:8px;"><strong>Apellidos:</strong> <span th:text="${usuario.apellidos}"></span></p>
+        <p style="margin-bottom:8px;"><strong>Correo:</strong> <span th:text="${usuario.correo}"></span></p>
+        <p style="margin-bottom:8px;">
+          <strong>Número de Documento:</strong>
+          <span th:if="${usuario.noDocumento != null and !#strings.startsWith(usuario.noDocumento, 'GOOGLE_PENDIENTE')}"
+                th:text="${usuario.noDocumento}"></span>
+          <span th:if="${usuario.noDocumento == null or #strings.startsWith(usuario.noDocumento, 'GOOGLE_PENDIENTE')}"
+                style="color:#dc2626; font-style:italic;">
+            Pendiente — <a th:href="@{/completar-perfil-google}" style="color:#5b21b6;">Completar ahora</a>
+          </span>
         </p>
-        <a th:href="@{/aprendiz/formulario}">
-          <button style="margin-top:12px;"><i class="fas fa-user-plus"></i> Completar Información</button>
-        </a>
+        <p style="margin-bottom:8px;"><strong>Usuario:</strong> <span th:text="${usuario.nombreUsuario}"></span></p>
+        <p style="margin-bottom:8px;"><strong>Perfil:</strong>
+          <span style="background:#fef9c3; color:#854d0e; border:1px solid #fde047; border-radius:20px; padding:2px 12px; font-size:12px; font-weight:600;">
+            <i class="fas fa-user-clock"></i> Invitado
+          </span>
+        </p>
+
       </div>
     </section>
 
@@ -239,9 +232,58 @@
       </table>
     </section>
 
-  </div>
+    <!-- === CUENTA GOOGLE === -->
+    <section id="google-cuenta" class="section">
+      <h2><i class="fab fa-google" style="color:#ea4335;"></i> Cuenta Google</h2>
+
+      <div id="google-estado-cargando" style="padding:20px; color:#666;">
+        <i class="fas fa-spinner fa-spin"></i> Cargando estado...
+      </div>
+
+      <!-- Estado: NO vinculada -->
+      <div id="google-no-vinculado" style="display:none;">
+        <div style="background:#fff3cd; border:1px solid #ffc107; border-radius:10px; padding:16px 20px; margin-bottom:20px;">
+          <p style="font-size:14px; color:#856404; margin-bottom:12px;">
+            <i class="fas fa-info-circle"></i>
+            <strong>No tienes ninguna cuenta de Google vinculada.</strong><br>
+            Al vincularla, podrás iniciar sesión con un clic usando Google.
+          </p>
+          <a href="/vincular-google/iniciar">
+            <button style="background:#fff; color:#444; border:1.5px solid #ddd; padding:10px 20px; border-radius:8px; font-weight:600; font-size:13px; display:flex; align-items:center; gap:10px; cursor:pointer;">
+              <img src="https://www.svgrepo.com/show/475656/google-color.svg" style="width:18px;height:18px;" alt="Google">
+              Vincular cuenta de Google
+            </button>
+          </a>
+        </div>
+      </div>
+
+      <!-- Estado: SÍ vinculada -->
+      <div id="google-si-vinculado" style="display:none;">
+        <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:16px 20px; margin-bottom:20px;">
+          <p style="font-size:14px; color:#166534; margin-bottom:4px;">
+            <i class="fas fa-check-circle"></i>
+            <strong>Cuenta de Google vinculada correctamente.</strong>
+          </p>
+          <p id="google-correo-vinculado" style="font-size:13px; color:#4b7c5f; margin-bottom:12px;"></p>
+          <p style="font-size:12px; color:#6b7280; margin-bottom:12px;">
+            Puedes iniciar sesión con Google en cualquier momento desde la pantalla de login.
+          </p>
+          <button id="btn-desvincular" onclick="desvincularGoogle()"
+            style="background:#fff; color:#dc2626; border:1.5px solid #fca5a5; padding:8px 18px; border-radius:8px; font-weight:600; font-size:13px; cursor:pointer;">
+            <i class="fas fa-unlink"></i> Desvincular Google
+          </button>
+          <p id="msg-no-pass" style="display:none; font-size:11px; color:#dc2626; margin-top:8px;">
+            <i class="fas fa-exclamation-triangle"></i>
+            No puedes desvincular Google porque tu cuenta no tiene contraseña configurada.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /content -->
 
   <script>
+    // ── Mostrar sección ──────────────────────────────────────────
     function showSection(eOrId, maybeId) {
       let id = typeof eOrId === 'string' ? eOrId : maybeId;
       if (eOrId && typeof eOrId.preventDefault === 'function') eOrId.preventDefault();
@@ -253,15 +295,11 @@
       const active = Array.from(document.querySelectorAll('.sidebar a'))
         .find(a => (a.getAttribute('onclick') || '').includes(`'${id}'`));
       if (active) active.classList.add('active');
+      // Cargar estado Google al abrir esa sección
+      if (id === 'google-cuenta') cargarEstadoGoogle();
     }
 
-    function mostrarQR() {
-      const qrDiv = document.getElementById('qrVista');
-      const qrImg = document.getElementById('qrImagen');
-      qrImg.src = "/aprendiz/qr-img?" + new Date().getTime();
-      qrDiv.style.display = 'block';
-    }
-
+    // ── Equipos ─────────────────────────────────────────────────
     function eliminarEquipo(id) {
       Swal.fire({
         title: '¿Eliminar equipo?', text: "Esta acción no se puede deshacer.",
@@ -284,12 +322,58 @@
       window.location.href = '/equipos/editar/' + id;
     }
 
-    // Sección inicial y manejo de ?section=
-    (function init() {
-      const params = new URLSearchParams(window.location.search);
-      showSection(params.get('section') || 'perfil');
-    })();
+    // ── Widget Google ────────────────────────────────────────────
+    function cargarEstadoGoogle() {
+      // Resetear estado visual antes de cargar
+      document.getElementById('google-estado-cargando').style.display = 'block';
+      document.getElementById('google-no-vinculado').style.display = 'none';
+      document.getElementById('google-si-vinculado').style.display = 'none';
 
+      fetch('/vincular-google/estado')
+        .then(r => r.json())
+        .then(data => {
+          document.getElementById('google-estado-cargando').style.display = 'none';
+          if (data.vinculado) {
+            document.getElementById('google-si-vinculado').style.display = 'block';
+            document.getElementById('google-correo-vinculado').textContent =
+              'Correo: ' + (data.correo || '');
+            if (!data.tienePassword) {
+              document.getElementById('btn-desvincular').disabled = true;
+              document.getElementById('btn-desvincular').style.opacity = '0.5';
+              document.getElementById('msg-no-pass').style.display = 'block';
+            }
+          } else {
+            document.getElementById('google-no-vinculado').style.display = 'block';
+          }
+        })
+        .catch(() => {
+          document.getElementById('google-estado-cargando').innerHTML =
+            '<span style="color:#dc2626;">Error al cargar el estado. Recarga la página.</span>';
+        });
+    }
+
+    function desvincularGoogle() {
+      Swal.fire({
+        title: '¿Desvincular Google?',
+        text: 'Ya no podrás iniciar sesión usando tu cuenta de Google.',
+        icon: 'warning', showCancelButton: true,
+        confirmButtonColor: '#dc2626', cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Sí, desvincular', cancelButtonText: 'Cancelar'
+      }).then(r => {
+        if (!r.isConfirmed) return;
+        fetch('/vincular-google/desvincular', { method: 'POST' })
+          .then(res => res.json())
+          .then(data => {
+            if (data.mensaje) {
+              Swal.fire('¡Desvinculado!', data.mensaje, 'success').then(() => location.reload());
+            } else {
+              Swal.fire('Error', data.error || 'No se pudo desvincular.', 'error');
+            }
+          });
+      });
+    }
+
+    // ── Sidebar mobile ───────────────────────────────────────────
     function toggleSidebar() {
       document.querySelector('.sidebar').classList.toggle('open');
       document.getElementById('sidebarOverlay').classList.toggle('active');
@@ -298,6 +382,32 @@
       document.querySelector('.sidebar').classList.remove('open');
       document.getElementById('sidebarOverlay').classList.remove('active');
     }
+
+    // ── Inicialización ───────────────────────────────────────────
+    (function init() {
+      const params = new URLSearchParams(window.location.search);
+
+      if (params.get('vincularOk')) {
+        Swal.fire({
+          icon: 'success', title: '¡Google vinculado!',
+          text: 'Tu cuenta de Google se vinculó correctamente.',
+          confirmButtonColor: '#5b21b6', timer: 3000, timerProgressBar: true
+        });
+        showSection('google-cuenta');
+        return;
+      }
+      if (params.get('vincularError')) {
+        Swal.fire({
+          icon: 'error', title: 'Error al vincular',
+          text: decodeURIComponent(params.get('vincularError')),
+          confirmButtonColor: '#5b21b6'
+        });
+        showSection('google-cuenta');
+        return;
+      }
+
+      showSection(params.get('section') || 'perfil');
+    })();
   </script>
   <script th:src="@{/js/theme.js}"></script>
   <script th:src="@{/js/notificaciones.js}"></script>

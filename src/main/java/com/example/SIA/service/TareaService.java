@@ -37,6 +37,12 @@ public class TareaService {
     @Autowired
     private NotificationWebSocketHandler notificationWebSocketHandler;
 
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private NotificacionService notificacionService;
+
     public TareaService(TareaRepository tareaRepository,
                         InstructorRepository instructorRepository,
                         ProgramacionRepository programacionRepository,
@@ -125,6 +131,40 @@ public class TareaService {
         );
         notificationWebSocketHandler.notificarAprendicesDeFicha(ficha, notificacionDTO);
 
+        // Enviar correo a cada aprendiz de la ficha
+        List<Aprendiz> aprendices = aprendizRepository.findByFichaContainedIn(ficha);
+        String fechaStr = tarea.getFechaLimite() != null
+                ? tarea.getFechaLimite().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+                : "Sin fecha límite";
+        String asunto  = "📋 Nueva tarea asignada: " + tarea.getTitulo();
+        for (Aprendiz a : aprendices) {
+            if (a.getUsuario() == null || a.getUsuario().getCorreo() == null
+                    || a.getUsuario().getCorreo().isBlank()) continue;
+            String nombre = (a.getUsuario().getNombres() + " " + a.getUsuario().getApellidos()).trim();
+            String cuerpo = "Hola " + nombre + ",\n\n"
+                    + "Tu instructor " + instructor.getNombreCompleto() + " ha asignado una nueva tarea:\n\n"
+                    + "  Título:       " + tarea.getTitulo() + "\n"
+                    + (tarea.getDescripcion() != null && !tarea.getDescripcion().isBlank()
+                        ? "  Descripción:  " + tarea.getDescripcion() + "\n" : "")
+                    + "  Fecha límite: " + fechaStr + "\n"
+                    + "  Ficha:        " + ficha + "\n\n"
+                    + "Ingresa al sistema SIA para ver el detalle y entregar tu trabajo.\n\n"
+                    + "— Sistema SIA";
+            emailService.enviarCorreoIndividual(
+                    a.getUsuario().getCorreo(), asunto, cuerpo,
+                    instructor.getUsuario() != null ? instructor.getUsuario().getCorreo() : null);
+
+            // Persistir notificación para que aparezca al entrar al dashboard
+            if (a.getUsuario().getIdUsuario() != null) {
+                notificacionService.crearParaUsuario(
+                        a.getUsuario().getIdUsuario(), "aprendiz",
+                        "📋 Nueva tarea: " + tarea.getTitulo(),
+                        "Tu instructor " + instructor.getNombreCompleto()
+                                + " asignó una tarea con fecha límite " + fechaStr,
+                        "nueva_tarea");
+            }
+        }
+
         return tarea;
     }
 
@@ -199,6 +239,50 @@ public class TareaService {
         entrega.setComentarioInstructor(comentario);
         entrega.setFechaCalificacion(LocalDateTime.now());
         entregaTareaRepository.save(entrega);
+
+        // Notificar al aprendiz por WebSocket y correo
+        try {
+            Aprendiz aprendiz = entrega.getAprendiz();
+            Tarea tarea = entrega.getTarea();
+            if (aprendiz != null && tarea != null) {
+                String nombreAprendiz = aprendiz.getUsuario() != null
+                        ? (aprendiz.getUsuario().getNombres() + " " + aprendiz.getUsuario().getApellidos()).trim()
+                        : "Aprendiz";
+                String ficha = aprendiz.getFichaFormacion();
+                String msgWs = "Tu tarea \"" + tarea.getTitulo() + "\" fue calificada con " + nota + "/5.0";
+                NotificacionDTO dto = new NotificacionDTO("tarea_entregada",
+                        "⭐ Tarea calificada", msgWs,
+                        tarea.getInstructor().getNombreCompleto(), ficha);
+                dto.setSonar(true);
+                notificationWebSocketHandler.notificarAprendicesDeFicha(ficha, dto);
+
+                // Correo al aprendiz
+                if (aprendiz.getUsuario() != null && aprendiz.getUsuario().getCorreo() != null) {
+                    String asunto = "⭐ Tu tarea fue calificada: " + tarea.getTitulo();
+                    String cuerpo = "Hola " + nombreAprendiz + ",\n\n"
+                            + "El instructor " + tarea.getInstructor().getNombreCompleto()
+                            + " calificó tu tarea \"" + tarea.getTitulo() + "\" con una nota de "
+                            + nota + "/5.0.\n\n"
+                            + (comentario != null && !comentario.isBlank()
+                                ? "Comentario: " + comentario + "\n\n" : "")
+                            + "Ingresa al sistema SIA para ver el detalle.\n\n— Sistema SIA";
+                    emailService.enviarCorreoIndividual(
+                            aprendiz.getUsuario().getCorreo(), asunto, cuerpo,
+                            tarea.getInstructor().getUsuario() != null
+                                ? tarea.getInstructor().getUsuario().getCorreo() : null);
+                }
+
+                // Persistir para campanita (offline)
+                if (aprendiz.getUsuario() != null && aprendiz.getUsuario().getIdUsuario() != null) {
+                    notificacionService.crearParaUsuario(
+                            aprendiz.getUsuario().getIdUsuario(), "aprendiz",
+                            "⭐ Tarea calificada: " + tarea.getTitulo(),
+                            "Nota: " + nota + "/5.0"
+                                    + (comentario != null && !comentario.isBlank() ? " — " + comentario : ""),
+                            "tarea_entregada");
+                }
+            }
+        } catch (Exception ignored) { /* no interrumpir */ }
     }
 
     /**

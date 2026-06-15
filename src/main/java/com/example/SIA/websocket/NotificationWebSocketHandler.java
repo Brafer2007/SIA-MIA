@@ -31,6 +31,9 @@ public class NotificationWebSocketHandler extends TextWebSocketHandler {
     // Lista global de sesiones de seguridad (todos los guardias reciben igual)
     private final List<WebSocketSession> seguridadSesiones = new CopyOnWriteArrayList<>();
 
+    // Lista de sesiones del administrador
+    private final List<WebSocketSession> adminSesiones = new CopyOnWriteArrayList<>();
+
     // Map: sesion -> tipo de usuario (aprendiz o instructor)
     private final Map<WebSocketSession, String> tipoUsuario = new ConcurrentHashMap<>();
 
@@ -63,8 +66,10 @@ public class NotificationWebSocketHandler extends TextWebSocketHandler {
             } else if ("seguridad".equalsIgnoreCase(tipo)) {
                 seguridadSesiones.add(session);
                 logger.info("🔔 Seguridad conectado a notificaciones - Session: {}", session.getId());
-            }
-        }
+            } else if ("admin".equalsIgnoreCase(tipo)) {
+                adminSesiones.add(session);
+                logger.info("🔔 Admin conectado a notificaciones - Session: {}", session.getId());
+            }        }
     }
 
     @Override
@@ -99,6 +104,9 @@ public class NotificationWebSocketHandler extends TextWebSocketHandler {
         } else if ("seguridad".equalsIgnoreCase(tipo)) {
             seguridadSesiones.remove(session);
             logger.info("🔔 Seguridad desconectado - Session: {}", session.getId());
+        } else if ("admin".equalsIgnoreCase(tipo)) {
+            adminSesiones.remove(session);
+            logger.info("🔔 Admin desconectado - Session: {}", session.getId());
         }
     }
 
@@ -121,6 +129,16 @@ public class NotificationWebSocketHandler extends TextWebSocketHandler {
         if (sesiones != null && !sesiones.isEmpty()) {
             enviarNotificacion(sesiones, notificacion);
             logger.info("🔔 Notificación enviada a instructor {}", instructorId);
+        }
+    }
+
+    /**
+     * Notificar a todos los administradores conectados
+     */
+    public void notificarAdmin(NotificacionDTO notificacion) {
+        if (!adminSesiones.isEmpty()) {
+            enviarNotificacion(adminSesiones, notificacion);
+            logger.info("🔔 Notificación enviada a {} admin(s)", adminSesiones.size());
         }
     }
 
